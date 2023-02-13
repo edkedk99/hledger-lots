@@ -22,7 +22,7 @@ def txn2hl(
     txn_hl = f"""
 {date} Sold {cur}
     ; commodity:{cur}, qtty:{sum_qtty:,.2f}, price:{price:,.2f}, avg_fifo_cost:{avg_cost:,.4f}
-    {cash_account}  {value} {base_curr}
+    {cash_account}  {value:.2f} {base_curr}
 """
 
     for txn in txns:

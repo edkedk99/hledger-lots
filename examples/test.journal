@@ -1,0 +1,31 @@
+2023-01-01 Initial
+    Asset:Bank                             100000.00 USD
+    Equity:Initial
+
+2023-01-05 Buy AAPL
+    Asset:Stocks                                  5 AAPL @ 4 USD
+    Asset:Bank
+
+2023/01/10 Buy AAPL
+    Asset:Stocks                                  10 AAPL @ 5 USD
+    Asset:Bank
+
+2023-01-15 Sold AAPL
+    ; commodity:AAPL, qtty:3.00, price:5.20, avg_fifo_cost:4.0000
+    Asset:Bank                           15.60 USD
+    Asset:Stocks                 -3.0 AAPL @ 4 USD  ; buy_date:2023-01-05, base_cur:USD
+    Revenue:Capital Gain Loss            -3.60 USD
+
+2023/01/20 Buy AAPL
+    Asset:Stocks                                  15 AAPL @ 5.8 USD
+    Asset:Bank
+
+
+2023-01-25 Sold AAPL
+    ; commodity:AAPL, qtty:8.00, price:4.20, avg_fifo_cost:4.7500
+    Asset:Bank                           33.60 USD
+    Asset:Stocks                 -2.0 AAPL @ 4 USD  ; buy_date:2023-01-05, base_cur:USD
+    Asset:Stocks                 -6.0 AAPL @ 5 USD  ; buy_date:2023-01-10, base_cur:USD
+    Revenue:Capital Gain Loss             4.40 USD
+
+
