@@ -66,7 +66,6 @@ def lots(file: TextIOWrapper, commodity: str):
     click.echo(table)
     total_qtty = sum(lot.qtty for lot in buy_lots)
     avg = get_avg(buy_lots) if total_qtty > 0 else 0
-    
 
     click.echo(f"\nCommodity: {commodity}")
     click.echo(f"Total Quantity: {total_qtty}")

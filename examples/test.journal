@@ -28,4 +28,7 @@
     Asset:Stocks                 -6.0 AAPL @ 5 USD  ; buy_date:2023-01-10, base_cur:USD
     Revenue:Capital Gain Loss             4.40 USD
 
+2023/02/01 Buy GOOG
+    Asset:Stocks                                  15 GOOG @ 19 USD
+    Asset:Bank
 
