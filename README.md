@@ -18,7 +18,7 @@ It also generate **FIFO** lots reports so the user can understand his situation 
 ## Instalation
 
 ```python
-pip install git+https://github.com/fill
+pip install https://github.com/edkedk99/hledger-fifo.git
 ```
 
 ## Usage
@@ -86,11 +86,11 @@ Options:
 #### Output example
 
 ```
-2023-01-30 Sold AAPL
-    ; commodity:AAPL, qtty:19.00, price:4.20, avg_fifo_cost:5.6316
-    Asset:Bank                            79.80 USD
-    Asset:Stocks                    -4 AAPL @ 5 USD  ; buy_date:2023-01-10, base_cur:USD
-    Asset:Stocks                 -15 AAPL @ 5.8 USD  ; buy_date:2023-01-20, base_cur:USD
+2023-01-15 Sold AAPL
+    ; commodity:AAPL, qtty:3.00, price:5.20, avg_fifo_cost:4.0000
+    Asset:Bank                           15.60 USD
+    Asset:Stocks                 -3.0 AAPL @ 4 USD  ; buy_date:2023-01-05, base_cur:USD
+    Revenue:Capital Gain Loss            -3.60 USD
 ```
 
 ### lots
