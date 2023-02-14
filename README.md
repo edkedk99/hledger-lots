@@ -18,7 +18,7 @@ It also generate **FIFO** lots reports so the user can understand his situation 
 ## Instalation
 
 ```python
-pip install https://github.com/edkedk99/hledger-fifo.git
+pip install git+https://github.com/edkedk99/hledger-fifo.git
 ```
 
 ## Usage
