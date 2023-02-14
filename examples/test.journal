@@ -32,3 +32,8 @@
     Asset:Stocks                                  15 GOOG @ 19 USD
     Asset:Bank
 
+2023-02-05 Sold GOOG
+    ; commodity:GOOG, qtty:12.00, price:25.00, avg_fifo_cost:19.0000
+    Ativo:Banco                      300.00 USD
+    Asset:Stocks            -12.0 GOOG @ 19 USD  ; buy_date:2023-02-01, base_cur:USD
+    Revenue:Capital Gain             -72.00 USD

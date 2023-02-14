@@ -55,6 +55,9 @@ def prices_items2txn(date: str, prices_items: dict, account: str) -> Txn:
 def hledger2txn(data: TextIOWrapper, cur: str) -> List[AdjustedTxn]:
     comm = ["hledger", "-f-", "print", f"cur:{cur}", "--output-format=json"]
     hl_proc = subprocess.run(comm, stdin=data, capture_output=True)
+    if hl_proc.returncode != 0:
+        raise ValueError(hl_proc.stderr.decode("utf8"))
+    
     hl_data = hl_proc.stdout.decode("utf8")
     txns_list = json.loads(hl_data)
 
