@@ -57,7 +57,7 @@ def get_sell_lots(lots: List[AdjustedTxn], sell_date: str, sell_qtty: float):
         buy = previous_buys[i]
         if buy.qtty == 0:
             pass
-        elif sell_qtty > buy.qtty:
+        elif sell_qtty_curr > buy.qtty:
             fifo_lots.append(
                 AdjustedTxn(buy.date, buy.price, buy.base_cur, buy.qtty, buy.acct)
             )

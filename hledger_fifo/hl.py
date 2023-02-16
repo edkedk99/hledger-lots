@@ -5,6 +5,10 @@ from typing import List
 
 from .lib import AdjustedTxn, Txn, get_avg
 
+import ipdb
+
+ipdb.set_trace()
+
 
 def txn2hl(
     txns: List[AdjustedTxn],
@@ -66,7 +70,7 @@ def hledger2txn(data: TextIOWrapper, cur: str) -> List[AdjustedTxn]:
         for txn in txns_list
         for posting_items in txn["tpostings"]
         for prices_items in posting_items["pamount"]
-        if prices_items["acommodity"] == cur
+        if prices_items["acommodity"] == cur and prices_items["aprice"]
     ]
 
     adjusted_txns = [adjust_txn(txn) for txn in txns]
