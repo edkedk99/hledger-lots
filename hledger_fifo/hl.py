@@ -1,6 +1,6 @@
 import json
 import subprocess
-from typing import List
+from typing import List, Optional
 
 from .lib import AdjustedTxn, Txn, get_avg
 
@@ -51,8 +51,11 @@ def prices_items2txn(date: str, prices_items: dict, account: str) -> Txn:
     return txn
 
 
-def hledger2txn(file_path: str, cur: str) -> List[AdjustedTxn]:
+def hledger2txn(file_path: str, cur: str, no_desc: Optional[str]) -> List[AdjustedTxn]:
     comm = ["hledger", "-f", file_path, "print", f"cur:{cur}", "--output-format=json"]
+    if no_desc:
+        comm.append(f"not:desc:{no_desc}")
+        
     hl_proc = subprocess.run(comm, capture_output=True)
     if hl_proc.returncode != 0:
         raise ValueError(hl_proc.stderr.decode("utf8"))

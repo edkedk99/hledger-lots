@@ -31,7 +31,14 @@ def cli():
     prompt=True,
     help="Commodity to get fifo lots",
 )
-def lots(file: str, commodity: str):
+@click.option(
+    "-n",
+    "--no-desc",
+    type=click.STRING,
+    prompt=False,
+    help="Description to be filtered out from calculation. Needed when closing journal with '--show-costs' option. Works like: not:desc:<value>. Will not be prompted if absent. If closed with default description, the value of this option should be: 'opening|closing balances'",
+)
+def lots(file: str, commodity: str, no_desc: str):
     """
     Report lots for a commodity.\r
 
@@ -41,7 +48,7 @@ def lots(file: str, commodity: str):
     """
 
     file_path = get_file_path(file)
-    adj_txn = hledger2txn(file_path, commodity)
+    adj_txn = hledger2txn(file_path, commodity, no_desc)
     buy_lots = get_lots(adj_txn)
 
     lots_dict = [
@@ -87,6 +94,13 @@ def lots(file: str, commodity: str):
     help="Commodity you are selling",
 )
 @click.option(
+    "-n",
+    "--no-desc",
+    type=click.STRING,
+    prompt=False,
+    help="Description to be filtered out from calculation. Needed when closing journal with '--show-costs' option. Works like: not:desc:<value>. Will not be prompted if absent. If closed with default description, the value of this option should be: 'opening|closing balances'",
+)
+@click.option(
     "-b",
     "--base-currency",
     type=click.STRING,
@@ -119,6 +133,7 @@ def lots(file: str, commodity: str):
 def sell(
     file: str,
     commodity: str,
+    no_desc: str,
     cash_account: str,
     base_currency: str,
     revenue_account: str,
@@ -142,7 +157,7 @@ def sell(
     All flags, except '--file' will be interactively prompted if absent, much like 'hledger-add'.
     """
     file_path = get_file_path(file)
-    adj_txns = hledger2txn(file_path, commodity)
+    adj_txns = hledger2txn(file_path, commodity, no_desc)
     sell_txn = get_sell_lots(adj_txns, date, quantity)
 
     value = price * quantity
