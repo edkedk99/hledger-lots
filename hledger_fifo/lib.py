@@ -3,7 +3,9 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 from tempfile import NamedTemporaryFile
-from typing import List
+from typing import List, Optional
+from click import Context, BadOptionUsage
+
 
 ENV_FILE = "LEDGER_FILE"
 default_path = Path.home() / ".hledger.journal"
@@ -40,7 +42,21 @@ def get_default_file():
         return str(default_path)
 
 
-def get_file_path(file_option: str):
+def get_parent_file(ctx:Context) -> str:
+    if not ctx.parent:
+        raise BadOptionUsage("file", "File missing")
+
+    filename = ctx.parent.params.get("file")
+    if not filename:
+        raise BadOptionUsage("file", "File missing")
+
+    return filename
+        
+
+    
+def get_file_path(file_curr: Optional[str], ctx: Context) -> str:
+    file_option = file_curr or get_parent_file(ctx)
+        
     if file_option != "-":
         return file_option
     else:
@@ -50,3 +66,5 @@ def get_file_path(file_option: str):
             journal_stdin = sys.stdin
             f.write(journal_stdin.read())
         return file_path
+
+    

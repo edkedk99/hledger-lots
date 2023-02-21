@@ -9,7 +9,7 @@ def check_short_sell_past(previous_buys: List[AdjustedTxn], sell: AdjustedTxn):
         raise ValueError(f"Short sell not allowed for sell {sell}")
 
 
-def check_shot_sell_current(previous_buys: List[AdjustedTxn], sell_qtty: float):
+def check_short_sell_current(previous_buys: List[AdjustedTxn], sell_qtty: float):
     previous_buys_qtty = sum([txn.qtty for txn in previous_buys])
     if sell_qtty > previous_buys_qtty:
         raise ValueError(

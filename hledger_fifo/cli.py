@@ -9,7 +9,15 @@ CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 
 
 @click.group(context_settings=CONTEXT_SETTINGS)
-def cli():
+@click.option(
+    "-f",
+    "--file",
+    type=click.Path(),
+    required=False,
+    default=get_default_file(),
+    help="Inform the journal file path. If \"-\", read from stdin. Without this flag read from $LEDGER_FILE or ~/.hledger.journal in this order  or '-f-'.",
+)
+def cli(file: str):
     """
     Commands to apply FIFO(first-in-first-out) accounting principles without manual management of lots. Useful for transactions involving purchase and selling foreign currencies or stocks.
     """
@@ -20,8 +28,7 @@ def cli():
     "-f",
     "--file",
     type=click.Path(),
-    required=True,
-    default=get_default_file(),
+    required=False,
     help="Inform the journal file path. If \"-\", read from stdin. Without this flag read from $LEDGER_FILE or ~/.hledger.journal in this order  or '-f-'.",
 )
 @click.option(
@@ -38,7 +45,8 @@ def cli():
     prompt=False,
     help="Description to be filtered out from calculation. Needed when closing journal with '--show-costs' option. Works like: not:desc:<value>. Will not be prompted if absent. If closed with default description, the value of this option should be: 'opening|closing balances'",
 )
-def lots(file: str, commodity: str, no_desc: str):
+@click.pass_context
+def lots(ctx: click.Context, file: str, commodity: str, no_desc: str):
     """
     Report lots for a commodity.\r
 
@@ -47,7 +55,7 @@ def lots(file: str, commodity: str, no_desc: str):
     All flags, except '--file' will be interactively prompted if absent, much like 'hledger-add'.
     """
 
-    file_path = get_file_path(file)
+    file_path = get_file_path(file, ctx)
     adj_txn = hledger2txn(file_path, commodity, no_desc)
     buy_lots = get_lots(adj_txn)
 
@@ -82,8 +90,7 @@ def lots(file: str, commodity: str, no_desc: str):
     "-f",
     "--file",
     type=click.Path(),
-    required=True,
-    default=get_default_file(),
+    required=False,
     help="Inform the journal file path. If \"-\", read from stdin. Without this flag read from $LEDGER_FILE or ~/.hledger.journal in this order  or '-f-'.",
 )
 @click.option(
@@ -130,7 +137,9 @@ def lots(file: str, commodity: str, no_desc: str):
 )
 @click.option("-q", "--quantity", type=click.FLOAT, prompt=True)
 @click.option("-p", "--price", type=click.FLOAT, prompt=True)
+@click.pass_context
 def sell(
+    ctx: click.Context,
     file: str,
     commodity: str,
     no_desc: str,
@@ -156,7 +165,7 @@ def sell(
 
     All flags, except '--file' will be interactively prompted if absent, much like 'hledger-add'.
     """
-    file_path = get_file_path(file)
+    file_path = get_file_path(file, ctx)
     adj_txns = hledger2txn(file_path, commodity, no_desc)
     sell_txn = get_sell_lots(adj_txns, date, quantity)
 
