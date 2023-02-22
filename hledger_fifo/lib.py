@@ -1,11 +1,9 @@
 import os
-import sys
 from dataclasses import dataclass
 from pathlib import Path
-from tempfile import NamedTemporaryFile
-from typing import List, Optional
-from click import Context, BadOptionUsage
+from typing import List, Optional, Tuple
 
+import click
 
 ENV_FILE = "LEDGER_FILE"
 default_path = Path.home() / ".hledger.journal"
@@ -33,38 +31,26 @@ def get_avg(txns: List[AdjustedTxn]):
     return avg
 
 
-def get_default_file():
+def get_default_file() -> Optional[Tuple[str]]:
     file_env = os.getenv("LEDGER_FILE")
     if file_env:
-        return file_env
+        return tuple(file_env)
 
     if default_path.exists():
-        return str(default_path)
+        return tuple(str(default_path))
 
 
-def get_parent_file(ctx:Context) -> str:
+def get_file_path(
+    ctx: click.Context, _param: click.Parameter, value: Tuple[str, ...]
+) -> Optional[Tuple[str, ...]]:
+    if value:
+        return value
+
     if not ctx.parent:
-        raise BadOptionUsage("file", "File missing")
+        raise click.BadOptionUsage("file", "File missing")
 
-    filename = ctx.parent.params.get("file")
-    if not filename:
-        raise BadOptionUsage("file", "File missing")
+    filenames: Optional[Tuple] = ctx.parent.params.get("file")
+    if not filenames:
+        raise click.BadOptionUsage("file", "File missing")
 
-    return filename
-        
-
-    
-def get_file_path(file_curr: Optional[str], ctx: Context) -> str:
-    file_option = file_curr or get_parent_file(ctx)
-        
-    if file_option != "-":
-        return file_option
-    else:
-        with NamedTemporaryFile(suffix=".journal") as t:
-            file_path = t.name
-        with open(file_path, "w") as f:
-            journal_stdin = sys.stdin
-            f.write(journal_stdin.read())
-        return file_path
-
-    
+    return filenames

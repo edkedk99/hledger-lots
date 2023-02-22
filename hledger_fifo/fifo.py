@@ -45,7 +45,7 @@ def get_lots(txns: List[AdjustedTxn]) -> List[AdjustedTxn]:
 
 
 def get_sell_lots(lots: List[AdjustedTxn], sell_date: str, sell_qtty: float):
-    check_shot_sell_current(lots, sell_qtty)
+    check_short_sell_current(lots, sell_qtty)
     buy_lots = get_lots(lots)
     previous_buys = [lot for lot in buy_lots if lot.date <= sell_date]
 

@@ -1,4 +1,6 @@
-import click
+from typing import Tuple
+
+import rich_click as click
 from tabulate import tabulate  # type: ignore
 
 from .fifo import get_lots, get_sell_lots
@@ -15,9 +17,11 @@ CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
     type=click.Path(),
     required=False,
     default=get_default_file(),
+    callback=get_file_path,
+    multiple=True,
     help="Inform the journal file path. If \"-\", read from stdin. Without this flag read from $LEDGER_FILE or ~/.hledger.journal in this order  or '-f-'.",
 )
-def cli(file: str):
+def cli(file: str):  # pyright:ignore
     """
     Commands to apply FIFO(first-in-first-out) accounting principles without manual management of lots. Useful for transactions involving purchase and selling foreign currencies or stocks.
     """
@@ -29,6 +33,8 @@ def cli(file: str):
     "--file",
     type=click.Path(),
     required=False,
+    callback=get_file_path,
+    multiple=True,
     help="Inform the journal file path. If \"-\", read from stdin. Without this flag read from $LEDGER_FILE or ~/.hledger.journal in this order  or '-f-'.",
 )
 @click.option(
@@ -45,8 +51,7 @@ def cli(file: str):
     prompt=False,
     help="Description to be filtered out from calculation. Needed when closing journal with '--show-costs' option. Works like: not:desc:<value>. Will not be prompted if absent. If closed with default description, the value of this option should be: 'opening|closing balances'",
 )
-@click.pass_context
-def lots(ctx: click.Context, file: str, commodity: str, no_desc: str):
+def lots(file: Tuple[str, ...], commodity: str, no_desc: str):
     """
     Report lots for a commodity.\r
 
@@ -55,8 +60,7 @@ def lots(ctx: click.Context, file: str, commodity: str, no_desc: str):
     All flags, except '--file' will be interactively prompted if absent, much like 'hledger-add'.
     """
 
-    file_path = get_file_path(file, ctx)
-    adj_txn = hledger2txn(file_path, commodity, no_desc)
+    adj_txn = hledger2txn(file, commodity, no_desc)
     buy_lots = get_lots(adj_txn)
 
     lots_dict = [
@@ -91,6 +95,8 @@ def lots(ctx: click.Context, file: str, commodity: str, no_desc: str):
     "--file",
     type=click.Path(),
     required=False,
+    callback=get_file_path,
+    multiple=True,
     help="Inform the journal file path. If \"-\", read from stdin. Without this flag read from $LEDGER_FILE or ~/.hledger.journal in this order  or '-f-'.",
 )
 @click.option(
@@ -139,8 +145,8 @@ def lots(ctx: click.Context, file: str, commodity: str, no_desc: str):
 @click.option("-p", "--price", type=click.FLOAT, prompt=True)
 @click.pass_context
 def sell(
-    ctx: click.Context,
-    file: str,
+    ctx: click.Context,  # pyright:ignore
+    file: Tuple[str, ...],
     commodity: str,
     no_desc: str,
     cash_account: str,
@@ -165,8 +171,8 @@ def sell(
 
     All flags, except '--file' will be interactively prompted if absent, much like 'hledger-add'.
     """
-    file_path = get_file_path(file, ctx)
-    adj_txns = hledger2txn(file_path, commodity, no_desc)
+
+    adj_txns = hledger2txn(file, commodity, no_desc)
     sell_txn = get_sell_lots(adj_txns, date, quantity)
 
     value = price * quantity

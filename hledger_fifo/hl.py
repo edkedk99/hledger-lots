@@ -1,6 +1,7 @@
 import json
 import subprocess
-from typing import List, Optional
+import sys
+from typing import List, Optional, Tuple
 
 from .lib import AdjustedTxn, Txn, get_avg
 
@@ -51,12 +52,22 @@ def prices_items2txn(date: str, prices_items: dict, account: str) -> Txn:
     return txn
 
 
-def hledger2txn(file_path: str, cur: str, no_desc: Optional[str]) -> List[AdjustedTxn]:
-    comm = ["hledger", "-f", file_path, "print", f"cur:{cur}", "--output-format=json"]
+def get_files_comm(file_path: Tuple[str, ...]) -> List[str]:
+    files = []
+    for file in file_path:
+        files = [*files, "-f", file]
+    return files
+
+
+def hledger2txn(
+    file_path: Tuple[str, ...], cur: str, no_desc: Optional[str]
+) -> List[AdjustedTxn]:
+    files_comm = get_files_comm(file_path)
+    comm = ["hledger", *files_comm, "print", f"cur:{cur}", "--output-format=json"]
     if no_desc:
         comm.append(f"not:desc:{no_desc}")
-        
-    hl_proc = subprocess.run(comm, capture_output=True)
+
+    hl_proc = subprocess.run(comm, stdin=sys.stdin, capture_output=True)
     if hl_proc.returncode != 0:
         raise ValueError(hl_proc.stderr.decode("utf8"))
 
