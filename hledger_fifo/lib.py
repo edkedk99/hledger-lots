@@ -2,6 +2,7 @@ import os
 from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Optional, Tuple
+from pyxirr import xirr
 
 import click
 
@@ -54,3 +55,13 @@ def get_file_path(
         raise click.BadOptionUsage("file", "File missing")
 
     return filenames
+
+
+def get_xirr(sell_price: float, sell_date: str, txns: List[AdjustedTxn]):
+    dates = [txn.date for txn in txns]
+    prices = [-txn.price for txn in txns]
+
+    dates = [*dates, sell_date]
+    prices = [*prices, sell_price]
+    sell_xirr = xirr(dates, prices)
+    return sell_xirr

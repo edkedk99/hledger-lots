@@ -1,2 +1,4 @@
 click
+rich_click
 tabulate
+pyxirr
