@@ -2,9 +2,9 @@ import os
 from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Optional, Tuple
-from pyxirr import xirr
 
 import click
+from pyxirr import DayCount, xirr
 
 ENV_FILE = "LEDGER_FILE"
 default_path = Path.home() / ".hledger.journal"
@@ -57,11 +57,15 @@ def get_file_path(
     return filenames
 
 
-def get_xirr(sell_price: float, sell_date: str, txns: List[AdjustedTxn]):
+def get_xirr(sell_price: float, sell_date: str, txns: List[AdjustedTxn]) -> float:
     dates = [txn.date for txn in txns]
-    prices = [-txn.price for txn in txns]
+    buy_amts = [txn.price * txn.qtty for txn in txns]
+    total_qtty = sum(txn.qtty for txn in txns)
 
     dates = [*dates, sell_date]
-    prices = [*prices, sell_price]
-    sell_xirr = xirr(dates, prices)
-    return sell_xirr
+    amts = [*buy_amts, -total_qtty * sell_price]
+    sell_xirr = xirr(dates, amts, day_count=DayCount.THIRTY_U_360)
+    if sell_xirr:
+        return sell_xirr
+    else:
+        return 0

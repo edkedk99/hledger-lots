@@ -3,7 +3,7 @@ import subprocess
 import sys
 from typing import List, Optional, Tuple
 
-from .lib import AdjustedTxn, Txn, get_avg
+from .lib import AdjustedTxn, Txn, get_avg, get_xirr
 
 
 def txn2hl(
@@ -18,10 +18,12 @@ def txn2hl(
     avg_cost = get_avg(txns)
     sum_qtty = sum(txn.qtty for txn in txns)
     price = value / sum_qtty
+    xirr = get_xirr(price, date, txns) * 100
 
     txn_hl = f"""
 {date} Sold {cur}
-    ; commodity:{cur}, qtty:{sum_qtty:,.2f}, price:{price:,.2f}, avg_fifo_cost:{avg_cost:,.4f}
+    ; commodity:{cur}, qtty:{sum_qtty:,.2f}, price:{price:,.2f}
+    ; avg_fifo_cost:{avg_cost:,.4f}, xirr:{xirr:.2f}% annual percent rate 30/360US
     {cash_account}  {value:.2f} {base_curr}
 """
 

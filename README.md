@@ -18,7 +18,7 @@ It also generate **FIFO** lots reports so the user can understand his situation 
 ## Instalation
 
 ```python
-pip install git+https://github.com/edkedk99/hledger-fifo.git
+pip install --force-reinstall git+https://github.com/edkedk99/hledger-fifo.git
 ```
 
 ## Usage
@@ -66,7 +66,7 @@ Usage: hledger-fifo sell [OPTIONS]
   currency.
 
   This command also add transaction's comment with the following information
-  as tags: commodity, total quantity sold and average FIFO cost
+  as tags: commodity, total quantity sold, average FIFO cost and xirr
 
   All flags, except '--file' will be interactively prompted if absent, much
   like 'hledger-add'.
@@ -86,12 +86,21 @@ Options:
 #### Output example
 
 ```
-2023-01-15 Sold AAPL
-    ; commodity:AAPL, qtty:3.00, price:5.20, avg_fifo_cost:4.0000
-    Asset:Bank                           15.60 USD
-    Asset:Stocks                 -3.0 AAPL @ 4 USD  ; buy_date:2023-01-05, base_cur:USD
-    Revenue:Capital Gain Loss            -3.60 USD
+2023-04-01 Sold AAPL
+    ; commodity:AAPL, qtty:6.00, price:6.50
+    ; avg_fifo_cost:5.1167, xirr:162.33% annual percent rate 30/360US
+    Asset:Bank                        39.00 USD
+    Asset:Stocks            -5.0 AAPL @ 5.1 USD  ; buy_date:2023-01-01, base_cur:USD
+    Asset:Stocks            -1.0 AAPL @ 5.2 USD  ; buy_date:2023-01-05, base_cur:USD
+    Revenue:Capital Gain              -8.30 USD
 ```
+
+#### XIRR
+
+The sale transaction gives you the calculated **xirr** as tag, which is the internal rate of return of an investment based on a specified series of irregularly spaced cash flows. This value is annual percentage rate following the 30/360US day count convention. It is a good metric to compare the investment return with a benchmark like the S&P or the T-Bill, for example.
+
+Note the benchmark can use another day count convention, so this comparison may not be 100% precise. This app may in the future offer others day count convention for **xirr** calculation.
+
 
 ### lots
 
