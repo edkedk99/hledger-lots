@@ -1,3 +1,4 @@
+from dataclasses import asdict
 from typing import Tuple
 
 import rich_click as click
@@ -5,10 +6,22 @@ from tabulate import tabulate  # type: ignore
 
 from .fifo import get_lots, get_sell_lots
 from .hl import hledger2txn, txn2hl
-from .lib import get_avg, get_default_file, get_file_path
+from .lib import get_default_file, get_file_path
+from .lots_info import AllInfo, LotInfo
 
 CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 
+click.rich_click.USE_MARKDOWN = True
+click.rich_click.SHOW_ARGUMENTS = True
+click.rich_click.GROUP_ARGUMENTS_OPTIONS = True
+click.rich_click.MAX_WIDTH = 80
+click.rich_click.SHOW_METAVARS_COLUMN = False
+click.rich_click.APPEND_METAVARS_HELP = True
+click.rich_click.STYLE_ERRORS_SUGGESTION = "magenta italic"
+click.rich_click.ERRORS_SUGGESTION = "Try running the '--help' flag for more information."
+click.rich_click.ERRORS_EPILOGUE = "To find out more, visit [link=https://github.com/edkedk99/hledger-fifo]https://github.com/edkedk99/hledger-fifo[/link]"
+click.rich_click.STYLE_OPTIONS_TABLE_LEADING = 1
+click.rich_click.STYLE_OPTIONS_TABLE_BOX = "SIMPLE"
 
 @click.group(context_settings=CONTEXT_SETTINGS)
 @click.option(
@@ -21,9 +34,14 @@ CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
     multiple=True,
     help="Inform the journal file path. If \"-\", read from stdin. Without this flag read from $LEDGER_FILE or ~/.hledger.journal in this order  or '-f-'.",
 )
+@click.version_option()
 def cli(file: str):  # pyright:ignore
     """
     Commands to apply FIFO(first-in-first-out) accounting principles without manual management of lots. Useful for transactions involving purchase and selling foreign currencies or stocks.
+
+    </br>
+
+    To find out more, visit [https://github.com/edkedk99/hledger-fifo](https://github.com/edkedk99/hledger-fifo)
     """
 
 
@@ -63,16 +81,7 @@ def lots(file: Tuple[str, ...], commodity: str, no_desc: str):
     adj_txn = hledger2txn(file, commodity, no_desc)
     buy_lots = get_lots(adj_txn)
 
-    lots_dict = [
-        dict(
-            date=lot.date,
-            qtty=lot.qtty,
-            price=lot.price,
-            amount=lot.price * lot.qtty,
-            base_cur=lot.base_cur,
-        )
-        for lot in buy_lots
-    ]
+    lots_dict = [asdict(lot) for lot in buy_lots]
     table = tabulate(
         lots_dict,
         headers="keys",
@@ -81,12 +90,9 @@ def lots(file: Tuple[str, ...], commodity: str, no_desc: str):
         tablefmt="simple",
     )
     click.echo(table)
-    total_qtty = sum(lot.qtty for lot in buy_lots)
-    avg = get_avg(buy_lots) if total_qtty > 0 else 0
 
-    click.echo(f"\nCommodity: {commodity}")
-    click.echo(f"Total Quantity: {total_qtty}")
-    click.echo(f"Average Cost: {avg:,.2f}")
+    lot_info = LotInfo(file, commodity, buy_lots)
+    click.echo(lot_info.info_txt)
 
 
 @click.command()
@@ -112,13 +118,6 @@ def lots(file: Tuple[str, ...], commodity: str, no_desc: str):
     type=click.STRING,
     prompt=False,
     help="Description to be filtered out from calculation. Needed when closing journal with '--show-costs' option. Works like: not:desc:<value>. Will not be prompted if absent. If closed with default description, the value of this option should be: 'opening|closing balances'",
-)
-@click.option(
-    "-b",
-    "--base-currency",
-    type=click.STRING,
-    prompt=True,
-    help="Currency on which you are receiving for the sale",
 )
 @click.option(
     "-a",
@@ -150,7 +149,6 @@ def sell(
     commodity: str,
     no_desc: str,
     cash_account: str,
-    base_currency: str,
     revenue_account: str,
     date: str,
     quantity: float,
@@ -174,19 +172,71 @@ def sell(
 
     adj_txns = hledger2txn(file, commodity, no_desc)
     sell_txn = get_sell_lots(adj_txns, date, quantity)
+    value = quantity * price
 
-    value = price * quantity
     txn_print = txn2hl(
-        sell_txn,
-        date,
-        commodity,
-        cash_account,
-        revenue_account,
-        base_currency,
-        value,
+        txns=sell_txn,
+        date=date,
+        cur=commodity,
+        cash_account=cash_account,
+        revenue_account=revenue_account,
+        value=value,
     )
     click.echo(txn_print)
 
 
+@click.command()
+@click.option(
+    "-f",
+    "--file",
+    type=click.Path(),
+    required=False,
+    callback=get_file_path,
+    multiple=True,
+    help="Inform the journal file path. If \"-\", read from stdin. Without this flag read from $LEDGER_FILE or ~/.hledger.journal in this order  or '-f-'.",
+)
+@click.option(
+    "-o",
+    "--output-format",
+    type=click.Choice(["plain", "pretty", "csv"]),
+    default="plain",
+    help="Format to output the report",
+)
+@click.option(
+    "-n",
+    "--no-desc",
+    type=click.STRING,
+    prompt=False,
+    help="Description to be filtered out from calculation. Needed when closing journal with '--show-costs' option. Works like: not:desc:<value>. Will not be prompted if absent. If closed with default description, the value of this option should be: 'opening|closing balances'",
+)
+def info(file: Tuple[str, ...], output_format: str, no_desc: str):
+    """
+    Show indicators for all your commodities in a tabular format sorted from higher to lower **XIRR**. It is advised to use full-screen of the terminal
+
+    ## Indicators
+    
+    ### Basic Indicators
+
+    - Commodity Name
+    - Quantity Purchased
+    - Amount Purchased
+    - Average Cost
+
+    ### With Market Prices
+
+    For commodities you have price directives on a date after the last purchase, you will have also the following indicators:
+
+    - Last Market Price
+    - Market Amount: Quantitty Purchased * Last Market Price
+    - Market Profit: Market Amount - Amount Purchased
+    - Last Market Date
+    - Xirr: Internal Rate of Return per year using 30/360US day convention as if you are for market price on market date
+    """
+    lots_info = AllInfo(file, no_desc)
+    table = lots_info.table
+    click.echo(table)
+
+
 cli.add_command(lots)
 cli.add_command(sell)
+cli.add_command(info)
