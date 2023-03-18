@@ -1,5 +1,7 @@
 import os
+import subprocess
 from dataclasses import dataclass
+from datetime import datetime
 from pathlib import Path
 from typing import List, Optional, Tuple
 
@@ -69,3 +71,45 @@ def get_xirr(sell_price: float, sell_date: str, txns: List[AdjustedTxn]) -> floa
         return sell_xirr
     else:
         return 0
+
+
+def get_last_price(prices_file: str, base_cur: str):
+    prices_comm = [
+        "hledger",
+        "-f",
+        prices_file,
+        "prices",
+        f"cur:{base_cur}",
+        "--infer-reverse-prices",
+    ]
+    prices_proc = subprocess.run(prices_comm, capture_output=True)
+    prices_str = prices_proc.stdout.decode("utf8")
+
+    if prices_str == "":
+        return None
+
+    prices_list = prices_str.split("\n")
+    date_list = [
+        (item[1], item[3]) for row in prices_list for item in row if base_cur in item[3]
+    ]
+    last_price = date_list[-1]
+    return last_price
+
+
+def get_lots_xirr(prices_file: str, base_cur: str, lots: List[AdjustedTxn]):
+    last_price = get_last_price(prices_file, base_cur)
+    if not last_price:
+        return None
+
+    sell_price = float(last_price[1])
+
+    last_buy_date = datetime.strptime(lots[-1].date, "%Y-%m-%d")
+    sell_date = datetime.strptime(last_price[0], "%Y-%m-%d")
+    if (last_buy_date) > sell_date:
+        return None
+
+    xirr = get_xirr(sell_price, last_price[0], lots)
+    if not xirr:
+        return None
+
+    return xirr
