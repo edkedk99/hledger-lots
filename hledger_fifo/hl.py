@@ -1,9 +1,10 @@
 import json
 import subprocess
 import sys
+from datetime import datetime
 from typing import List, Optional, Tuple
 
-from .lib import AdjustedTxn, Txn, get_avg, get_xirr
+from .lib import AdjustedTxn, Txn, get_avg, get_files_comm, get_xirr
 
 
 def txn2hl(
@@ -12,13 +13,14 @@ def txn2hl(
     cur: str,
     cash_account: str,
     revenue_account: str,
-    base_curr: str,
     value: float,
 ):
+    base_curr = txns[0].base_cur
     avg_cost = get_avg(txns)
     sum_qtty = sum(txn.qtty for txn in txns)
     price = value / sum_qtty
-    xirr = get_xirr(price, date, txns) * 100
+    dt = datetime.strptime(date, "%Y-%m-%d").date()
+    xirr = get_xirr(price, dt, txns) or 0 * 100
 
     txn_hl = f"""
 {date} Sold {cur}
@@ -52,13 +54,6 @@ def prices_items2txn(date: str, prices_items: dict, account: str) -> Txn:
 
     txn = Txn(date, price, base_cur, qtty, account, price_type)
     return txn
-
-
-def get_files_comm(file_path: Tuple[str, ...]) -> List[str]:
-    files = []
-    for file in file_path:
-        files = [*files, "-f", file]
-    return files
 
 
 def hledger2txn(
