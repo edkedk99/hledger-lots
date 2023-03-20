@@ -9,6 +9,7 @@ from .hl import hledger2txn, txn2hl
 from .lib import get_default_file, get_file_path
 from .lots_info import AllInfo, LotInfo
 
+
 CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 
 click.rich_click.USE_MARKDOWN = True
@@ -18,10 +19,14 @@ click.rich_click.MAX_WIDTH = 80
 click.rich_click.SHOW_METAVARS_COLUMN = False
 click.rich_click.APPEND_METAVARS_HELP = True
 click.rich_click.STYLE_ERRORS_SUGGESTION = "magenta italic"
-click.rich_click.ERRORS_SUGGESTION = "Try running the '--help' flag for more information."
+click.rich_click.ERRORS_SUGGESTION = (
+    "Try running the '--help' flag for more information."
+)
 click.rich_click.ERRORS_EPILOGUE = "To find out more, visit [link=https://github.com/edkedk99/hledger-fifo]https://github.com/edkedk99/hledger-fifo[/link]"
 click.rich_click.STYLE_OPTIONS_TABLE_LEADING = 1
 click.rich_click.STYLE_OPTIONS_TABLE_BOX = "SIMPLE"
+click.rich_click.STYLE_OPTIONS_PANEL_BORDER = "dim"  # Possibly conceal
+
 
 @click.group(context_settings=CONTEXT_SETTINGS)
 @click.option(
@@ -211,10 +216,12 @@ def sell(
 )
 def info(file: Tuple[str, ...], output_format: str, no_desc: str):
     """
-    Show indicators for all your commodities in a tabular format sorted from higher to lower **XIRR**. It is advised to use full-screen of the terminal
+    Show indicators for all your commodities in a tabular format sorted from higher to lower **XIRR**. It is advised to use full-screen of the terminal.
+
+    It can output in three formats: *plain, pretty and csv*.
 
     ## Indicators
-    
+
     ### Basic Indicators
 
     - Commodity Name
@@ -222,9 +229,9 @@ def info(file: Tuple[str, ...], output_format: str, no_desc: str):
     - Amount Purchased
     - Average Cost
 
-    ### With Market Prices
+    ### Market Indicators
 
-    For commodities you have price directives on a date after the last purchase, you will have also the following indicators:
+    For commodities with price directives on a date after the last purchase, you will have also the following indicators:
 
     - Last Market Price
     - Market Amount: Quantitty Purchased * Last Market Price
@@ -233,7 +240,15 @@ def info(file: Tuple[str, ...], output_format: str, no_desc: str):
     - Xirr: Internal Rate of Return per year using 30/360US day convention as if you are for market price on market date
     """
     lots_info = AllInfo(file, no_desc)
-    table = lots_info.table
+
+    if output_format == "pretty":
+        table = lots_info.get_infos_table("mixed_grid")
+    elif output_format == "csv":
+        infos_io = lots_info.get_infos_csv()
+        table = infos_io.read()
+    else:
+        table = lots_info.get_infos_table("plain")
+
     click.echo(table)
 
 

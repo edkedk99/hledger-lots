@@ -141,3 +141,4 @@ Average Cost: 5.63
 ## Limitations
 
 - No _short-selling_
+- Each commodity can have only one base currency. For example, it is not possible to buy AAPL with USD and later with EUR.
