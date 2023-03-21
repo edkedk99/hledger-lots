@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Output examples - hledger-fifo</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Output examples";
+        var mkdocs_page_input_path = "output.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <script src="../js/jquery-3.6.0.min.js" defer></script>
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+      <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> hledger-fifo
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../usage/">Usage</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="./">Output examples</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#sell">sell</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#lots">lots</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#infos">Infos</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#plain">plain</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#pretty">pretty</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#csv">csv</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">hledger-fifo</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" alt="Docs"></a> &raquo;</li>
+      <li>Output examples</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/edkedk99/hledger-fifo/edit/master/docs/output.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="output-examples">Output examples<a class="headerlink" href="#output-examples" title="Permanent link">#</a></h1>
+<h2 id="sell">sell<a class="headerlink" href="#sell" title="Permanent link">#</a></h2>
+<p>Besides the transaction, constructed according to <em>FIFO</em> without any manual intervation, you have as tags the quantity and price sold, the average cost using <em>FIFO</em> and the <em>xirr</em> of the transaction, as explained <a href="../#xirr">here</a> </p>
+<pre><code class="language-txt">2023-04-01 Sold AAPL
+    ; commodity:AAPL, qtty:6.00, price:6.50
+    ; avg_fifo_cost:5.1167, xirr:1.62% annual percent rate 30/360US
+    Asset:Bank                        39.00 USD
+    Asset:Stocks            -5.0 AAPL @ 5.1 USD  ; buy_date:2023-01-01
+    Asset:Stocks            -1.0 AAPL @ 5.2 USD  ; buy_date:2023-01-05
+    Revenue:Capital Gain              -8.30 USD
+</code></pre>
+<h2 id="lots">lots<a class="headerlink" href="#lots" title="Permanent link">#</a></h2>
+<pre><code class="language-txt">date          price  base_cur      qtty  acct
+----------  -------  ----------  ------  ------------
+2022-01-05   4.0000  USD              0  Asset:Stocks
+2022-01-10   5.0000  USD              0  Asset:Stocks
+2022-01-20   5.8000  USD              0  Asset:Stocks
+2022-02-15   5.1000  USD              0  Asset:Stocks
+2023-01-01   5.1000  USD              5  Asset:Stocks
+2023-01-05   5.2000  USD              3  Asset:Stocks
+
+Info
+----
+Commodity:      AAPL
+Quantity:       8
+Amount:         41.10
+Average Cost:   5.1375
+
+Market Price:  6.2000
+Market Amount: 49.60
+Market Profit: 8.50
+Market Date:   2023-07-01
+Xirr:          46.1056% (APR 30/360US)
+</code></pre>
+<h2 id="infos">Infos<a class="headerlink" href="#infos" title="Permanent link">#</a></h2>
+<h3 id="plain">plain<a class="headerlink" href="#plain" title="Permanent link">#</a></h3>
+<pre><code class="language-txt">comm    cur      qtty    amount    avg_cost  mkt_price    mkt_amount    mkt_profit    mkt_date    xirr
+AAPL    USD         8   41.1000      5.1375  6.2000       49.60         8.50          2023-07-01  46.1056%
+BRL     USD        55   10.0000      0.1818
+GOOG    USD         3   57.0000     19.0000
+</code></pre>
+<h3 id="pretty">pretty<a class="headerlink" href="#pretty" title="Permanent link">#</a></h3>
+<pre><code class="language-txt">┍━━━━━━━━┯━━━━━━━┯━━━━━━━━┯━━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━━━━━━┯━━━━━━━━━━━━━━┯━━━━━━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━━━┑
+│ comm   │ cur   │   qtty │   amount │   avg_cost │ mkt_price   │ mkt_amount   │ mkt_profit   │ mkt_date   │ xirr     │
+┝━━━━━━━━┿━━━━━━━┿━━━━━━━━┿━━━━━━━━━━┿━━━━━━━━━━━━┿━━━━━━━━━━━━━┿━━━━━━━━━━━━━━┿━━━━━━━━━━━━━━┿━━━━━━━━━━━━┿━━━━━━━━━━┥
+│ AAPL   │ USD   │      8 │  41.1000 │     5.1375 │ 6.2000      │ 49.60        │ 8.50         │ 2023-07-01 │ 46.1056% │
+├────────┼───────┼────────┼──────────┼────────────┼─────────────┼──────────────┼──────────────┼────────────┼──────────┤
+│ BRL    │ USD   │     55 │  10.0000 │     0.1818 │             │              │              │            │          │
+├────────┼───────┼────────┼──────────┼────────────┼─────────────┼──────────────┼──────────────┼────────────┼──────────┤
+│ GOOG   │ USD   │      3 │  57.0000 │    19.0000 │             │              │              │            │          │
+┕━━━━━━━━┷━━━━━━━┷━━━━━━━━┷━━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━━━┷━━━━━━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━━━┙
+</code></pre>
+<h3 id="csv">csv<a class="headerlink" href="#csv" title="Permanent link">#</a></h3>
+<pre><code class="language-txt">comm,cur,qtty,amount,avg_cost,mkt_price,mkt_amount,mkt_profit,mkt_date,xirr
+AAPL,USD,8,41.10,5.1375,6.2000,49.60,8.50,2023-07-01,46.1056%
+BRL,USD,55,10.00,0.1818,,,,,
+GOOG,USD,3,57.00,19.0000,,,,,
+</code></pre>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../usage/" class="btn btn-neutral float-left" title="Usage"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/edkedk99/hledger-fifo" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../usage/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

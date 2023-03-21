@@ -1,0 +1,23 @@
+2023-01-01 opening balances
+    Asset:Bank                               99698.55 USD = 99698.55 USD
+    Asset:Stocks                       5.0 AAPL @ 5.1 USD = 5.0 AAPL
+    Asset:Stocks                        3.0 GOOG @ 19 USD = 3.0 GOOG
+    Ativo:Banco                                300.00 USD = 300.00 USD
+    Equity:Initial                         -100000.00 USD = -100000.00 USD
+    Revenue:Capital Gain                       -81.85 USD = -81.85 USD
+    Revenue:Capital Gain Loss                    0.80 USD = 0.80 USD
+    equity:opening/closing balances
+
+
+
+
+2023-01-05 Buy AAPL
+    Asset:Stocks                                   3 AAPL @ 5.2 USD
+    Asset:Bank
+
+
+2023-01-10 Buy BRL
+    Asset:FOREX                                  55 BRL @@ 10 USD
+    Asset:Bank
+
+P 2023-07-01 AAPL 6.2 USD

@@ -1,0 +1,2 @@
+include /home/eduardo/projects/hledger-fifo/examples/test2022.journal
+include /home/eduardo/projects/hledger-fifo/examples/test2023.journal
