@@ -105,7 +105,7 @@
 <p>This script aims to help hledger's users to add transactions involving buying and selling commodities, which can be FOREX or investments assets, for example</p>
 <p>When you sell a commodity, you should use the cost and quantity from the purchase date, which is buried deep down in your journal file so you have hledger accounting the correct <em>Capital Gain</em>.</p>
 <p>This package uses <strong>FIFO</strong> method (First-In-First-Out-Method) to create a sale transaction according to information provided by the user and traverse the journal file to determine what quantity and lot prices should be used and generate a valid hledger transaction to be appended to the journal with additional helpful calculations as comment tags.</p>
-<p>When using this package, you don't need to create lots as subaccounts or tag, just purchase as usual and <em>hledger-fifo</em> will generate the correct postings adding the cost for you, so you don't need to bother looking for this information</p>
+<p>When using this package, you don't need to create lots as subaccounts or tag, just add a purchase transaction as usual and when there is a sale, <em>hledger-fifo</em> will generate the correct postings adding the cost for you, so you don't need to bother looking for this information.</p>
 <p>It also generate <strong>FIFO</strong> lots reports so the user can understand his situation with a commodity and check the correctness of the generated sell transaction.</p>
 <h2 id="documentation">Documentation<a class="headerlink" href="#documentation" title="Permanent link">#</a></h2>
 <p>Documentation with usage information can be found <a href="https://edkedk99.github.io/hledger-fifo/">here</a></p>
@@ -120,14 +120,10 @@
 <h2 id="workflow">Workflow<a class="headerlink" href="#workflow" title="Permanent link">#</a></h2>
 <ol>
 <li>Add purchase transaction as normal. <strong>Don't bother creating subaccounts or tags with unique lot name</strong>. See the some examples <a href="examples/test2022.journal">here</a></li>
-<li>When you sell, use the command <a href="#sell">sell</a> instead of adding the transactions manually. Hledger-fifo will generate the correct transaction and print to stdout so you can add to the journal if everything is correct. <em>See transaction tags with interesting indicators about the current trade</em></li>
+<li>When you sell, use the command <a href="usage/#sell">sell</a> instead of adding the transactions manually. Hledger-fifo will generate the correct transaction and print to stdout so you can add to the journal if everything is correct. <em>See transaction tags with interesting indicators about the current trade</em></li>
 </ol>
 <h2 id="reports">Reports<a class="headerlink" href="#reports" title="Permanent link">#</a></h2>
 <p>To get information about the commodities, there is more 2 commands:</p>
-<ul>
-<li>lots: Get the lots and indicators for a specific commodity</li>
-<li>infos: Get the indicators for all commodities as a table </li>
-</ul>
 <table>
 <thead>
 <tr>
@@ -223,5 +219,5 @@
 
 <!--
 MkDocs version : 1.4.2
-Build Date UTC : 2023-03-22 00:38:39.849118+00:00
+Build Date UTC : 2023-03-22 16:30:09.131399+00:00
 -->
