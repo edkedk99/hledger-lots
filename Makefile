@@ -1,9 +1,10 @@
 remote_server := phl
 remote_wheel_dir=/shared/wheels
 
-get_value = $(shell sed -n "s/\($1 \?= \?\)\(.*\)/\2/p" setup.cfg)
+get_value = $(shell sed -n "s/\($1 \?= \?\"\)\(.*\)\(\"\)/\2/p" pyproject.toml)
 pkg_name := $(call get_value,name)
 version := $(call get_value,version)
+vermin := 3.8
 wheel := $(pkg_name)-$(version)-py3-none-any.whl
 
 .PHONY: local
@@ -25,7 +26,12 @@ fix:
 	pyright $(pkg_name) && \
 	pycln $(pkg_name) && \
 	isort --profile black $(pkg_name) && \
-	black $(pkg_name)
+	black $(pkg_name) && \
+	vermin -t=$(vermin) \
+		--eval-annotations \
+		--backport dataclasses \
+		--backport typing \
+		--no-parse-comments "$(pkg_name)"
 
 .PHONY: serve-docs
 serve-docs:
@@ -38,3 +44,10 @@ gh-deploy:
 	PYTHONPATH="$(CURDIR)" mkdocs gh-deploy
 
 
+.PHONY: version
+version:
+	vermin -t=$(vermin) \
+		--eval-annotations \
+		--backport dataclasses \
+		--backport typing \
+		--no-parse-comments "$(pkg_name)"
