@@ -27,6 +27,14 @@ fix:
 	isort --profile black $(pkg_name) && \
 	black $(pkg_name)
 
+.PHONY: serve-docs
+serve-docs:
+	source venv/bin/activate && \
+	PYTHONPATH="$(CURDIR)" mkdocs serve
 
+.PHONY: gh-deploy
+gh-deploy:
+	source venv/bin/activate && \
+	PYTHONPATH="$(CURDIR)" mkdocs gh-deploy
 
 
