@@ -34,7 +34,6 @@ click.rich_click.STYLE_OPTIONS_PANEL_BORDER = "dim"  # Possibly conceal
     "--file",
     type=click.Path(),
     required=False,
-    default=get_default_file(),
     callback=get_file_path,
     multiple=True,
     help="Inform the journal file path. If \"-\", read from stdin. Without this flag read from $LEDGER_FILE or ~/.hledger.journal in this order  or '-f-'.",
@@ -42,9 +41,7 @@ click.rich_click.STYLE_OPTIONS_PANEL_BORDER = "dim"  # Possibly conceal
 @click.version_option()
 def cli(file: str):  # pyright:ignore
     """
-    Commands to apply FIFO(first-in-first-out) accounting principles without manual management of lots. Useful for transactions involving purchase and selling foreign currencies or stocks.
-
-    </br>
+    Commands to apply FIFO(first-in-first-out) accounting principles without manual management of lots. Useful for transactions involving buying and selling foreign currencies or stocks.
 
     To find out more, visit [https://github.com/edkedk99/hledger-fifo](https://github.com/edkedk99/hledger-fifo)
     """
@@ -78,12 +75,15 @@ def lots(file: Tuple[str, ...], commodity: str, no_desc: str):
     """
     Report lots for a commodity.\r
 
-    Show a report with lots for a commodity considering eventual past sale using FIFO accounting principles. Also sum the quantity and calculate average price.
+    Show a report with lots for a commodity considering eventual past sale using FIFO accounting principles.
+
+    Also show some indicators about the lots and performance if there is prices in the journal after the last purchase. See the docs for details
 
     All flags, except '--file' will be interactively prompted if absent, much like 'hledger-add'.
     """
 
-    adj_txn = hledger2txn(file, commodity, no_desc)
+    journals = file or get_default_file()
+    adj_txn = hledger2txn(journals, commodity, no_desc)
     buy_lots = get_lots(adj_txn)
 
     lots_dict = [asdict(lot) for lot in buy_lots]
@@ -145,8 +145,20 @@ def lots(file: Tuple[str, ...], commodity: str, no_desc: str):
     prompt=True,
     help="Date of the transaction (YYYY-mm-dd)",
 )
-@click.option("-q", "--quantity", type=click.FLOAT, prompt=True)
-@click.option("-p", "--price", type=click.FLOAT, prompt=True)
+@click.option(
+    "-q",
+    "--quantity",
+    help="Quantity being sold",
+    type=click.FLOAT,
+    prompt=True,
+)
+@click.option(
+    "-p",
+    "--price",
+    help="Price being sold",
+    type=click.FLOAT,
+    prompt=True,
+)
 @click.pass_context
 def sell(
     ctx: click.Context,  # pyright:ignore
@@ -170,12 +182,13 @@ def sell(
 
     - Revenue posting: posting that represent Capital Gain or Loss as the difference between the total cost and the amount received on the base-currency.
 
-    This command also add transaction's comment with the following information as tags: commodity, total quantity sold and average FIFO cost
+    This command also add transaction's comment with some indicators. See the docs for more info.
 
     All flags, except '--file' will be interactively prompted if absent, much like 'hledger-add'.
     """
 
-    adj_txns = hledger2txn(file, commodity, no_desc)
+    journals = file or get_default_file()
+    adj_txns = hledger2txn(journals, commodity, no_desc)
     sell_txn = get_sell_lots(adj_txns, date, quantity)
     value = quantity * price
 
@@ -216,30 +229,13 @@ def sell(
 )
 def info(file: Tuple[str, ...], output_format: str, no_desc: str):
     """
-    Show indicators for all your commodities in a tabular format sorted from higher to lower **XIRR**. It is advised to use full-screen of the terminal.
+    Show indicators for all your commodities in a tabular format sorted from higher to lower **XIRR**. It is advised to use full-screen of the terminal. See the docs for a list of indicators and output examples.
 
     It can output in three formats: *plain, pretty and csv*.
-
-    ## Indicators
-
-    ### Basic Indicators
-
-    - Commodity Name
-    - Quantity Purchased
-    - Amount Purchased
-    - Average Cost
-
-    ### Market Indicators
-
-    For commodities with price directives on a date after the last purchase, you will have also the following indicators:
-
-    - Last Market Price
-    - Market Amount: Quantitty Purchased * Last Market Price
-    - Market Profit: Market Amount - Amount Purchased
-    - Last Market Date
-    - Xirr: Internal Rate of Return per year using 30/360US day convention as if you are for market price on market date
     """
-    lots_info = AllInfo(file, no_desc)
+
+    journals = file or get_default_file()
+    lots_info = AllInfo(journals, no_desc)
 
     if output_format == "pretty":
         table = lots_info.get_infos_table("mixed_grid")

@@ -135,7 +135,7 @@ Market Price:  {self.info['mkt_price']}
 Market Amount: {self.info['mkt_amount']}
 Market Profit: {self.info['mkt_profit']}
 Market Date:   {self.info['mkt_date']}
-Xirr:          {self.info['xirr']}% (APR 30/360US)
+Xirr:          {self.info['xirr']} (APR 30/360US)
 """
         else:
             info_txt += "\nMarket Data not available"
