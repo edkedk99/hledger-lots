@@ -33,7 +33,7 @@ def get_avg(txns: List[AdjustedTxn]):
     return avg
 
 
-def get_default_file() -> Tuple[str,...]:
+def get_default_file() -> Tuple[str, ...]:
     file_env = os.getenv("LEDGER_FILE")
     if file_env:
         return tuple(file_env)
@@ -41,7 +41,7 @@ def get_default_file() -> Tuple[str,...]:
         return tuple(str(default_path))
     else:
         raise click.BadOptionUsage("file", "File missing")
-        
+
 
 def get_file_path(
     ctx: click.Context, _param, value: Tuple[str, ...]

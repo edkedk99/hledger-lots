@@ -1,9 +1,10 @@
+import csv
 import re
 import subprocess
 from datetime import datetime
-from typing import List, Optional, Tuple, TypedDict
-import csv
 from io import StringIO
+from typing import List, Optional, Tuple, TypedDict
+
 from tabulate import tabulate
 
 from .fifo import MultipleBaseCurrencies, get_lots
@@ -176,7 +177,7 @@ class AllInfo:
         infos = [info for info in infos if info is not None]
         return infos
 
-    def get_infos_table(self, output_format: str):        
+    def get_infos_table(self, output_format: str):
         infos_list = [info.info for info in self.infos]
         infos_sorted = sorted(
             infos_list, key=lambda info: info["xirr"] or "", reverse=True
@@ -203,6 +204,3 @@ class AllInfo:
         writer.writerows(infos_sorted)
         infos_io.seek(0)
         return infos_io
-
-        
-

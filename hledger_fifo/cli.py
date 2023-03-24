@@ -9,7 +9,6 @@ from .hl import hledger2txn, txn2hl
 from .lib import get_default_file, get_file_path
 from .lots_info import AllInfo, LotInfo
 
-
 CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 
 click.rich_click.USE_MARKDOWN = True

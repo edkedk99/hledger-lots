@@ -1,8 +1,45 @@
+[tool.isort]
+profile = "black"
+
+[tool.pyright]
+venvPath = "venv"
+venv = "."
+verboseOutput = false
+reportConstantRedefinition = "warning"
+reportUnnecessaryComparison = "warning"
+reportAssertAlwaysTrue = "warning"
+reportUnusedExpression = false
+
 [build-system]
 requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
-[tool.isort]
-profile = "black"
+[tool.setuptools.packages]
+find = {}  # Scan the project directory with the default parameters
 
+[project]
+name = "hledger_fifo"
+version = "0.0.8"
+description = "..."
+readme= "docs/README.md"
+requires-python = ">=3.8"
+license = {text = "MIT License"}
+keyword = ["...","..."]
+classifiers = [""]
+author = "Eduardo"
+author_email = "author@example.com"
+dependencies = [
+	     "click",
+	     "rich_click",
+	     "tabulate",
+	     "pyxirr"
+]
 
+[project.urls]
+homepage = "https://github.com/edkedk99/hledger-fifo"
+documentation = "https://edkedk99.github.io/hledger-fifo/"
+repository = "https://github.com/edkedk99/hledger-fifo"
+# changelog = ""
+
+[project.scripts]
+hledger-fifo = "hledger_fifo.__main__:main"

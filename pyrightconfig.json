@@ -1,9 +1,0 @@
-{
-    "venvPath": "venv",
-    "venv": ".",
-    "verboseOutput": true,
-    "reportConstantRedefinition": "warning",
-    "reportUnnecessaryComparison": "warning",
-    "reportAssertAlwaysTrue": "warning",
-    "reportUnusedExpression": false
-}
