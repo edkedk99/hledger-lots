@@ -27,6 +27,8 @@ class Txn(AdjustedTxn):
 
 def get_avg(txns: List[AdjustedTxn]):
     total_qtty = sum(txn.qtty for txn in txns)
+    if total_qtty == 0:
+        return 0
     mult = [txn.qtty * txn.price for txn in txns]
     total_mult = sum(mult)
     avg = total_mult / total_qtty
@@ -36,15 +38,15 @@ def get_avg(txns: List[AdjustedTxn]):
 def get_default_file() -> Tuple[str, ...]:
     file_env = os.getenv("LEDGER_FILE")
     if file_env:
-        return tuple(file_env)
+        return (file_env,)
     elif default_path.exists():
-        return tuple(str(default_path))
+        return (str(default_path),)
     else:
         raise click.BadOptionUsage("file", "File missing")
 
 
 def get_file_path(
-    ctx: click.Context, _param, value: Tuple[str, ...]
+    ctx: click.Context, _param, value: Optional[Tuple[str, ...]]
 ) -> Optional[Tuple[str, ...]]:  # type: ignore
     if value:
         return value

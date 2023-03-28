@@ -1,3 +1,4 @@
+import copy
 from typing import List
 
 from .lib import AdjustedTxn
@@ -11,7 +12,7 @@ class MultipleBaseCurrencies(Exception):
 
 def check_short_sell_past(previous_buys: List[AdjustedTxn], sell: AdjustedTxn):
     previous_buys_qtty = sum([txn.qtty for txn in previous_buys])
-    if sell.qtty > previous_buys_qtty:
+    if abs(sell.qtty) > abs(previous_buys_qtty):
         raise ValueError(f"Short sell not allowed for sell {sell}")
 
 
@@ -30,9 +31,11 @@ def check_base_currency(txns: List[AdjustedTxn]):
 
 
 def get_lots(txns: List[AdjustedTxn]) -> List[AdjustedTxn]:
+    local_txns = copy.deepcopy(txns)
     check_base_currency(txns)
-    buys = [txn for txn in txns if txn.qtty >= 0]
-    sells = [txn for txn in txns if txn.qtty < 0]
+
+    buys = [txn for txn in local_txns if txn.qtty >= 0]
+    sells = [txn for txn in local_txns if txn.qtty < 0]
 
     buys_lot: List[AdjustedTxn] = buys if len(sells) == 0 else []
     for sell in sells:
@@ -60,7 +63,7 @@ def get_lots(txns: List[AdjustedTxn]) -> List[AdjustedTxn]:
 def get_sell_lots(lots: List[AdjustedTxn], sell_date: str, sell_qtty: float):
     check_short_sell_current(lots, sell_qtty)
     buy_lots = get_lots(lots)
-    previous_buys = [lot for lot in buy_lots if lot.date <= sell_date]
+    previous_buys = [lot for lot in buy_lots.copy() if lot.date <= sell_date]
 
     fifo_lots: List[AdjustedTxn] = []
     sell_qtty_curr = sell_qtty

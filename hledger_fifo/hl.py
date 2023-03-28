@@ -30,7 +30,7 @@ def txn2hl(
 """
 
     for txn in txns:
-        txn_hl += f"    {txn.acct}    {txn.qtty * -1} {cur} @ {txn.price} {base_curr}  ; buy_date:{txn.date}\n"
+        txn_hl += f"    {txn.acct}    {txn.qtty * -1} {cur} @ {txn.price} {base_curr}  ; buy_date:{txn.date}, base_cur:{txn.base_cur}\n"
 
     txn_hl += f"    {revenue_account}   "
     comm = ["hledger", "-f-", "print", "--explicit"]
@@ -57,7 +57,7 @@ def prices_items2txn(date: str, prices_items: dict, account: str) -> Txn:
 
 
 def hledger2txn(
-    file_path: Tuple[str, ...], cur: str, no_desc: Optional[str]
+    file_path: Tuple[str, ...], cur: str, no_desc: Optional[str] = None
 ) -> List[AdjustedTxn]:
     files_comm = get_files_comm(file_path)
     comm = ["hledger", *files_comm, "print", f"cur:{cur}", "--output-format=json"]
