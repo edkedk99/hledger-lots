@@ -8,3 +8,6 @@ build
 mkdocs
 mkdocs-click
 vermin
+pytest
+pytest-cov
+pytest-html

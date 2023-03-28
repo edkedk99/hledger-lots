@@ -11,6 +11,8 @@ nav:
     - Home: README.md
     - Usage: usage.md
     - Output examples: output.md
+    - Test Coverage: /hledger-fifo/test_coverage
+    - Unit tests: /hledger-fifo/unit_tests
 
 markdown_extensions:
   - attr_list

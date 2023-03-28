@@ -7,6 +7,10 @@ version := $(call get_value,version)
 vermin := 3.8
 wheel := $(pkg_name)-$(version)-py3-none-any.whl
 
+test_docs := pytest --cov=hledger_fifo tests/ --cov-report=html:docs/test_coverage && \
+	mkdir -p docs/unit_tests && \
+	pytest --html=docs/unit_tests/index.html
+
 .PHONY: local
 local:
 	make build && \
@@ -31,16 +35,19 @@ fix:
 		--eval-annotations \
 		--backport dataclasses \
 		--backport typing \
-		--no-parse-comments "$(pkg_name)"
+		--no-parse-comments "$(pkg_name)" && \
+	pytest
 
 .PHONY: serve-docs
 serve-docs:
 	source venv/bin/activate && \
+	$(test_docs) && \
 	PYTHONPATH="$(CURDIR)" mkdocs serve
 
 .PHONY: gh-deploy
 gh-deploy:
 	source venv/bin/activate && \
+	$(test_docs) && \
 	PYTHONPATH="$(CURDIR)" mkdocs gh-deploy
 
 
