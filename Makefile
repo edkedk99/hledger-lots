@@ -50,11 +50,9 @@ gh-deploy:
 	$(test_docs) && \
 	PYTHONPATH="$(CURDIR)" mkdocs gh-deploy
 
-
-.PHONY: version
-version:
-	vermin -t=$(vermin) \
-		--eval-annotations \
-		--backport dataclasses \
-		--backport typing \
-		--no-parse-comments "$(pkg_name)"
+.PHONY: publish
+publish:
+	source venv/bin/activate && \
+	rm dist/*
+	make build && \
+	python3 -m twine upload dist/*

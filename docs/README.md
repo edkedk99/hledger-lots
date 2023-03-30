@@ -24,7 +24,7 @@ Documentation with usage information can be found [here](https://edkedk99.github
 ## Installation
 
 ```python
-pip install --upgrade git+https://github.com/edkedk99/hledger-fifo.git
+pip install --upgrade hledger-fifo
 ```
 
 ## Workflow

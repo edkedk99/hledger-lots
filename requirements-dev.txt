@@ -11,3 +11,4 @@ vermin
 pytest
 pytest-cov
 pytest-html
+twine
