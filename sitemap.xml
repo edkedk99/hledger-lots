@@ -2,17 +2,17 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://edkedk99.github.io/hledger-fifo/</loc>
-         <lastmod>2023-03-22</lastmod>
+         <lastmod>2023-03-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://edkedk99.github.io/hledger-fifo/output/</loc>
-         <lastmod>2023-03-22</lastmod>
+         <lastmod>2023-03-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://edkedk99.github.io/hledger-fifo/usage/</loc>
-         <lastmod>2023-03-22</lastmod>
+         <lastmod>2023-03-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>
