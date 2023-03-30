@@ -4,7 +4,8 @@ import sys
 from datetime import datetime
 from typing import List, Optional, Tuple
 
-from .lib import AdjustedTxn, Txn, get_avg, get_files_comm, get_xirr
+from .files import get_files_comm
+from .lib import AdjustedTxn, Txn, get_avg_fifo, get_xirr
 
 
 def txn2hl(
@@ -16,7 +17,7 @@ def txn2hl(
     value: float,
 ):
     base_curr = txns[0].base_cur
-    avg_cost = get_avg(txns)
+    avg_cost = get_avg_fifo(txns)
     sum_qtty = sum(txn.qtty for txn in txns)
     price = value / sum_qtty
     dt = datetime.strptime(date, "%Y-%m-%d").date()

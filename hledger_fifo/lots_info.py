@@ -7,9 +7,11 @@ from typing import List, Optional, Tuple, TypedDict
 
 from tabulate import tabulate
 
-from .fifo import MultipleBaseCurrencies, get_lots
+from .checks import MultipleBaseCurrencies
+from .fifo import get_lots
+from .files import get_files_comm
 from .hl import hledger2txn
-from .lib import AdjustedTxn, get_avg, get_files_comm, get_xirr
+from .lib import AdjustedTxn, get_avg_fifo, get_xirr
 
 
 class LotsInfo(TypedDict):
@@ -88,7 +90,7 @@ class LotInfo:
         cur = self.lots[0].base_cur
         qtty = sum(lot.qtty for lot in self.lots)
         amount = sum(lot.price * lot.qtty for lot in self.lots)
-        avg_cost = get_avg(self.lots) if qtty > 0 else 0
+        avg_cost = get_avg_fifo(self.lots) if qtty > 0 else 0
 
         if self.market_price and self.market_date and self.xirr:
             market_price_str = f"{self.market_price:,.4f}"

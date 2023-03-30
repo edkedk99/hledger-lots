@@ -1,14 +1,8 @@
-import os
 from dataclasses import dataclass
 from datetime import date
-from pathlib import Path
-from typing import List, Optional, Tuple
+from typing import List, Optional
 
-import click
 from pyxirr import DayCount, xirr
-
-ENV_FILE = "LEDGER_FILE"
-default_path = Path.home() / ".hledger.journal"
 
 
 @dataclass
@@ -25,7 +19,7 @@ class Txn(AdjustedTxn):
     type: str
 
 
-def get_avg(txns: List[AdjustedTxn]):
+def get_avg_fifo(txns: List[AdjustedTxn]):
     total_qtty = sum(txn.qtty for txn in txns)
     if total_qtty == 0:
         return 0
@@ -33,39 +27,6 @@ def get_avg(txns: List[AdjustedTxn]):
     total_mult = sum(mult)
     avg = total_mult / total_qtty
     return avg
-
-
-def get_default_file() -> Tuple[str, ...]:
-    file_env = os.getenv("LEDGER_FILE")
-    if file_env:
-        return (file_env,)
-    elif default_path.exists():
-        return (str(default_path),)
-    else:
-        raise click.BadOptionUsage("file", "File missing")
-
-
-def get_file_path(
-    ctx: click.Context, _param, value: Optional[Tuple[str, ...]]
-) -> Optional[Tuple[str, ...]]:  # type: ignore
-    if value:
-        return value
-
-    if not ctx.parent:
-        return None
-
-    filenames: Optional[Tuple] = ctx.parent.params.get("file")
-    if not filenames:
-        raise click.BadOptionUsage("file", "File missing")
-
-    return filenames
-
-
-def get_files_comm(file_path: Tuple[str, ...]) -> List[str]:
-    files = []
-    for file in file_path:
-        files = [*files, "-f", file]
-    return files
 
 
 def get_xirr(

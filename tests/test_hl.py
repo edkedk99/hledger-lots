@@ -1,9 +1,6 @@
-from io import StringIO
 from pathlib import Path
-from sys import setprofile
 
 import pytest
-from _pytest.tmpdir import tmp_path_factory
 
 from hledger_fifo import hl
 from hledger_fifo.lib import AdjustedTxn, Txn
@@ -42,14 +39,16 @@ class TestTxn2Hl:
         )
 
         expected = """2022-02-01 Sold USD
-    ; commodity:USD, qtty:5.00, price:32.00
-    ; avg_fifo_cost:26.0000, xirr:61.42% annual percent rate 30/360US
+    ; commodity:USD, qtty:5.00, price:16.00
+    ; avg_fifo_cost:26.0000, xirr:-1.00% annual percent rate 30/360US
     Bank                  80.00 USD
     Acct1      -2.00 USD @ 35.0 USD  ; buy_date:2022-01-12, base_cur:USD
     Acct1      -3.00 USD @ 20.0 USD  ; buy_date:2022-01-14, base_cur:USD
-    Revenue              -50.00 USD
+    Revenue               50.00 USD
 
 """
+
+        assert test == expected
 
 
 class TestAdjustTxn:
