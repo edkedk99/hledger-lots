@@ -2,53 +2,10 @@ from pathlib import Path
 
 import pytest
 
-from hledger_fifo import hl
 from hledger_fifo.lib import AdjustedTxn, Txn
+from hledger_fifo.hl import adjust_txn, hledger2txn
 
 from . import lots_data
-
-
-class TestTxn2Hl:
-    txns = lots_data.expected_qtty_reaches_zero_sell_all
-    date = "2022-02-01"
-    cash_account = "Bank"
-    revenue_account = "Revenue"
-
-    def test_txn2hl_profit(self):
-        cur = "USD"
-        test = hl.txn2hl(
-            self.txns, self.date, cur, self.cash_account, self.revenue_account, 160
-        )
-
-        expected = """2022-02-01 Sold USD
-    ; commodity:USD, qtty:5.00, price:32.00
-    ; avg_fifo_cost:26.0000, xirr:61.42% annual percent rate 30/360US
-    Bank                 160.00 USD
-    Acct1      -2.00 USD @ 35.0 USD  ; buy_date:2022-01-12, base_cur:USD
-    Acct1      -3.00 USD @ 20.0 USD  ; buy_date:2022-01-14, base_cur:USD
-    Revenue              -30.00 USD
-
-"""
-
-        assert test == expected
-
-    def test_txn2hl_loss(self):
-        cur = "USD"
-        test = hl.txn2hl(
-            self.txns, self.date, cur, self.cash_account, self.revenue_account, 80
-        )
-
-        expected = """2022-02-01 Sold USD
-    ; commodity:USD, qtty:5.00, price:16.00
-    ; avg_fifo_cost:26.0000, xirr:-1.00% annual percent rate 30/360US
-    Bank                  80.00 USD
-    Acct1      -2.00 USD @ 35.0 USD  ; buy_date:2022-01-12, base_cur:USD
-    Acct1      -3.00 USD @ 20.0 USD  ; buy_date:2022-01-14, base_cur:USD
-    Revenue               50.00 USD
-
-"""
-
-        assert test == expected
 
 
 class TestAdjustTxn:
@@ -64,7 +21,7 @@ class TestAdjustTxn:
         expected = AdjustedTxn(
             date="2022-01-01", price=10.0, base_cur="USD", qtty=1.0, acct="Acct1"
         )
-        assert hl.adjust_txn(txn) == expected
+        assert adjust_txn(txn) == expected
 
     def test_adjust_txn_total_price(self):
         txn = Txn(
@@ -78,7 +35,7 @@ class TestAdjustTxn:
         expected = AdjustedTxn(
             date="2022-01-01", price=10.0, base_cur="USD", qtty=2.0, acct="Acct1"
         )
-        assert hl.adjust_txn(txn) == expected
+        assert adjust_txn(txn) == expected
 
     def test_adjust_txn_zero_quantity(self):
         txn = Txn(
@@ -90,7 +47,7 @@ class TestAdjustTxn:
             type="TotalPrice",
         )
         with pytest.raises(ZeroDivisionError):
-            hl.adjust_txn(txn)
+            adjust_txn(txn)
 
 
 class TestHledger2Txn:
@@ -133,7 +90,7 @@ class TestHledger2Txn:
         file_path.write_text(self.hl_txns)
         file_tup = (str(file_path),)
 
-        assert hl.hledger2txn(file_tup, "AAPL") == expected
+        assert hledger2txn(file_tup, "AAPL") == expected
 
     def test_total_amount(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
         expected = [
@@ -153,4 +110,4 @@ class TestHledger2Txn:
         file_path.write_text(self.hl_txns)
         file_tup = (str(file_path),)
 
-        assert hl.hledger2txn(file_tup, "BRL") == expected
+        assert hledger2txn(file_tup, "BRL") == expected

@@ -1,8 +1,9 @@
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from datetime import date
 from typing import List, Optional
 
 from pyxirr import DayCount, xirr
+from tabulate import tabulate
 
 
 @dataclass
@@ -32,6 +33,9 @@ def get_avg_fifo(txns: List[AdjustedTxn]):
 def get_xirr(
     sell_price: float, sell_date: date, txns: List[AdjustedTxn]
 ) -> Optional[float]:
+    if len(txns) == 0:
+        return 0
+
     dates = [txn.date for txn in txns]
     buy_amts = [txn.price * txn.qtty for txn in txns]
     total_qtty = sum(txn.qtty for txn in txns)
@@ -41,3 +45,15 @@ def get_xirr(
     amts = [*buy_amts, -total_qtty * sell_price]
     sell_xirr = xirr(dates, amts, day_count=DayCount.THIRTY_U_360)
     return sell_xirr
+
+
+def dt_list2table(dt_list: List, tablefmt: str = "simple"):
+    lots_dict = [asdict(dt) for dt in dt_list]
+    table = tabulate(
+        lots_dict,
+        headers="keys",
+        numalign="decimal",
+        floatfmt=",.4f",
+        tablefmt=tablefmt,
+    )
+    return table

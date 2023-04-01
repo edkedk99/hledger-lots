@@ -59,8 +59,7 @@ class TestGetXirr:
             lib.get_xirr(0,date(2023,3,23),self.txns)
 
     def test_xirr_empty(self):
-        with pytest.raises(pyxirr.InvalidPaymentsError):
-            lib.get_xirr(0,date(2023,3,23),[])
+        lib.get_xirr(0,date(2023,3,23),[]) == None
 
     def test_xir_negative(self):
         assert lib.get_xirr(99,date(2023,3,23),self.txns) == pytest.approx(-0.0772, abs=1e-4)

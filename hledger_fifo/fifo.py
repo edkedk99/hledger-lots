@@ -1,8 +1,10 @@
 import copy
+import subprocess
+from datetime import datetime
 from typing import List
 
 from . import checks
-from .lib import AdjustedTxn
+from .lib import AdjustedTxn, get_avg_fifo, get_xirr
 
 
 def get_lots(txns: List[AdjustedTxn]) -> List[AdjustedTxn]:
@@ -61,3 +63,35 @@ def get_sell_lots(lots: List[AdjustedTxn], sell_date: str, sell_qtty: float):
         i += 1
 
     return fifo_lots
+
+
+def txn2hl(
+    txns: List[AdjustedTxn],
+    date: str,
+    cur: str,
+    cash_account: str,
+    revenue_account: str,
+    value: float,
+):
+    base_curr = txns[0].base_cur
+    avg_cost = get_avg_fifo(txns)
+    sum_qtty = sum(txn.qtty for txn in txns)
+    price = value / sum_qtty
+    dt = datetime.strptime(date, "%Y-%m-%d").date()
+    xirr = get_xirr(price, dt, txns) or 0 * 100
+
+    txn_hl = f"""
+{date} Sold {cur}
+    ; commodity:{cur}, qtty:{sum_qtty:,.2f}, price:{price:,.2f}
+    ; avg_fifo_cost:{avg_cost:,.4f}, xirr:{xirr:.2f}% annual percent rate 30/360US
+    {cash_account}  {value:.2f} {base_curr}
+"""
+
+    for txn in txns:
+        txn_hl += f"    {txn.acct}    {txn.qtty * -1} {cur} @ {txn.price} {base_curr}  ; buy_date:{txn.date}, base_cur:{txn.base_cur}\n"
+
+    txn_hl += f"    {revenue_account}   "
+    comm = ["hledger", "-f-", "print", "--explicit"]
+    txn_proc = subprocess.run(comm, input=txn_hl.encode(), capture_output=True)
+    txn_print: str = txn_proc.stdout.decode("utf8")
+    return txn_print

@@ -1,13 +1,15 @@
-from dataclasses import asdict
 from typing import Tuple
 
 import rich_click as click
-from tabulate import tabulate  # type: ignore
 
-from .fifo import get_lots, get_sell_lots
+from .avg import avg_sell, get_avg_cost
+from .avg_info import AllAvgInfo, AvgInfo
+from .fifo import get_lots, get_sell_lots, txn2hl
+from .fifo_info import AllFifoInfo, FifoInfo
 from .files import get_default_file, get_file_path
-from .hl import hledger2txn, txn2hl
-from .lots_info import AllInfo, LotInfo
+from .hl import hledger2txn
+from .info import AllInfo
+from .lib import dt_list2table
 
 CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 
@@ -57,6 +59,9 @@ def cli(file: str):  # pyright:ignore
     help="Inform the journal file path. If \"-\", read from stdin. Without this flag read from $LEDGER_FILE or ~/.hledger.journal in this order  or '-f-'.",
 )
 @click.option(
+    "-g", "--avg-cost", is_flag=True, help='Change cost method to "average cost"'
+)
+@click.option(
     "-c",
     "--commodity",
     type=click.STRING,
@@ -70,7 +75,7 @@ def cli(file: str):  # pyright:ignore
     prompt=False,
     help="Description to be filtered out from calculation. Needed when closing journal with '--show-costs' option. Works like: not:desc:<value>. Will not be prompted if absent. If closed with default description, the value of this option should be: 'opening|closing balances'",
 )
-def lots(file: Tuple[str, ...], commodity: str, no_desc: str):
+def lots(file: Tuple[str, ...], avg_cost: bool, commodity: str, no_desc: str):
     """
     Report lots for a commodity.\r
 
@@ -83,20 +88,20 @@ def lots(file: Tuple[str, ...], commodity: str, no_desc: str):
 
     journals = file or get_default_file()
     adj_txn = hledger2txn(journals, commodity, no_desc)
-    buy_lots = get_lots(adj_txn)
 
-    lots_dict = [asdict(lot) for lot in buy_lots]
-    table = tabulate(
-        lots_dict,
-        headers="keys",
-        numalign="decimal",
-        floatfmt=",.4f",
-        tablefmt="simple",
-    )
-    click.echo(table)
+    if avg_cost:
+        buy_lots = get_avg_cost(adj_txn)
+        table = dt_list2table(buy_lots)
+        click.echo(table)
+        avg_info = AvgInfo(journals, commodity)
+        click.echo(avg_info.info_txt)
 
-    lot_info = LotInfo(file, commodity, buy_lots)
-    click.echo(lot_info.info_txt)
+    else:
+        buy_lots = get_lots(adj_txn)
+        table = dt_list2table(buy_lots)
+        click.echo(table)
+        fifo_info = FifoInfo(journals, commodity)
+        click.echo(fifo_info.info_txt)
 
 
 @click.command()
@@ -108,6 +113,9 @@ def lots(file: Tuple[str, ...], commodity: str, no_desc: str):
     callback=get_file_path,
     multiple=True,
     help="Inform the journal file path. If \"-\", read from stdin. Without this flag read from $LEDGER_FILE or ~/.hledger.journal in this order  or '-f-'.",
+)
+@click.option(
+    "-g", "--avg-cost", is_flag=True, help='Change cost method to "average cost"'
 )
 @click.option(
     "-c",
@@ -122,6 +130,14 @@ def lots(file: Tuple[str, ...], commodity: str, no_desc: str):
     type=click.STRING,
     prompt=False,
     help="Description to be filtered out from calculation. Needed when closing journal with '--show-costs' option. Works like: not:desc:<value>. Will not be prompted if absent. If closed with default description, the value of this option should be: 'opening|closing balances'",
+)
+@click.option(
+    "-s",
+    "--commodity-account",
+    type=click.STRING,
+    prompt=False,
+    required=False,
+    help="What account holds product of the sale. Only used with --avg-cost",
 )
 @click.option(
     "-a",
@@ -162,8 +178,10 @@ def lots(file: Tuple[str, ...], commodity: str, no_desc: str):
 def sell(
     ctx: click.Context,  # pyright:ignore
     file: Tuple[str, ...],
+    avg_cost: bool,
     commodity: str,
     no_desc: str,
+    commodity_account: str,
     cash_account: str,
     revenue_account: str,
     date: str,
@@ -188,18 +206,34 @@ def sell(
 
     journals = file or get_default_file()
     adj_txns = hledger2txn(journals, commodity, no_desc)
-    sell_txn = get_sell_lots(adj_txns, date, quantity)
     value = quantity * price
 
-    txn_print = txn2hl(
-        txns=sell_txn,
-        date=date,
-        cur=commodity,
-        cash_account=cash_account,
-        revenue_account=revenue_account,
-        value=value,
-    )
-    click.echo(txn_print)
+    if avg_cost and not commodity_account:
+        commodity_account = input("Commodity account")
+
+    if avg_cost:
+        sell_avg = avg_sell(
+            txns=adj_txns,
+            date=date,
+            qtty=quantity,
+            cur=commodity,
+            cash_account=cash_account,
+            revenue_account=revenue_account,
+            comm_account=commodity_account,
+            value=value,
+        )
+        click.echo(sell_avg)
+    else:
+        sell_fifo = get_sell_lots(adj_txns, date, quantity)
+        txn_print = txn2hl(
+            txns=sell_fifo,
+            date=date,
+            cur=commodity,
+            cash_account=cash_account,
+            revenue_account=revenue_account,
+            value=value,
+        )
+        click.echo(txn_print)
 
 
 @click.command()
@@ -211,6 +245,9 @@ def sell(
     callback=get_file_path,
     multiple=True,
     help="Inform the journal file path. If \"-\", read from stdin. Without this flag read from $LEDGER_FILE or ~/.hledger.journal in this order  or '-f-'.",
+)
+@click.option(
+    "-g", "--avg-cost", is_flag=True, help='Change cost method to "average cost"'
 )
 @click.option(
     "-o",
@@ -226,7 +263,7 @@ def sell(
     prompt=False,
     help="Description to be filtered out from calculation. Needed when closing journal with '--show-costs' option. Works like: not:desc:<value>. Will not be prompted if absent. If closed with default description, the value of this option should be: 'opening|closing balances'",
 )
-def info(file: Tuple[str, ...], output_format: str, no_desc: str):
+def info(file: Tuple[str, ...], avg_cost: bool, output_format: str, no_desc: str):
     """
     Show indicators for all your commodities in a tabular format sorted from higher to lower **XIRR**. It is advised to use full-screen of the terminal. See the docs for a list of indicators and output examples.
 
@@ -236,13 +273,15 @@ def info(file: Tuple[str, ...], output_format: str, no_desc: str):
     journals = file or get_default_file()
     lots_info = AllInfo(journals, no_desc)
 
+    lots_info = AllAvgInfo(file, no_desc) if avg_cost else AllFifoInfo(file, no_desc)
+
     if output_format == "pretty":
-        table = lots_info.get_infos_table("mixed_grid")
+        table = lots_info.infos_table("mixed_grid")
     elif output_format == "csv":
-        infos_io = lots_info.get_infos_csv()
+        infos_io = lots_info.infos_csv()
         table = infos_io.read()
     else:
-        table = lots_info.get_infos_table("plain")
+        table = lots_info.infos_table("plain")
 
     click.echo(table)
 

@@ -27,3 +27,11 @@ def check_base_currency(txns: List[AdjustedTxn]):
     base_currencies = set(txn.base_cur for txn in txns)
     if len(base_currencies) > 1:
         raise MultipleBaseCurrencies(base_currencies)
+
+
+def check_available(txns: List[AdjustedTxn], account: str, sell_qtty: float):
+    sum_qtty = sum(txn.qtty for txn in txns if txn.acct == account)
+    if sell_qtty > sum_qtty:
+        raise ValueError(
+            f"You can't sell {sell_qtty:,.2f} in {account} because there is only {sum_qtty:,.2f} available"
+        )
