@@ -159,6 +159,12 @@
 <td>None</td>
 </tr>
 <tr>
+<td><code>-g</code>, <code>--avg-cost</code></td>
+<td>boolean</td>
+<td>Change cost method to "average cost"</td>
+<td><code>False</code></td>
+</tr>
+<tr>
 <td><code>-o</code>, <code>--output-format</code></td>
 <td>choice (<code>plain</code> &#x7C; <code>pretty</code> &#x7C; <code>csv</code>)</td>
 <td>Format to output the report</td>
@@ -180,7 +186,7 @@
 </table>
 <h2 id="hledger-fifo-lots">hledger-fifo lots<a class="headerlink" href="#hledger-fifo-lots" title="Permanent link">#</a></h2>
 <p>Report lots for a commodity.</p>
-<p>Show a report with lots for a commodity considering eventual past sale using FIFO accounting principles.</p>
+<p>Show a report with lots for a commodity considering eventual past sale using FIFO or AVERAGE COST accounting principles.</p>
 <p>Also show some indicators about the lots and performance if there is prices in the journal after the last purchase. See the docs for details</p>
 <p>All flags, except '--file' will be interactively prompted if absent, much like 'hledger-add'.</p>
 <p><strong>Usage:</strong></p>
@@ -204,6 +210,12 @@
 <td>None</td>
 </tr>
 <tr>
+<td><code>-g</code>, <code>--avg-cost</code></td>
+<td>boolean</td>
+<td>Change cost method to "average cost"</td>
+<td><code>False</code></td>
+</tr>
+<tr>
 <td><code>-c</code>, <code>--commodity</code></td>
 <td>text</td>
 <td>Commodity to get fifo lots</td>
@@ -224,7 +236,7 @@
 </tbody>
 </table>
 <h2 id="hledger-fifo-sell">hledger-fifo sell<a class="headerlink" href="#hledger-fifo-sell" title="Permanent link">#</a></h2>
-<p>Create a transaction with automatic FIFO for a commodity.</p>
+<p>Create a transaction with automatic FIFO or AVERAGE COST for a commodity.</p>
 <p>Generate a transaction that represents a sale of a commodity with the following postings:</p>
 <ul>
 <li>
@@ -260,6 +272,12 @@
 <td>None</td>
 </tr>
 <tr>
+<td><code>-g</code>, <code>--avg-cost</code></td>
+<td>boolean</td>
+<td>Change cost method to "average cost"</td>
+<td><code>False</code></td>
+</tr>
+<tr>
 <td><code>-c</code>, <code>--commodity</code></td>
 <td>text</td>
 <td>Commodity you are selling</td>
@@ -270,6 +288,12 @@
 <td>text</td>
 <td>Description to be filtered out from calculation. Needed when closing journal with '--show-costs' option. Works like: not:desc:<value>. Will not be prompted if absent. If closed with default description, the value of this option should be: 'opening</td>
 <td>closing balances'</td>
+</tr>
+<tr>
+<td><code>-s</code>, <code>--commodity-account</code></td>
+<td>text</td>
+<td>What account holds product of the sale. Only used with --avg-cost</td>
+<td>None</td>
 </tr>
 <tr>
 <td><code>-a</code>, <code>--cash-account</code></td>
