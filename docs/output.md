@@ -15,6 +15,7 @@ Besides the transaction, constructed according to *FIFO* without any manual inte
 
 ## lots
 
+### FIFO method
 ```txt
 date          price  base_cur      qtty  acct
 ----------  -------  ----------  ------  ------------
@@ -37,6 +38,38 @@ Market Amount: 49.60
 Market Profit: 8.50
 Market Date:   2023-07-01
 Xirr:          46.1056% (APR 30/360US)
+```
+
+### AVERAGE COST METHOD
+
+```txt
+date          total_qtty    total_amount    avg_cost
+----------  ------------  --------------  ----------
+2022-01-05             5         20.0000      4.0000
+2022-01-10            15         70.0000      4.6667
+2022-01-15            12         56.0000      4.6667
+2022-01-20            27        143.0000      5.2963
+2022-01-25            25        132.4074      5.2963
+2022-01-25            19        100.6296      5.2963
+2022-02-10            15         79.4444      5.2963
+2022-02-10             0          0.0000      0.0000
+2022-02-15             5         25.5000      5.1000
+2022-12-31             0          0.0000      0.0000
+2023-01-01             5         25.5000      5.1000
+2023-01-05             8         41.1000      5.1375
+
+Info
+----
+Commodity:      AAPL
+Quantity:       8
+Amount:         41.10
+Average Cost:   5.1375
+
+Market Price:  6.2000
+Market Amount: 49.60
+Market Profit: 8.50
+Market Date:   2023-07-01
+Xirr:          0.1595% (APR 30/360US)
 ```
 
 ## Info

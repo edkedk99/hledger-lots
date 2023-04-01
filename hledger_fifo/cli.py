@@ -79,7 +79,7 @@ def lots(file: Tuple[str, ...], avg_cost: bool, commodity: str, no_desc: str):
     """
     Report lots for a commodity.\r
 
-    Show a report with lots for a commodity considering eventual past sale using FIFO accounting principles.
+    Show a report with lots for a commodity considering eventual past sale using FIFO or AVERAGE COST accounting principles.
 
     Also show some indicators about the lots and performance if there is prices in the journal after the last purchase. See the docs for details
 
@@ -189,7 +189,7 @@ def sell(
     price: float,
 ):
     """
-    Create a transaction with automatic FIFO for a commodity.\r
+    Create a transaction with automatic FIFO or AVERAGE COST for a commodity.\r
 
     Generate a transaction that represents a sale of a commodity with the following postings:
 

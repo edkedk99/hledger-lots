@@ -6,11 +6,16 @@ This script aims to help hledger's users to add transactions involving buying an
 
 When you sell a commodity, you should use the cost and quantity from the purchase date, which is buried deep down in your journal file so you have hledger accounting the correct _Capital Gain_.
 
-This package uses **FIFO** method (First-In-First-Out-Method) to create a sale transaction according to information provided by the user and traverse the journal file to determine what quantity and lot prices should be used and generate a valid hledger transaction to be appended to the journal with additional helpful calculations as comment tags.
+You can choose between two diferrent methods to calculate the cost of selling lots:
+
+- **FIFO**: First In First Out
+- **AVERAGE COST**: Average Cost of all previous purchase. It is as if selling a proportional part of each previous sale.
+
+This package create a sale transaction according to information provided by the user and traverse the journal file to determine what quantity and lot prices should be used and generate a valid hledger transaction to be appended to the journal with additional helpful calculations as comment tags.
 
 When using this package, you don't need to create lots as subaccounts or tag, just add a purchase transaction as usual and when there is a sale, *hledger-fifo* will generate the correct postings adding the cost for you, so you don't need to bother looking for this information.
 
-It also generate **FIFO** lots reports so the user can understand his situation with a commodity and check the correctness of the generated sell transaction.
+It also generate lots reports so the user can understand his situation with a commodity and check the correctness of the generated sell transaction.
 
 ## Documentation
 
@@ -31,6 +36,9 @@ pip install --upgrade hledger-fifo
 
 1. Add purchase transaction as normal. **Don't bother creating subaccounts or tags with unique lot name**. See the some examples [here](examples/test2022.journal)
 2. When you sell, use the command [sell](usage/#sell) instead of adding the transactions manually. Hledger-fifo will generate the correct transaction and print to stdout so you can add to the journal if everything is correct. *See transaction tags with interesting indicators about the current trade*
+
+> By default the sale is created using *FIFO* method. Use the option flag "--avg-cost" to change it to *Average Cost*
+   
 
 ## Reports
 
