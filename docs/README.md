@@ -13,13 +13,13 @@ You can choose between two diferrent methods to calculate the cost of selling lo
 
 This package create a sale transaction according to information provided by the user and traverse the journal file to determine what quantity and lot prices should be used and generate a valid hledger transaction to be appended to the journal with additional helpful calculations as comment tags.
 
-When using this package, you don't need to create lots as subaccounts or tag, just add a purchase transaction as usual and when there is a sale, *hledger-fifo* will generate the correct postings adding the cost for you, so you don't need to bother looking for this information.
+When using this package, you don't need to create lots as subaccounts or tag, just add a purchase transaction as usual and when there is a sale, *hledger-lots* will generate the correct postings adding the cost for you, so you don't need to bother looking for this information.
 
 It also generate lots reports so the user can understand his situation with a commodity and check the correctness of the generated sell transaction.
 
 ## Documentation
 
-Documentation with usage information can be found [here](https://edkedk99.github.io/hledger-fifo/)
+Documentation with usage information can be found [here](https://edkedk99.github.io/hledger-lots/)
 
 ## Requirements
 
@@ -29,7 +29,7 @@ Documentation with usage information can be found [here](https://edkedk99.github
 ## Installation
 
 ```python
-pip install --upgrade hledger-fifo
+pip install --upgrade hledger-lots
 ```
 
 ## Workflow
@@ -46,8 +46,8 @@ To get information about the commodities, there is more 2 commands:
 
 | command | description                                          |
 |---------|------------------------------------------------------|
-| lots    | Get the lots and indicators for a specific commodity |
-| infos   | Get the indicators for all commodities as a table    |
+| view    | Get the lots and indicators for a specific commodity |
+| list   | Get the indicators for all commodities as a table    |
 
 
 

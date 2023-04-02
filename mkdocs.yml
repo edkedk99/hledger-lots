@@ -1,12 +1,10 @@
-site_name: hledger-fifo
-site_url: https://edkedk99.github.io/hledger-fifo/
-repo_url: https://github.com/edkedk99/hledger-fifo
+site_name: hledger-lots
+site_url: https://edkedk99.github.io/hledger-lots/
+repo_url: https://github.com/edkedk99/hledger-lots
 strict: true
 remote_name: github
 
 theme: readthedocs
-watch:
-  - hledger_fifo
 nav:
     - Home: README.md
     - Usage: usage.md

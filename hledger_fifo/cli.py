@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Literal, Tuple
 
 import rich_click as click
 
@@ -42,7 +42,7 @@ click.rich_click.STYLE_OPTIONS_PANEL_BORDER = "dim"  # Possibly conceal
 @click.version_option()
 def cli(file: str):  # pyright:ignore
     """
-    Commands to apply FIFO(first-in-first-out) accounting principles without manual management of lots. Useful for transactions involving buying and selling foreign currencies or stocks.
+    Commands to apply FIFO(first-in-first-out) or AVERAGE COST accounting principles without manual management of lots. Useful for transactions involving buying and selling foreign currencies or stocks.
 
     To find out more, visit [https://github.com/edkedk99/hledger-fifo](https://github.com/edkedk99/hledger-fifo)
     """
@@ -75,7 +75,7 @@ def cli(file: str):  # pyright:ignore
     prompt=False,
     help="Description to be filtered out from calculation. Needed when closing journal with '--show-costs' option. Works like: not:desc:<value>. Will not be prompted if absent. If closed with default description, the value of this option should be: 'opening|closing balances'",
 )
-def lots(file: Tuple[str, ...], avg_cost: bool, commodity: str, no_desc: str):
+def view(file: Tuple[str, ...], avg_cost: bool, commodity: str, no_desc: str):
     """
     Report lots for a commodity.\r
 
@@ -236,7 +236,7 @@ def sell(
         click.echo(txn_print)
 
 
-@click.command()
+@click.command(name="list")
 @click.option(
     "-f",
     "--file",
@@ -263,9 +263,14 @@ def sell(
     prompt=False,
     help="Description to be filtered out from calculation. Needed when closing journal with '--show-costs' option. Works like: not:desc:<value>. Will not be prompted if absent. If closed with default description, the value of this option should be: 'opening|closing balances'",
 )
-def info(file: Tuple[str, ...], avg_cost: bool, output_format: str, no_desc: str):
+def list_commodities(
+    file: Tuple[str, ...],
+    avg_cost: bool,
+    output_format: str,
+    no_desc: Literal["plain", "pretty", "csv"],
+):
     """
-    Show indicators for all your commodities in a tabular format sorted from higher to lower **XIRR**. It is advised to use full-screen of the terminal. See the docs for a list of indicators and output examples.
+    List indicators for all your commodities in a tabular format sorted from higher to lower **XIRR**. It is advised to use full-screen of the terminal. See the docs for a list of indicators and output examples.
 
     It can output in three formats: *plain, pretty and csv*.
     """
@@ -286,6 +291,6 @@ def info(file: Tuple[str, ...], avg_cost: bool, output_format: str, no_desc: str
     click.echo(table)
 
 
-cli.add_command(lots)
+cli.add_command(view)
 cli.add_command(sell)
-cli.add_command(info)
+cli.add_command(list_commodities)

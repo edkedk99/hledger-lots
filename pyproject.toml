@@ -25,6 +25,7 @@ author = "Eduardo"
 author_email = "edkedk99@hotmail.com"
 
 [project]
+# TODO: Change name
 name = "hledger_fifo"
 version = "0.1.0"
 readme= "docs/README.md"
@@ -38,10 +39,10 @@ dependencies = [
 ]
 
 [project.urls]
-homepage = "https://github.com/edkedk99/hledger-fifo"
-documentation = "https://edkedk99.github.io/hledger-fifo/"
-repository = "https://github.com/edkedk99/hledger-fifo"
+homepage = "https://github.com/edkedk99/hledger-lots"
+documentation = "https://edkedk99.github.io/hledger-lots/"
+repository = "https://github.com/edkedk99/hledger-lots"
 # changelog = ""
 
 [project.scripts]
-hledger-fifo = "hledger_fifo.__main__:main"
+hledger-fifo = "hledger_fifo.__main__:main"  # TODO: Change name
