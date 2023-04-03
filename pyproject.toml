@@ -26,7 +26,7 @@ author_email = "edkedk99@hotmail.com"
 
 [project]
 name = "hledger_lots"
-version = "0.1.0"
+version = "0.1.1"
 readme= "docs/README.md"
 requires-python = ">=3.8"
 license = {text = "MIT License"}
@@ -44,4 +44,4 @@ repository = "https://github.com/edkedk99/hledger-lots"
 # changelog = ""
 
 [project.scripts]
-hledger-fifo = "hledger_lots.__main__:main"
+hledger-lots = "hledger_lots.__main__:main"
