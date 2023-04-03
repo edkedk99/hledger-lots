@@ -1,4 +1,4 @@
-from hledger_fifo.lib import AdjustedTxn
+from hledger_lots.lib import AdjustedTxn
 
 txns_only_buying = [
     AdjustedTxn(date="2022-01-01", price=10.0, base_cur="USD", qtty=10.0, acct="Acct1"),

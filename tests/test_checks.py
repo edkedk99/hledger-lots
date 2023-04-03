@@ -1,6 +1,6 @@
-from hledger_fifo.lib import AdjustedTxn
+from hledger_lots.lib import AdjustedTxn
 import pytest
-from hledger_fifo import checks
+from hledger_lots import checks
 
 
 class TestCheckShortSellPast:

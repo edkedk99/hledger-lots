@@ -1,4 +1,4 @@
-from hledger_fifo import fifo
+from hledger_lots import fifo
 
 from . import lots_data
 

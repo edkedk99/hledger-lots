@@ -1,4 +1,4 @@
-from hledger_fifo.avg import get_avg_cost, avg_sell, AvgCost
+from hledger_lots.avg import get_avg_cost, avg_sell, AvgCost
 from datetime import date
 from . import lots_data
 

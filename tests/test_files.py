@@ -1,5 +1,5 @@
 import pytest
-from hledger_fifo import files
+from hledger_lots import files
 import click
 
 
@@ -17,12 +17,12 @@ class TestGetDefaultFile:
 
     def test_with_default_path(self, monkeypatch, tmp_path):
         default_path = tmp_path.home() / ".hledger.journal"
-        monkeypatch.setattr("hledger_fifo.files.default_path", default_path)
+        monkeypatch.setattr("hledger_lots.files.default_path", default_path)
         assert files.get_default_file() == (str(default_path),)
 
     def test_missing_file(self, monkeypatch: pytest.MonkeyPatch):
         monkeypatch.delenv("LEDGER_FILE", raising=False)
-        monkeypatch.setattr("hledger_fifo.files.default_path", PathMissing())
+        monkeypatch.setattr("hledger_lots.files.default_path", PathMissing())
 
         with pytest.raises(click.BadOptionUsage):
             files.get_default_file()

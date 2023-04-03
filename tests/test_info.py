@@ -4,8 +4,8 @@ from typing import Set, Tuple
 
 import pytest
 
-from hledger_fifo.fifo_info import FifoInfo
-from hledger_fifo.avg_info import AvgInfo
+from hledger_lots.fifo_info import FifoInfo
+from hledger_lots.avg_info import AvgInfo
 import sys
 from io import StringIO
 

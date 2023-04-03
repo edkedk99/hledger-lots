@@ -2,8 +2,8 @@ from pathlib import Path
 
 import pytest
 
-from hledger_fifo.lib import AdjustedTxn, Txn
-from hledger_fifo.hl import adjust_txn, hledger2txn
+from hledger_lots.lib import AdjustedTxn, Txn
+from hledger_lots.hl import adjust_txn, hledger2txn
 
 from . import lots_data
 

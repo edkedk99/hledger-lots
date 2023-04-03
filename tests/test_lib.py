@@ -1,5 +1,5 @@
-from hledger_fifo import lib
-from hledger_fifo.lib import AdjustedTxn
+from hledger_lots import lib
+from hledger_lots.lib import AdjustedTxn
 import pytest
 from datetime import date
 import pyxirr

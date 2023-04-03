@@ -19,14 +19,13 @@ find = {}  # Scan the project directory with the default parameters
 
 [metadata]
 description = "..."
-keyword = ["hledger","PTA", "investments", "accounting", "fifo"]
+keyword = ["hledger","PTA", "investments", "accounting", "lots"]
 classifiers = [""]
 author = "Eduardo"
 author_email = "edkedk99@hotmail.com"
 
 [project]
-# TODO: Change name
-name = "hledger_fifo"
+name = "hledger_lots"
 version = "0.1.0"
 readme= "docs/README.md"
 requires-python = ">=3.8"
@@ -45,4 +44,4 @@ repository = "https://github.com/edkedk99/hledger-lots"
 # changelog = ""
 
 [project.scripts]
-hledger-fifo = "hledger_fifo.__main__:main"  # TODO: Change name
+hledger-fifo = "hledger_lots.__main__:main"
