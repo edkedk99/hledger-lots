@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-         <loc>https://edkedk99.github.io/hledger-fifo/</loc>
-         <lastmod>2023-04-01</lastmod>
+         <loc>https://edkedk99.github.io/hledger-lots/</loc>
+         <lastmod>2023-04-03</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://edkedk99.github.io/hledger-fifo/output/</loc>
-         <lastmod>2023-04-01</lastmod>
+         <loc>https://edkedk99.github.io/hledger-lots/output/</loc>
+         <lastmod>2023-04-03</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://edkedk99.github.io/hledger-fifo/usage/</loc>
-         <lastmod>2023-04-01</lastmod>
+         <loc>https://edkedk99.github.io/hledger-lots/usage/</loc>
+         <lastmod>2023-04-03</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>

@@ -3,9 +3,9 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="None" /><link rel="canonical" href="https://edkedk99.github.io/hledger-fifo/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="None" /><link rel="canonical" href="https://edkedk99.github.io/hledger-lots/" />
       <link rel="shortcut icon" href="img/favicon.ico" />
-    <title>hledger-fifo</title>
+    <title>hledger-lots</title>
     <link rel="stylesheet" href="css/theme.css" />
     <link rel="stylesheet" href="css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
@@ -14,7 +14,7 @@
         // Current page data
         var mkdocs_page_name = "Home";
         var mkdocs_page_input_path = "README.md";
-        var mkdocs_page_url = "/hledger-fifo/";
+        var mkdocs_page_url = "/hledger-lots/";
       </script>
     
     <script src="js/jquery-3.6.0.min.js" defer></script>
@@ -31,7 +31,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
     <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
-          <a href="." class="icon icon-home"> hledger-fifo
+          <a href="." class="icon icon-home"> hledger-lots
         </a><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
       <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
@@ -91,7 +91,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
       <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href=".">hledger-fifo</a>
+          <a href=".">hledger-lots</a>
         
       </nav>
       <div class="wy-nav-content">
@@ -100,7 +100,7 @@
     <li><a href="." class="icon icon-home" alt="Docs"></a> &raquo;</li>
       <li>Home</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/edkedk99/hledger-fifo/edit/master/docs/README.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/edkedk99/hledger-lots/edit/master/docs/README.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -118,17 +118,17 @@
 <li><strong>AVERAGE COST</strong>: Average Cost of all previous purchase. It is as if selling a proportional part of each previous sale.</li>
 </ul>
 <p>This package create a sale transaction according to information provided by the user and traverse the journal file to determine what quantity and lot prices should be used and generate a valid hledger transaction to be appended to the journal with additional helpful calculations as comment tags.</p>
-<p>When using this package, you don't need to create lots as subaccounts or tag, just add a purchase transaction as usual and when there is a sale, <em>hledger-fifo</em> will generate the correct postings adding the cost for you, so you don't need to bother looking for this information.</p>
+<p>When using this package, you don't need to create lots as subaccounts or tag, just add a purchase transaction as usual and when there is a sale, <em>hledger-lots</em> will generate the correct postings adding the cost for you, so you don't need to bother looking for this information.</p>
 <p>It also generate lots reports so the user can understand his situation with a commodity and check the correctness of the generated sell transaction.</p>
 <h2 id="documentation">Documentation<a class="headerlink" href="#documentation" title="Permanent link">#</a></h2>
-<p>Documentation with usage information can be found <a href="https://edkedk99.github.io/hledger-fifo/">here</a></p>
+<p>Documentation with usage information can be found <a href="https://edkedk99.github.io/hledger-lots/">here</a></p>
 <h2 id="requirements">Requirements<a class="headerlink" href="#requirements" title="Permanent link">#</a></h2>
 <ul>
 <li>python</li>
 <li>hledger</li>
 </ul>
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">#</a></h2>
-<pre><code class="language-python">pip install --upgrade hledger-fifo
+<pre><code class="language-python">pip install --upgrade hledger-lots
 </code></pre>
 <h2 id="workflow">Workflow<a class="headerlink" href="#workflow" title="Permanent link">#</a></h2>
 <ol>
@@ -149,11 +149,11 @@
 </thead>
 <tbody>
 <tr>
-<td>lots</td>
+<td>view</td>
 <td>Get the lots and indicators for a specific commodity</td>
 </tr>
 <tr>
-<td>infos</td>
+<td>list</td>
 <td>Get the indicators for all commodities as a table</td>
 </tr>
 </tbody>
@@ -211,7 +211,7 @@
   <span class="rst-current-version" data-toggle="rst-current-version">
     
         <span>
-          <a href="https://github.com/edkedk99/hledger-fifo" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+          <a href="https://github.com/edkedk99/hledger-lots" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
         </span>
     
     
@@ -235,5 +235,5 @@
 
 <!--
 MkDocs version : 1.4.2
-Build Date UTC : 2023-04-01 21:00:48.574177+00:00
+Build Date UTC : 2023-04-03 16:56:28.265391+00:00
 -->
