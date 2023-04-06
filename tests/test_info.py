@@ -1,13 +1,13 @@
 from datetime import date, datetime
 from pathlib import Path
-from typing import Set, Tuple
+from typing import Tuple
 
 import pytest
 
 from hledger_lots.fifo_info import FifoInfo
 from hledger_lots.avg_info import AvgInfo
 import sys
-from io import StringIO
+
 
 
 def price_journal(price: str):
@@ -55,12 +55,12 @@ def journals(tmp_path: Path):
 @pytest.fixture()
 def fifo_info(journals: Tuple[str, ...], monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setattr(sys, "stdin", None)
-    return FifoInfo(journals, "AAPL")
+    return FifoInfo(journals, "AAPL", False)
 
 @pytest.fixture()
 def avg_info(journals: Tuple[str, ...], monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setattr(sys, "stdin", None)
-    return AvgInfo(journals, "AAPL")
+    return AvgInfo(journals, "AAPL", False)
 
 
 
@@ -79,7 +79,7 @@ class TestInfo:
         file_tup = (str(file_path),)
 
         monkeypatch.setattr(sys, "stdin", None)
-        fifo_info = FifoInfo(file_tup, "AAPL")
+        fifo_info = FifoInfo(file_tup, "AAPL", False)
 
         assert fifo_info.last_price == (date(2023, 2, 1), expected)
 

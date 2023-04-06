@@ -1,3 +1,4 @@
+import os
 from typing import Literal, Tuple
 
 import rich_click as click
@@ -9,7 +10,7 @@ from .fifo_info import AllFifoInfo, FifoInfo
 from .files import get_default_file, get_file_path
 from .hl import hledger2txn
 from .info import AllInfo
-from .lib import dt_list2table
+from .lib import default_fn_bool, dt_list2table
 
 CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 
@@ -59,7 +60,11 @@ def cli(file: str):  # pyright:ignore
     help="Inform the journal file path. If \"-\", read from stdin. Without this flag read from $LEDGER_FILE or ~/.hledger.journal in this order  or '-f-'.",
 )
 @click.option(
-    "-g", "--avg-cost", is_flag=True, help='Change cost method to "average cost"'
+    "-g",
+    "--avg-cost",
+    is_flag=True,
+    default=default_fn_bool("HLEDGER_LOTS_AVG_COST", False),
+    help='Change cost method to "average cost"". Can be set with env HLEDGER_LOTS_IS_AVG_COST=true|false. Default to false',
 )
 @click.option(
     "-c",
@@ -72,10 +77,22 @@ def cli(file: str):  # pyright:ignore
     "-n",
     "--no-desc",
     type=click.STRING,
+    default=lambda: os.environ.get("HLEDGER_NO_DESC", None),
     prompt=False,
-    help="Description to be filtered out from calculation. Needed when closing journal with '--show-costs' option. Works like: not:desc:<value>. Will not be prompted if absent. If closed with default description, the value of this option should be: 'opening|closing balances'",
+    help="Description to be filtered out from calculation. Needed when closing journal with '--show-costs' option. Works like: not:desc:<value>. Will not be prompted if absent. If closed with default description, the value of this option should be: 'opening|closing balances'. Can be set with env HLEDGER_LOTS_NO_DESC",
 )
-def view(file: Tuple[str, ...], avg_cost: bool, commodity: str, no_desc: str):
+@click.option(
+    "--check/--no-check",
+    default=default_fn_bool("HLEDGER_LOTS_CHECK", False),
+    help="Enable/Disable check on the commodities previous transactions to ensure it is following the choosen method. Can be set with env HLEDGER_LOTS_CHECK=tru|false. Default to false. Inthe future it will default to true",
+)
+def view(
+    file: Tuple[str, ...],
+    avg_cost: bool,
+    commodity: str,
+    no_desc: str,
+    check: bool,
+):
     """
     Report lots for a commodity.\r
 
@@ -90,17 +107,17 @@ def view(file: Tuple[str, ...], avg_cost: bool, commodity: str, no_desc: str):
     adj_txn = hledger2txn(journals, commodity, no_desc)
 
     if avg_cost:
-        buy_lots = get_avg_cost(adj_txn)
+        buy_lots = get_avg_cost(adj_txn, check)
         table = dt_list2table(buy_lots)
         click.echo(table)
-        avg_info = AvgInfo(journals, commodity)
+        avg_info = AvgInfo(journals, commodity, check)
         click.echo(avg_info.info_txt)
 
     else:
-        buy_lots = get_lots(adj_txn)
+        buy_lots = get_lots(adj_txn, check)
         table = dt_list2table(buy_lots)
         click.echo(table)
-        fifo_info = FifoInfo(journals, commodity)
+        fifo_info = FifoInfo(journals, commodity, check)
         click.echo(fifo_info.info_txt)
 
 
@@ -115,7 +132,11 @@ def view(file: Tuple[str, ...], avg_cost: bool, commodity: str, no_desc: str):
     help="Inform the journal file path. If \"-\", read from stdin. Without this flag read from $LEDGER_FILE or ~/.hledger.journal in this order  or '-f-'.",
 )
 @click.option(
-    "-g", "--avg-cost", is_flag=True, help='Change cost method to "average cost"'
+    "-g",
+    "--avg-cost",
+    is_flag=True,
+    default=default_fn_bool("HLEDGER_LOTS_AVG_COST", False),
+    help='Change cost method to "average cost"". Can be set with env HLEDGER_LOTS_IS_AVG_COST=true|false. Default to false',
 )
 @click.option(
     "-c",
@@ -128,8 +149,14 @@ def view(file: Tuple[str, ...], avg_cost: bool, commodity: str, no_desc: str):
     "-n",
     "--no-desc",
     type=click.STRING,
+    default=lambda: os.environ.get("HLEDGER_NO_DESC", None),
     prompt=False,
-    help="Description to be filtered out from calculation. Needed when closing journal with '--show-costs' option. Works like: not:desc:<value>. Will not be prompted if absent. If closed with default description, the value of this option should be: 'opening|closing balances'",
+    help="Description to be filtered out from calculation. Needed when closing journal with '--show-costs' option. Works like: not:desc:<value>. Will not be prompted if absent. If closed with default description, the value of this option should be: 'opening|closing balances'. Can be set with env HLEDGER_LOTS_NO_DESC",
+)
+@click.option(
+    "--check/--no-check",
+    default=default_fn_bool("HLEDGER_LOTS_CHECK", False),
+    help="Enable/Disable check on the commodities previous transactions to ensure it is following the choosen method. Can be set with env HLEDGER_LOTS_CHECK=tru|false. Default to false. Inthe future it will default to true",
 )
 @click.option(
     "-s",
@@ -187,6 +214,7 @@ def sell(
     date: str,
     quantity: float,
     price: float,
+    check: bool,
 ):
     """
     Create a transaction with automatic FIFO or AVERAGE COST for a commodity.\r
@@ -221,10 +249,11 @@ def sell(
             revenue_account=revenue_account,
             comm_account=commodity_account,
             value=value,
+            check=check,
         )
         click.echo(sell_avg)
     else:
-        sell_fifo = get_sell_lots(adj_txns, date, quantity)
+        sell_fifo = get_sell_lots(adj_txns, date, quantity, check)
         txn_print = txn2hl(
             txns=sell_fifo,
             date=date,
@@ -247,7 +276,11 @@ def sell(
     help="Inform the journal file path. If \"-\", read from stdin. Without this flag read from $LEDGER_FILE or ~/.hledger.journal in this order  or '-f-'.",
 )
 @click.option(
-    "-g", "--avg-cost", is_flag=True, help='Change cost method to "average cost"'
+    "-g",
+    "--avg-cost",
+    is_flag=True,
+    default=default_fn_bool("HLEDGER_LOTS_AVG_COST", False),
+    help='Change cost method to "average cost"". Can be set with env HLEDGER_LOTS_IS_AVG_COST=true|false. Default to false',
 )
 @click.option(
     "-o",
@@ -260,14 +293,21 @@ def sell(
     "-n",
     "--no-desc",
     type=click.STRING,
+    default=lambda: os.environ.get("HLEDGER_NO_DESC", None),
     prompt=False,
-    help="Description to be filtered out from calculation. Needed when closing journal with '--show-costs' option. Works like: not:desc:<value>. Will not be prompted if absent. If closed with default description, the value of this option should be: 'opening|closing balances'",
+    help="Description to be filtered out from calculation. Needed when closing journal with '--show-costs' option. Works like: not:desc:<value>. Will not be prompted if absent. If closed with default description, the value of this option should be: 'opening|closing balances'. Can be set with env HLEDGER_LOTS_NO_DESC",
+)
+@click.option(
+    "--check/--no-check",
+    default=default_fn_bool("HLEDGER_LOTS_CHECK", False),
+    help="Enable/Disable check on the commodities previous transactions to ensure it is following the choosen method. Can be set with env HLEDGER_LOTS_CHECK=tru|false. Default to false. Inthe future it will default to true",
 )
 def list_commodities(
     file: Tuple[str, ...],
     avg_cost: bool,
     output_format: str,
     no_desc: Literal["plain", "pretty", "csv"],
+    check: bool,
 ):
     """
     List indicators for all your commodities in a tabular format sorted from higher to lower **XIRR**. It is advised to use full-screen of the terminal. See the docs for a list of indicators and output examples.
@@ -278,7 +318,11 @@ def list_commodities(
     journals = file or get_default_file()
     lots_info = AllInfo(journals, no_desc)
 
-    lots_info = AllAvgInfo(file, no_desc) if avg_cost else AllFifoInfo(file, no_desc)
+    lots_info = (
+        AllAvgInfo(file, no_desc, check)
+        if avg_cost
+        else AllFifoInfo(file, no_desc, check)
+    )
 
     if output_format == "pretty":
         table = lots_info.infos_table("mixed_grid")

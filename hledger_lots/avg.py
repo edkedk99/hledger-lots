@@ -1,10 +1,11 @@
 import subprocess
 from dataclasses import dataclass
 from datetime import date, datetime
+from decimal import Decimal
 from typing import List, Optional
 
 from . import checks
-from .lib import AdjustedTxn, get_xirr
+from .lib import AdjustedTxn, CostMethodError, get_xirr
 
 
 @dataclass
@@ -15,8 +16,24 @@ class AvgCost:
     avg_cost: float = 0
 
 
+def check_sell(sell: AdjustedTxn, avg_cost: float, check: bool):
+    if not check:
+        return
+
+    decimals_price = Decimal(str(sell.price)).as_tuple().exponent
+    decimals_avg = Decimal(str(avg_cost)).as_tuple().exponent
+    if type(decimals_price) == int and type(decimals_avg) == int:
+        decimals = min(abs(decimals_price), abs(decimals_avg))
+    else:
+        raise ValueError("Not a decimal")
+
+    if abs(sell.price - avg_cost) > 10 ** (-decimals):
+        raise CostMethodError(sell, avg_cost, sell.base_cur)
+    pass
+
+
 def get_avg_cost(
-    txns: List[AdjustedTxn], until: Optional[date] = None
+    txns: List[AdjustedTxn], check: bool, until: Optional[date] = None
 ) -> List[AvgCost]:
     if until:
         included_txns = [
@@ -41,6 +58,7 @@ def get_avg_cost(
         if txn.qtty >= 0:
             total_amount += txn.qtty * txn.price
         else:
+            check_sell(txn, avg_cost, check)
             total_amount += txn.qtty * avg_cost
 
         avg_cost = total_amount / total_qtty if total_qtty != 0 else 0
@@ -58,13 +76,14 @@ def avg_sell(
     revenue_account: str,
     comm_account: str,
     value: float,
+    check: bool,
 ):
     checks.check_short_sell_current(txns, qtty)
     checks.check_base_currency(txns)
     checks.check_available(txns, comm_account, qtty)
 
     sell_date = datetime.strptime(date, "%Y-%m-%d").date()
-    avg_cost = get_avg_cost(txns, sell_date)
+    avg_cost = get_avg_cost(txns, check)
     cost = avg_cost[-1].avg_cost
 
     base_curr = txns[0].base_cur

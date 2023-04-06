@@ -6,18 +6,15 @@ from .info import AllInfo, Info, LotsInfo
 
 
 class AvgInfo(Info):
-    def __init__(
-        self,
-        journals: Tuple[str, ...],
-        commodity: str,
-    ):
+    def __init__(self, journals: Tuple[str, ...], commodity: str, check: bool):
         super().__init__(journals, commodity)
+        self.check = check
 
     @property
     def info(self):
         commodity = self.commodity
         cur = self.txns[0].base_cur
-        avg_lots = get_avg_cost(self.txns)
+        avg_lots = get_avg_cost(self.txns, self.check)
         qtty = avg_lots[-1].total_qtty
         amount = avg_lots[-1].total_amount
         avg_cost = avg_lots[-1].avg_cost
@@ -58,11 +55,12 @@ class AvgInfo(Info):
 
 
 class AllAvgInfo(AllInfo):
-    def __init__(self, journals: Tuple[str, ...], no_desc: str):
+    def __init__(self, journals: Tuple[str, ...], no_desc: str, check: bool):
         super().__init__(journals, no_desc)
+        self.check = check
 
     def get_info(self, commodity: str):
-        avg_obj = AvgInfo(self.journals, commodity)
+        avg_obj = AvgInfo(self.journals, commodity, self.check)
         if len(avg_obj.txns) == 0:
             return
         else:

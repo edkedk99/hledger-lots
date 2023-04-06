@@ -105,3 +105,13 @@ AAPL,USD,8,41.10,5.1375,6.2000,49.60,8.50,2023-07-01,46.1056%
 BRL,USD,55,10.00,0.1818,,,,,
 GOOG,USD,3,57.00,19.0000,,,,,
 ```
+
+## --check/no-check
+
+The error below was raised for a sale transaction generated using *AVERAGE COST* after trying to use the *view* command not setting "--avg-cost", so *FIFO* was used. This command raised a *CostMethodError* because the cost was not the one expected:
+
+
+> hledger_lots -f test.journal view -c AAPL --check
+
+>*hledger_lots.lib.CostMethodError: Error in sale AdjustedTxn(date='2023-03-10', price=1.3066666667, base_cur='BRL', qtty=-15, acct='Ativo:Acoes:AAPL'). Correct price should be 1.2 in currency BRL*
+

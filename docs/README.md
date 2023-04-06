@@ -17,6 +17,8 @@ When using this package, you don't need to create lots as subaccounts or tag, ju
 
 It also generate lots reports so the user can understand his situation with a commodity and check the correctness of the generated sell transaction.
 
+To verify your transaction, this package can also check if your past sale has the correct cost.
+
 ## Documentation
 
 Documentation with usage information can be found [here](https://edkedk99.github.io/hledger-lots/)
@@ -77,6 +79,12 @@ For commodities with price directives on a date after the last purchase, you wil
 The sale transaction gives you the calculated **xirr** as tag, which is the internal rate of return of an investment based on a specified series of irregularly spaced cash flows. This value is annual percentage rate following the 30/360US day count convention. It is a good metric to compare the investment return with a benchmark like the S&P or the T-Bill, for example.
 
 Note the benchmark can use another day count convention, so this comparison may not be 100% precise. This app may in the future offer others day count convention for **xirr** calculation.
+
+## Checks
+
+It is recommended to use the option *--check* to ensure you past selling transaction has the correct cost according to the choosen cost method. It can be enabled by setting the environment variable **HLEDGER_LOTS_CHECK** to "true". It can be disabled with the option *--no-check* or setting the environment variable **HLEDGER_LOTS_CHECK** to "false".
+
+At the moment the dafault is set to "false", but expect it to be turned to "true" in future releases.
 
 ## Limitations
 
