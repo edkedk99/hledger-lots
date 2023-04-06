@@ -7,7 +7,7 @@ version := $(call get_value,version)
 vermin := 3.8
 wheel := $(pkg_name)-$(version)-py3-none-any.whl
 
-test_docs := pytest --cov=hledger_fifo tests/ --cov-report=html:docs/test_coverage && \
+test_docs := pytest --cov=hledger_lots tests/ --cov-report=html:docs/test_coverage && \
 	mkdir -p docs/unit_tests && \
 	pytest --html=docs/unit_tests/index.html
 

@@ -209,7 +209,7 @@ def sell(
     value = quantity * price
 
     if avg_cost and not commodity_account:
-        commodity_account = input("Commodity account")
+        commodity_account = input("Commodity account: ")
 
     if avg_cost:
         sell_avg = avg_sell(

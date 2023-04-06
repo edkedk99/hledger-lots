@@ -9,13 +9,14 @@ nav:
     - Home: README.md
     - Usage: usage.md
     - Output examples: output.md
-    - Test Coverage: /hledger-fifo/test_coverage
-    - Unit tests: /hledger-fifo/unit_tests
+    - Test Coverage: /hledger_lots/test_coverage/
+    - Unit tests: /hledger-lots/unit_tests
 
 markdown_extensions:
   - attr_list
   - mkdocs-click
   - toc:
         permalink: "#"
+
 
 

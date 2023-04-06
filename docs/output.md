@@ -1,7 +1,7 @@
 # Output examples
 ## sell
 
-Besides the transaction, constructed according to *FIFO* without any manual intervention, you have as tags the quantity and price sold, the average cost using *FIFO* and the *xirr* of the transaction, as explained [here](README.md#xirr) 
+Besides the transaction, constructed according to *FIFO* or *AVERAGE COST* without any manual intervention, you have as tags the quantity and price sold, the average cost using *FIFO* and the *xirr* of the transaction, as explained [here](README.md#xirr) 
 
 ```txt
 2023-04-01 Sold AAPL
@@ -13,7 +13,7 @@ Besides the transaction, constructed according to *FIFO* without any manual inte
     Revenue:Capital Gain              -8.30 USD
 ```
 
-## lots
+## view
 
 ### FIFO method
 ```txt

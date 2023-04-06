@@ -66,7 +66,6 @@ def avg_sell(
     sell_date = datetime.strptime(date, "%Y-%m-%d").date()
     avg_cost = get_avg_cost(txns, sell_date)
     cost = avg_cost[-1].avg_cost
-    last_avg_cost = avg_cost[-1]
 
     base_curr = txns[0].base_cur
     price = value / qtty
