@@ -63,6 +63,8 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#xirr">XIRR</a>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#checks">Checks</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#limitations">Limitations</a>
     </li>
     </ul>
@@ -77,11 +79,11 @@
                 </li>
               </ul>
               <ul>
-                <li class="toctree-l1"><a class="" href="/hledger-fifo/test_coverage">Test Coverage</a>
+                <li class="toctree-l1"><a class="" href="/hledger_lots/test_coverage/">Test Coverage</a>
                 </li>
               </ul>
               <ul>
-                <li class="toctree-l1"><a class="" href="/hledger-fifo/unit_tests">Unit tests</a>
+                <li class="toctree-l1"><a class="" href="/hledger-lots/unit_tests">Unit tests</a>
                 </li>
               </ul>
       </div>
@@ -120,6 +122,7 @@
 <p>This package create a sale transaction according to information provided by the user and traverse the journal file to determine what quantity and lot prices should be used and generate a valid hledger transaction to be appended to the journal with additional helpful calculations as comment tags.</p>
 <p>When using this package, you don't need to create lots as subaccounts or tag, just add a purchase transaction as usual and when there is a sale, <em>hledger-lots</em> will generate the correct postings adding the cost for you, so you don't need to bother looking for this information.</p>
 <p>It also generate lots reports so the user can understand his situation with a commodity and check the correctness of the generated sell transaction.</p>
+<p>To verify your transaction, this package can also check if your past sale has the correct cost.</p>
 <h2 id="documentation">Documentation<a class="headerlink" href="#documentation" title="Permanent link">#</a></h2>
 <p>Documentation with usage information can be found <a href="https://edkedk99.github.io/hledger-lots/">here</a></p>
 <h2 id="requirements">Requirements<a class="headerlink" href="#requirements" title="Permanent link">#</a></h2>
@@ -179,6 +182,9 @@
 <h2 id="xirr">XIRR<a class="headerlink" href="#xirr" title="Permanent link">#</a></h2>
 <p>The sale transaction gives you the calculated <strong>xirr</strong> as tag, which is the internal rate of return of an investment based on a specified series of irregularly spaced cash flows. This value is annual percentage rate following the 30/360US day count convention. It is a good metric to compare the investment return with a benchmark like the S&amp;P or the T-Bill, for example.</p>
 <p>Note the benchmark can use another day count convention, so this comparison may not be 100% precise. This app may in the future offer others day count convention for <strong>xirr</strong> calculation.</p>
+<h2 id="checks">Checks<a class="headerlink" href="#checks" title="Permanent link">#</a></h2>
+<p>It is recommended to use the option <em>--check</em> to ensure you past selling transaction has the correct cost according to the choosen cost method. It can be enabled by setting the environment variable <strong>HLEDGER_LOTS_CHECK</strong> to "true". It can be disabled with the option <em>--no-check</em> or setting the environment variable <strong>HLEDGER_LOTS_CHECK</strong> to "false".</p>
+<p>At the moment the dafault is set to "false", but expect it to be turned to "true" in future releases.</p>
 <h2 id="limitations">Limitations<a class="headerlink" href="#limitations" title="Permanent link">#</a></h2>
 <ul>
 <li>No <em>short-selling</em></li>
@@ -235,5 +241,5 @@
 
 <!--
 MkDocs version : 1.4.2
-Build Date UTC : 2023-04-03 17:01:02.191358+00:00
+Build Date UTC : 2023-04-06 18:18:34.411451+00:00
 -->

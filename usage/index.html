@@ -53,6 +53,8 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#hledger-lots-view">view</a>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#environment-variables">Environment Variables</a>
+    </li>
     </ul>
                 </li>
               </ul>
@@ -61,11 +63,11 @@
                 </li>
               </ul>
               <ul>
-                <li class="toctree-l1"><a class="" href="/hledger-fifo/test_coverage">Test Coverage</a>
+                <li class="toctree-l1"><a class="" href="/hledger_lots/test_coverage/">Test Coverage</a>
                 </li>
               </ul>
               <ul>
-                <li class="toctree-l1"><a class="" href="/hledger-fifo/unit_tests">Unit tests</a>
+                <li class="toctree-l1"><a class="" href="/hledger-lots/unit_tests">Unit tests</a>
                 </li>
               </ul>
       </div>
@@ -161,8 +163,8 @@
 <tr>
 <td><code>-g</code>, <code>--avg-cost</code></td>
 <td>boolean</td>
-<td>Change cost method to "average cost"</td>
-<td><code>False</code></td>
+<td>Change cost method to "average cost"". Can be set with env HLEDGER_LOTS_IS_AVG_COST=true</td>
+<td>false. Default to false</td>
 </tr>
 <tr>
 <td><code>-o</code>, <code>--output-format</code></td>
@@ -174,7 +176,13 @@
 <td><code>-n</code>, <code>--no-desc</code></td>
 <td>text</td>
 <td>Description to be filtered out from calculation. Needed when closing journal with '--show-costs' option. Works like: not:desc:<value>. Will not be prompted if absent. If closed with default description, the value of this option should be: 'opening</td>
-<td>closing balances'</td>
+<td>closing balances'. Can be set with env HLEDGER_LOTS_NO_DESC</td>
+</tr>
+<tr>
+<td><code>--check</code> / <code>--no-check</code></td>
+<td>boolean</td>
+<td>Enable/Disable check on the commodities previous transactions to ensure it is following the choosen method. Can be set with env HLEDGER_LOTS_CHECK=tru</td>
+<td>false. Default to false. Inthe future it will default to true</td>
 </tr>
 <tr>
 <td><code>--help</code></td>
@@ -223,8 +231,8 @@
 <tr>
 <td><code>-g</code>, <code>--avg-cost</code></td>
 <td>boolean</td>
-<td>Change cost method to "average cost"</td>
-<td><code>False</code></td>
+<td>Change cost method to "average cost"". Can be set with env HLEDGER_LOTS_IS_AVG_COST=true</td>
+<td>false. Default to false</td>
 </tr>
 <tr>
 <td><code>-c</code>, <code>--commodity</code></td>
@@ -236,7 +244,13 @@
 <td><code>-n</code>, <code>--no-desc</code></td>
 <td>text</td>
 <td>Description to be filtered out from calculation. Needed when closing journal with '--show-costs' option. Works like: not:desc:<value>. Will not be prompted if absent. If closed with default description, the value of this option should be: 'opening</td>
-<td>closing balances'</td>
+<td>closing balances'. Can be set with env HLEDGER_LOTS_NO_DESC</td>
+</tr>
+<tr>
+<td><code>--check</code> / <code>--no-check</code></td>
+<td>boolean</td>
+<td>Enable/Disable check on the commodities previous transactions to ensure it is following the choosen method. Can be set with env HLEDGER_LOTS_CHECK=tru</td>
+<td>false. Default to false. Inthe future it will default to true</td>
 </tr>
 <tr>
 <td><code>-s</code>, <code>--commodity-account</code></td>
@@ -310,8 +324,8 @@
 <tr>
 <td><code>-g</code>, <code>--avg-cost</code></td>
 <td>boolean</td>
-<td>Change cost method to "average cost"</td>
-<td><code>False</code></td>
+<td>Change cost method to "average cost"". Can be set with env HLEDGER_LOTS_IS_AVG_COST=true</td>
+<td>false. Default to false</td>
 </tr>
 <tr>
 <td><code>-c</code>, <code>--commodity</code></td>
@@ -323,13 +337,51 @@
 <td><code>-n</code>, <code>--no-desc</code></td>
 <td>text</td>
 <td>Description to be filtered out from calculation. Needed when closing journal with '--show-costs' option. Works like: not:desc:<value>. Will not be prompted if absent. If closed with default description, the value of this option should be: 'opening</td>
-<td>closing balances'</td>
+<td>closing balances'. Can be set with env HLEDGER_LOTS_NO_DESC</td>
+</tr>
+<tr>
+<td><code>--check</code> / <code>--no-check</code></td>
+<td>boolean</td>
+<td>Enable/Disable check on the commodities previous transactions to ensure it is following the choosen method. Can be set with env HLEDGER_LOTS_CHECK=tru</td>
+<td>false. Default to false. Inthe future it will default to true</td>
 </tr>
 <tr>
 <td><code>--help</code></td>
 <td>boolean</td>
 <td>Show this message and exit.</td>
 <td><code>False</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="environment-variables">Environment Variables<a class="headerlink" href="#environment-variables" title="Permanent link">#</a></h2>
+<p>Some options are suposed to be constant for your workflow. They can be set as <em>environment variables</em>. See below available options:</p>
+<table>
+<thead>
+<tr>
+<th>env</th>
+<th>equivalent option</th>
+<th>content</th>
+<th>default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>HLEDGER_LOTS_AVG_COST</td>
+<td>--avg-cost</td>
+<td>true|false</td>
+<td>false</td>
+</tr>
+<tr>
+<td>HLEDGER_LOTS_CHECK</td>
+<td>--check/--no-check</td>
+<td>true|false</td>
+<td>false</td>
+</tr>
+<tr>
+<td>HLEDGER_NO_DESC</td>
+<td>--no-desc</td>
+<td>&lt;str></td>
+<td>None</td>
 </tr>
 </tbody>
 </table>
