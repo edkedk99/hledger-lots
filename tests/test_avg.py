@@ -5,7 +5,7 @@ from . import lots_data
 
 class TestGetAvgCost:
     def test_empty(self):
-        assert get_avg_cost([], date(2022, 1, 1)) == []
+        assert get_avg_cost([], False, date(2022, 1, 1)) == []
 
     def test_only_buying_after_some(self):
         txns = lots_data.txns_only_buying
@@ -33,7 +33,7 @@ class TestGetAvgCost:
             ),
         ]
 
-        assert get_avg_cost(txns, date(2022, 1, 4)) == expected
+        assert get_avg_cost(txns, False,date(2022, 1, 4)) == expected
 
     def test_only_buying_after_all(self):
         txns = lots_data.txns_only_buying
@@ -67,7 +67,7 @@ class TestGetAvgCost:
             ),
         ]
 
-        assert get_avg_cost(txns) == expected
+        assert get_avg_cost(txns, False) == expected
 
     def test_with_sell(self):
         txns = lots_data.txns_qtty_never_zero
@@ -119,11 +119,11 @@ class TestGetAvgCost:
             ),
         ]
 
-        assert get_avg_cost(txns, date(2022, 1, 8)) == expected
+        assert get_avg_cost(txns, False,date(2022, 1, 8)) == expected
 
 
 class TestAvgSell:
-    def test_avg_sell(self, monkeypatch):
+    def test_avg_sell(self):
         txns = lots_data.txns_only_buying
         test = avg_sell(
             txns=txns,
@@ -134,6 +134,7 @@ class TestAvgSell:
             revenue_account="Revenue:Capital Gain",
             comm_account="Acct1",
             value=1000,
+            check=False
         )
 
         expected = """2022-02-01 Sold AAPL

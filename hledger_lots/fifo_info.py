@@ -9,14 +9,11 @@ from .lib import get_avg_fifo
 
 
 class FifoInfo(Info):
-    def __init__(
-        self,
-        journals: Tuple[str, ...],
-        commodity: str,
-    ):
+    def __init__(self, journals: Tuple[str, ...], commodity: str, check: bool):
         super().__init__(journals, commodity)
+        self.check = check
 
-        self.lots = get_lots(self.txns)
+        self.lots = get_lots(self.txns, check)
         self.last_buy_date = self.lots[-1].date if len(self.lots) > 0 else None
 
     @property
@@ -70,18 +67,19 @@ class FifoInfo(Info):
 
 
 class AllFifoInfo(AllInfo):
-    def __init__(self, journals: Tuple[str, ...], no_desc: str):
+    def __init__(self, journals: Tuple[str, ...], no_desc: str, check: bool):
         super().__init__(journals, no_desc)
+        self.check = check
 
     def get_info(self, commodity: str):
         txns = hledger2txn(self.journals, commodity, self.no_desc)
         try:
-            lots = get_lots(txns)
+            lots = get_lots(txns, self.check)
         except MultipleBaseCurrencies:
             return None
 
         if len(lots) > 0:
-            lot_info = FifoInfo(self.journals, commodity).info
+            lot_info = FifoInfo(self.journals, commodity, self.check).info
             return lot_info
 
     @property

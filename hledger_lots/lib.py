@@ -1,3 +1,4 @@
+import os
 from dataclasses import asdict, dataclass
 from datetime import date
 from typing import List, Optional
@@ -18,6 +19,12 @@ class AdjustedTxn:
 @dataclass
 class Txn(AdjustedTxn):
     type: str
+
+
+class CostMethodError(Exception):
+    def __init__(self, sell: AdjustedTxn, price: float, base_cur: str) -> None:
+        self.message = f"Error in sale {sell}. Correct price should be {price} in currency {base_cur}"
+        super().__init__(self.message)
 
 
 def get_avg_fifo(txns: List[AdjustedTxn]):
@@ -57,3 +64,13 @@ def dt_list2table(dt_list: List, tablefmt: str = "simple"):
         tablefmt=tablefmt,
     )
     return table
+
+
+def default_fn_bool(env_name: str, default: bool):
+    env = os.environ.get(env_name, None)
+    if env == "true":
+        return True
+    elif env == "False":
+        return False
+    else:
+        return default

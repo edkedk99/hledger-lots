@@ -18,7 +18,7 @@ build-backend = "setuptools.build_meta"
 find = {}  # Scan the project directory with the default parameters
 
 [metadata]
-description = "..."
+description = "Automatic lots using FIFO or AVERAGE COST for transactions using commodities in hledger"
 keyword = ["hledger","PTA", "investments", "accounting", "lots"]
 classifiers = [""]
 author = "Eduardo"
@@ -26,7 +26,7 @@ author_email = "edkedk99@hotmail.com"
 
 [project]
 name = "hledger_lots"
-version = "0.1.1"
+version = "0.1.2"
 readme= "docs/README.md"
 requires-python = ">=3.8"
 license = {text = "MIT License"}

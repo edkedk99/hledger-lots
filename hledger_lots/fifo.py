@@ -4,10 +4,25 @@ from datetime import datetime
 from typing import List
 
 from . import checks
-from .lib import AdjustedTxn, get_avg_fifo, get_xirr
+from .lib import AdjustedTxn, CostMethodError, get_avg_fifo, get_xirr
 
 
-def get_lots(txns: List[AdjustedTxn]) -> List[AdjustedTxn]:
+def check_sell(sell: AdjustedTxn, previous_buys: List[AdjustedTxn], check: bool):
+    if not check:
+        return
+
+    diff_zero = [
+        previous_buy for previous_buy in previous_buys if previous_buy.qtty != 0
+    ]
+    if len(diff_zero) == 0:
+        return
+
+    previous_buy = diff_zero[0]
+    if sell.price != previous_buy.price or sell.base_cur != previous_buy.base_cur:
+        raise CostMethodError(sell, previous_buy.price, previous_buy.base_cur)
+
+
+def get_lots(txns: List[AdjustedTxn], check: bool) -> List[AdjustedTxn]:
     local_txns = copy.deepcopy(txns)
     checks.check_base_currency(txns)
 
@@ -24,12 +39,14 @@ def get_lots(txns: List[AdjustedTxn]) -> List[AdjustedTxn]:
         i = 0
         while i < len(previous_buys) and sell_qtty > 0:
             previous_buy = previous_buys[i]
+            check_sell(sell, previous_buys, check)
             if sell_qtty >= previous_buy.qtty:
                 sell_qtty -= previous_buy.qtty
                 previous_buys[i].qtty = 0
             else:
                 previous_buys[i].qtty -= sell_qtty
                 sell_qtty = 0
+
             i += 1
 
         buys_lot = [*previous_buys, *later_buys]
@@ -37,9 +54,11 @@ def get_lots(txns: List[AdjustedTxn]) -> List[AdjustedTxn]:
     return buys_lot
 
 
-def get_sell_lots(lots: List[AdjustedTxn], sell_date: str, sell_qtty: float):
+def get_sell_lots(
+    lots: List[AdjustedTxn], sell_date: str, sell_qtty: float, check: bool
+):
     checks.check_short_sell_current(lots, sell_qtty)
-    buy_lots = get_lots(lots)
+    buy_lots = get_lots(lots, check)
     previous_buys = [lot for lot in buy_lots.copy() if lot.date <= sell_date]
 
     fifo_lots: List[AdjustedTxn] = []
