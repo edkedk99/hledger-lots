@@ -77,7 +77,7 @@ def cli(file: str):  # pyright:ignore
     "-n",
     "--no-desc",
     type=click.STRING,
-    default=lambda: os.environ.get("HLEDGER_NO_DESC", None),
+    default=lambda: os.environ.get("HLEDGER_LOTS_NO_DESC", None),
     prompt=False,
     help="Description to be filtered out from calculation. Needed when closing journal with '--show-costs' option. Works like: not:desc:<value>. Will not be prompted if absent. If closed with default description, the value of this option should be: 'opening|closing balances'. Can be set with env HLEDGER_LOTS_NO_DESC",
 )
@@ -149,7 +149,7 @@ def view(
     "-n",
     "--no-desc",
     type=click.STRING,
-    default=lambda: os.environ.get("HLEDGER_NO_DESC", None),
+    default=lambda: os.environ.get("HLEDGER_LOTS_NO_DESC", None),
     prompt=False,
     help="Description to be filtered out from calculation. Needed when closing journal with '--show-costs' option. Works like: not:desc:<value>. Will not be prompted if absent. If closed with default description, the value of this option should be: 'opening|closing balances'. Can be set with env HLEDGER_LOTS_NO_DESC",
 )
@@ -293,7 +293,7 @@ def sell(
     "-n",
     "--no-desc",
     type=click.STRING,
-    default=lambda: os.environ.get("HLEDGER_NO_DESC", None),
+    default=lambda: os.environ.get("HLEDGER_LOTS_NO_DESC", None),
     prompt=False,
     help="Description to be filtered out from calculation. Needed when closing journal with '--show-costs' option. Works like: not:desc:<value>. Will not be prompted if absent. If closed with default description, the value of this option should be: 'opening|closing balances'. Can be set with env HLEDGER_LOTS_NO_DESC",
 )
