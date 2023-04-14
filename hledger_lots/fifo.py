@@ -91,6 +91,7 @@ def txn2hl(
     cash_account: str,
     revenue_account: str,
     value: float,
+    sell_cmd: str,
 ):
     base_curr = txns[0].base_cur
     avg_cost = get_avg_fifo(txns)
@@ -103,6 +104,7 @@ def txn2hl(
 {date} Sold {cur}
     ; commodity:{cur}, qtty:{sum_qtty:,.2f}, price:{price:,.2f}
     ; avg_fifo_cost:{avg_cost:,.4f}, xirr:{xirr:.2f}% annual percent rate 30/360US
+    ; command:{sell_cmd}
     {cash_account}  {value:.2f} {base_curr}
 """
 

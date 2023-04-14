@@ -5,7 +5,7 @@ from decimal import Decimal
 from typing import List, Optional
 
 from . import checks
-from .lib import AdjustedTxn, CostMethodError, get_xirr
+from .lib import AdjustedTxn, CostMethodError, get_sell_comm, get_xirr
 
 
 @dataclass
@@ -77,6 +77,7 @@ def avg_sell(
     comm_account: str,
     value: float,
     check: bool,
+    sell_cmd: str,
 ):
     checks.check_short_sell_current(txns, qtty)
     checks.check_base_currency(txns)
@@ -93,6 +94,7 @@ def avg_sell(
     txn_hl = f"""{date} Sold {cur}
     ; commodity:{cur}, qtty:{qtty:,.2f}, price:{price:,.2f}
     ; xirr:{xirr:.2f}% annual percent rate 30/360US
+    ; command:{sell_cmd}
     {cash_account}    {value:.2f} {base_curr}
     {comm_account}    {qtty * -1} {cur} @ {cost} {base_curr}
     {revenue_account}"""

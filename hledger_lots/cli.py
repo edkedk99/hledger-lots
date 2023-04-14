@@ -1,3 +1,4 @@
+import functools
 import os
 from typing import Literal, Tuple
 
@@ -10,7 +11,7 @@ from .fifo_info import AllFifoInfo, FifoInfo
 from .files import get_default_file, get_file_path
 from .hl import hledger2txn
 from .info import AllInfo
-from .lib import default_fn_bool, dt_list2table
+from .lib import default_fn_bool, dt_list2table, get_sell_comm
 
 CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 
@@ -24,7 +25,7 @@ click.rich_click.STYLE_ERRORS_SUGGESTION = "magenta italic"
 click.rich_click.ERRORS_SUGGESTION = (
     "Try running the '--help' flag for more information."
 )
-click.rich_click.ERRORS_EPILOGUE = "To find out more, visit [link=https://github.com/edkedk99/hledger-fifo]https://github.com/edkedk99/hledger-fifo[/link]"
+click.rich_click.ERRORS_EPILOGUE = "To find out more, visit [link=https://github.com/edkedk99/hledger-lots]https://github.com/edkedk99/hledger-lots[/link]"
 click.rich_click.STYLE_OPTIONS_TABLE_LEADING = 1
 click.rich_click.STYLE_OPTIONS_TABLE_BOX = "SIMPLE"
 click.rich_click.STYLE_OPTIONS_PANEL_BORDER = "dim"  # Possibly conceal
@@ -236,10 +237,23 @@ def sell(
     adj_txns = hledger2txn(journals, commodity, no_desc)
     value = quantity * price
 
+    sell_comm_fn = functools.partial(
+        get_sell_comm,
+        commodity,
+        no_desc,
+        commodity_account,
+        cash_account,
+        revenue_account,
+        date,
+        quantity,
+        price,
+    )
+
     if avg_cost and not commodity_account:
         commodity_account = input("Commodity account: ")
 
     if avg_cost:
+        sell_cmd = sell_comm_fn(True)
         sell_avg = avg_sell(
             txns=adj_txns,
             date=date,
@@ -250,10 +264,12 @@ def sell(
             comm_account=commodity_account,
             value=value,
             check=check,
+            sell_cmd=sell_cmd,
         )
         click.echo(sell_avg)
     else:
         sell_fifo = get_sell_lots(adj_txns, date, quantity, check)
+        sell_cmd = sell_comm_fn(False)
         txn_print = txn2hl(
             txns=sell_fifo,
             date=date,
@@ -261,6 +277,7 @@ def sell(
             cash_account=cash_account,
             revenue_account=revenue_account,
             value=value,
+            sell_cmd=sell_cmd,
         )
         click.echo(txn_print)
 

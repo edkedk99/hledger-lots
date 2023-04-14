@@ -1,10 +1,13 @@
 import os
+import shlex
 from dataclasses import asdict, dataclass
 from datetime import date
 from typing import List, Optional
 
 from pyxirr import DayCount, xirr
 from tabulate import tabulate
+
+from .files import get_files_comm
 
 
 @dataclass
@@ -74,3 +77,43 @@ def default_fn_bool(env_name: str, default: bool):
         return False
     else:
         return default
+
+
+def get_sell_comm(
+    commodity: str,
+    no_desc: str,
+    commodity_account: str,
+    cash_account: str,
+    revenue_account: str,
+    date: str,
+    quantity: float,
+    price: float,
+    avg_cost: bool,
+):
+
+    avg_comm = ["-g"] if avg_cost else []
+    no_desc_comm = ["n", no_desc] if no_desc else []
+
+    comm = [
+        "hledger-lots",
+        "sell",
+        *avg_comm,
+        *no_desc_comm,
+        "-c",
+        commodity,
+        "-s",
+        commodity_account,
+        "-a",
+        cash_account,
+        "-r",
+        revenue_account,
+        "-d",
+        date,
+        "-q",
+        str(quantity),
+        "-p",
+        str(price),
+    ]
+    comm_str: str = shlex.join(comm)
+
+    return comm_str
