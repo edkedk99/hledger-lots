@@ -37,7 +37,7 @@ pip install --upgrade hledger-lots
 ## Workflow
 
 1. Add purchase transaction as normal. **Don't bother creating subaccounts or tags with unique lot name**. See the some examples [here](examples/test2022.journal)
-2. When you sell, use the command [sell](usage/#sell) instead of adding the transactions manually. Hledger-fifo will generate the correct transaction and print to stdout so you can add to the journal if everything is correct. *See transaction tags with interesting indicators about the current trade*
+2. When you sell, use the command [sell](usage/#sell) instead of adding the transactions manually. Hledger-lots will generate the correct transaction and print to stdout so you can add to the journal if everything is correct. *See transaction tags with interesting indicators about the current trade*
 
 > By default the sale is created using *FIFO* method. Use the option flag "--avg-cost" to change it to *Average Cost*
    

@@ -45,7 +45,7 @@ def cli(file: str):  # pyright:ignore
     """
     Commands to apply FIFO(first-in-first-out) or AVERAGE COST accounting principles without manual management of lots. Useful for transactions involving buying and selling foreign currencies or stocks.
 
-    To find out more, visit [https://github.com/edkedk99/hledger-fifo](https://github.com/edkedk99/hledger-fifo)
+    To find out more, visit [https://github.com/edkedk99/hledger-lots](https://github.com/edkedk99/hledger-lots)
     """
 
 
