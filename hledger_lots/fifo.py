@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import List
 
 from . import checks
-from .lib import AdjustedTxn, CostMethodError, get_avg_fifo, get_xirr
+from .lib import AdjustedTxn, CostMethodError, adjust_commodity, get_avg_fifo, get_xirr
 
 
 def check_sell(sell: AdjustedTxn, previous_buys: List[AdjustedTxn], check: bool):
@@ -93,6 +93,7 @@ def txn2hl(
     value: float,
     sell_cmd: str,
 ):
+    adj_comm = adjust_commodity(cur)
     base_curr = txns[0].base_cur
     avg_cost = get_avg_fifo(txns)
     sum_qtty = sum(txn.qtty for txn in txns)
@@ -101,18 +102,22 @@ def txn2hl(
     xirr = get_xirr(price, dt, txns) or 0 * 100
 
     txn_hl = f"""
-{date} Sold {cur}
+{date} Sold {cur}  ; cost_method:fifo
     ; commodity:{cur}, qtty:{sum_qtty:,.2f}, price:{price:,.2f}
-    ; avg_fifo_cost:{avg_cost:,.4f}, xirr:{xirr:.2f}% annual percent rate 30/360US
+    ; avg_cost:{avg_cost:,.4f}, xirr:{xirr:.2f}% annual percent rate 30/360US
     ; command:{sell_cmd}
     {cash_account}  {value:.2f} {base_curr}
 """
 
     for txn in txns:
-        txn_hl += f"    {txn.acct}    {txn.qtty * -1} {cur} @ {txn.price} {base_curr}  ; buy_date:{txn.date}, base_cur:{txn.base_cur}\n"
+        txn_hl += f"    {txn.acct}    {txn.qtty * -1} {adj_comm} @ {txn.price} {base_curr}  ; buy_date:{txn.date}, base_cur:{txn.base_cur}\n"
 
     txn_hl += f"    {revenue_account}   "
     comm = ["hledger", "-f-", "print", "--explicit"]
-    txn_proc = subprocess.run(comm, input=txn_hl.encode(), capture_output=True)
+    txn_proc = subprocess.run(
+        comm,
+        input=txn_hl.encode(),
+        capture_output=True,
+    )
     txn_print: str = txn_proc.stdout.decode("utf8")
     return txn_print

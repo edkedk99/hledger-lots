@@ -2,3 +2,6 @@ click
 rich-click
 tabulate
 pyxirr
+yfinance
+requests
+requests-cache

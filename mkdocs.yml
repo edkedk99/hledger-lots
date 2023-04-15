@@ -8,8 +8,9 @@ theme: readthedocs
 nav:
     - Home: README.md
     - Usage: usage.md
+    - Download Market Prices: market_prices.md
     - Output examples: output.md
-    - Test Coverage: /hledger_lots/test_coverage/
+    - Test Coverage: /hledger-lots/test_coverage
     - Unit tests: /hledger-lots/unit_tests
 
 markdown_extensions:

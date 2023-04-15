@@ -1,6 +1,7 @@
 import csv
 import re
 import subprocess
+from dataclasses import dataclass
 from datetime import date, datetime
 from io import StringIO
 from typing import List, Optional, Tuple, TypedDict
@@ -9,7 +10,7 @@ from tabulate import tabulate
 
 from .files import get_files_comm
 from .hl import hledger2txn
-from .lib import get_xirr
+from .lib import adjust_commodity, get_xirr
 
 
 class LotsInfo(TypedDict):
@@ -25,6 +26,55 @@ class LotsInfo(TypedDict):
     xirr: Optional[str]
 
 
+@dataclass
+class Price:
+    date: date
+    comm: str
+    price: float
+    cur: str
+
+
+def get_last_price(files_comm: List[str], commodity: str):
+    prices_comm = [
+        "hledger",
+        *files_comm,
+        "prices",
+        f"cur:{commodity}",
+        "--infer-reverse-prices",
+    ]
+    prices_proc = subprocess.run(prices_comm, capture_output=True)
+    prices_str = prices_proc.stdout.decode("utf8")
+
+    if prices_str == "":
+        return (None, None)
+
+    prices_list = [row.split(" ", 3) for row in prices_str.split("\n") if row != ""]
+
+    date_list = [
+        (row[1], re.sub(r"[a-zA-Z]|\,|\s", "", row[3]))
+        for row in prices_list
+        if row[2] == adjust_commodity(commodity)
+    ]
+
+    if len(date_list) == 0:
+        return (None, None)
+
+    last_date_str = date_list[-1][0]
+    last_date = datetime.strptime(last_date_str, "%Y-%m-%d").date()
+    last_price = float(date_list[-1][1])
+    return (last_date, last_price)
+
+
+def get_commodities(journals: Tuple[str, ...]):
+    files_comm = get_files_comm(journals)
+    comm = ["hledger", *files_comm, "commodities"]
+    commodities_proc = subprocess.run(comm, capture_output=True)
+    commodities_str = commodities_proc.stdout.decode("utf8")
+
+    commodities_list = [com for com in commodities_str.split("\n")]
+    return commodities_list
+
+
 class Info:
     def __init__(
         self, journals: Tuple[str, ...], commodity: str, no_desc: Optional[str] = None
@@ -36,38 +86,9 @@ class Info:
 
         self.has_txn = len(self.txns) > 0
 
+        self.last_price = get_last_price(self.files_comm, commodity)
+
         self.market_date, self.market_price = self.last_price
-
-    @property
-    def last_price(self):
-        prices_comm = [
-            "hledger",
-            *self.files_comm,
-            "prices",
-            f"cur:{self.commodity}",
-            "--infer-reverse-prices",
-        ]
-        prices_proc = subprocess.run(prices_comm, capture_output=True)
-        prices_str = prices_proc.stdout.decode("utf8")
-
-        if prices_str == "":
-            return (None, None)
-
-        prices_list = [row.split(" ", 3) for row in prices_str.split("\n") if row != ""]
-
-        date_list = [
-            (row[1], re.sub(r"[a-zA-Z]|\,|\s", "", row[3]))
-            for row in prices_list
-            if row[2] == self.commodity
-        ]
-
-        if len(date_list) == 0:
-            return (None, None)
-
-        last_date_str = date_list[-1][0]
-        last_date = datetime.strptime(last_date_str, "%Y-%m-%d").date()
-        last_price = float(date_list[-1][1])
-        return (last_date, last_price)
 
     def get_lots_xirr(self, last_buy_date: date):
         if self.market_date and self.market_price and self.market_date >= last_buy_date:
@@ -102,16 +123,7 @@ class AllInfo:
     def __init__(self, journals: Tuple[str, ...], no_desc: str) -> None:
         self.journals = journals
         self.no_desc = no_desc
-
-    @property
-    def commodities(self):
-        files_comm = get_files_comm(self.journals)
-        comm = ["hledger", *files_comm, "commodities"]
-        commodities_proc = subprocess.run(comm, capture_output=True)
-        commodities_str = commodities_proc.stdout.decode("utf8")
-
-        commodities_list = [com for com in commodities_str.split("\n")]
-        return commodities_list
+        self.commodities = get_commodities(journals)
 
     def get_infos_table(self, infos: List[LotsInfo], output_format: str):
         infos_list = [info for info in infos]

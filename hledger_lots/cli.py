@@ -1,5 +1,6 @@
 import functools
 import os
+from pathlib import Path
 from typing import Literal, Tuple
 
 import rich_click as click
@@ -10,8 +11,9 @@ from .fifo import get_lots, get_sell_lots, txn2hl
 from .fifo_info import AllFifoInfo, FifoInfo
 from .files import get_default_file, get_file_path
 from .hl import hledger2txn
-from .info import AllInfo
+from .info import AllInfo, get_commodities
 from .lib import default_fn_bool, dt_list2table, get_sell_comm
+from .prices_yahoo import get_hledger_prices
 
 CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 
@@ -85,7 +87,17 @@ def cli(file: str):  # pyright:ignore
 @click.option(
     "--check/--no-check",
     default=default_fn_bool("HLEDGER_LOTS_CHECK", False),
-    help="Enable/Disable check on the commodities previous transactions to ensure it is following the choosen method. Can be set with env HLEDGER_LOTS_CHECK=tru|false. Default to false. Inthe future it will default to true",
+    help="Enable/Disable check on the commodities previous transactions to ensure it is following the choosen method. Can be set with env HLEDGER_LOTS_CHECK=true|false. Default to false. Inthe future it will default to true",
+)
+# TODO: fill help
+@click.option(
+    "-p",
+    "--append-prices-to",
+    type=click.Path(),
+    default=lambda: os.environ.get("HLEDGER_APPEND_PRICES_TO", None),
+    prompt=False,
+    required=False,
+    help="Download market price and append to this option file value. Check the doc for info on how to set it up. Can be set with env HLEDGER_APPEND_PRICES_TO",
 )
 def view(
     file: Tuple[str, ...],
@@ -93,6 +105,7 @@ def view(
     commodity: str,
     no_desc: str,
     check: bool,
+    append_prices_to: Path,
 ):
     """
     Report lots for a commodity.\r
@@ -106,6 +119,9 @@ def view(
 
     journals = file or get_default_file()
     adj_txn = hledger2txn(journals, commodity, no_desc)
+
+    if append_prices_to:
+        get_hledger_prices(file, append_prices_to)
 
     if avg_cost:
         buy_lots = get_avg_cost(adj_txn, check)
@@ -319,12 +335,22 @@ def sell(
     default=default_fn_bool("HLEDGER_LOTS_CHECK", False),
     help="Enable/Disable check on the commodities previous transactions to ensure it is following the choosen method. Can be set with env HLEDGER_LOTS_CHECK=tru|false. Default to false. Inthe future it will default to true",
 )
+@click.option(
+    "-p",
+    "--append-prices-to",
+    type=click.Path(),
+    default=lambda: os.environ.get("HLEDGER_APPEND_PRICES_TO", None),
+    prompt=False,
+    required=False,
+    help="Download market price and append to this option file value. Check the doc for info on how to set it up. Can be set with env HLEDGER_LOTS_APPEND_PRICES_TO",
+)
 def list_commodities(
     file: Tuple[str, ...],
     avg_cost: bool,
     output_format: str,
     no_desc: Literal["plain", "pretty", "csv"],
     check: bool,
+    append_prices_to: Path,
 ):
     """
     List indicators for all your commodities in a tabular format sorted from higher to lower **XIRR**. It is advised to use full-screen of the terminal. See the docs for a list of indicators and output examples.
@@ -334,6 +360,9 @@ def list_commodities(
 
     journals = file or get_default_file()
     lots_info = AllInfo(journals, no_desc)
+
+    if append_prices_to:
+        get_hledger_prices(file, append_prices_to)
 
     lots_info = (
         AllAvgInfo(file, no_desc, check)

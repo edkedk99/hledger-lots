@@ -1,4 +1,5 @@
 import os
+import re
 import shlex
 from dataclasses import asdict, dataclass
 from datetime import date
@@ -69,6 +70,12 @@ def dt_list2table(dt_list: List, tablefmt: str = "simple"):
     return table
 
 
+def adjust_commodity(comm: str):
+    has_non_word = re.search(r"\W", comm)
+    adjusted = f'"{comm}"' if has_non_word else comm
+    return adjusted
+
+
 def default_fn_bool(env_name: str, default: bool):
     env = os.environ.get(env_name, None)
     if env == "true":
@@ -90,7 +97,6 @@ def get_sell_comm(
     price: float,
     avg_cost: bool,
 ):
-
     avg_comm = ["-g"] if avg_cost else []
     no_desc_comm = ["n", no_desc] if no_desc else []
 

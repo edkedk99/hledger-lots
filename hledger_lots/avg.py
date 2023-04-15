@@ -4,8 +4,10 @@ from datetime import date, datetime
 from decimal import Decimal
 from typing import List, Optional
 
+from hledger_lots.hl import adjust_txn
+
 from . import checks
-from .lib import AdjustedTxn, CostMethodError, get_sell_comm, get_xirr
+from .lib import AdjustedTxn, CostMethodError, adjust_commodity, get_xirr
 
 
 @dataclass
@@ -79,6 +81,7 @@ def avg_sell(
     check: bool,
     sell_cmd: str,
 ):
+    adj_comm = adjust_commodity(cur)
     checks.check_short_sell_current(txns, qtty)
     checks.check_base_currency(txns)
     checks.check_available(txns, comm_account, qtty)
@@ -91,12 +94,12 @@ def avg_sell(
     price = value / qtty
     xirr = get_xirr(price, sell_date, txns) or 0 * 100
 
-    txn_hl = f"""{date} Sold {cur}
+    txn_hl = f"""{date} Sold {cur}  ; cost_method:avg_cost
     ; commodity:{cur}, qtty:{qtty:,.2f}, price:{price:,.2f}
     ; xirr:{xirr:.2f}% annual percent rate 30/360US
     ; command:{sell_cmd}
     {cash_account}    {value:.2f} {base_curr}
-    {comm_account}    {qtty * -1} {cur} @ {cost} {base_curr}
+    {comm_account}    {qtty * -1} {adj_comm} @ {cost} {base_curr}
     {revenue_account}"""
 
     comm = ["hledger", "-f-", "print", "--explicit"]

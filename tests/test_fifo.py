@@ -55,9 +55,9 @@ class TestTxn2Hl:
             self.txns, self.date, cur, self.cash_account, self.revenue_account, 160, ""
         )
 
-        expected = """2022-02-01 Sold USD
+        expected = """2022-02-01 Sold USD  ; cost_method:fifo
     ; commodity:USD, qtty:5.00, price:32.00
-    ; avg_fifo_cost:26.0000, xirr:61.42% annual percent rate 30/360US
+    ; avg_cost:26.0000, xirr:61.42% annual percent rate 30/360US
     ; command:
     Bank                 160.00 USD
     Acct1      -2.00 USD @ 35.0 USD  ; buy_date:2022-01-12, base_cur:USD
@@ -74,9 +74,9 @@ class TestTxn2Hl:
             self.txns, self.date, cur, self.cash_account, self.revenue_account, 80, ""
         )
 
-        expected = """2022-02-01 Sold USD
+        expected = """2022-02-01 Sold USD  ; cost_method:fifo
     ; commodity:USD, qtty:5.00, price:16.00
-    ; avg_fifo_cost:26.0000, xirr:-1.00% annual percent rate 30/360US
+    ; avg_cost:26.0000, xirr:-1.00% annual percent rate 30/360US
     ; command:
     Bank                  80.00 USD
     Acct1      -2.00 USD @ 35.0 USD  ; buy_date:2022-01-12, base_cur:USD

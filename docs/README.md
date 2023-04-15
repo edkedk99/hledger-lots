@@ -15,7 +15,7 @@ This package create a sale transaction according to information provided by the 
 
 When using this package, you don't need to create lots as subaccounts or tag, just add a purchase transaction as usual and when there is a sale, *hledger-lots* will generate the correct postings adding the cost for you, so you don't need to bother looking for this information.
 
-It also generate lots reports so the user can understand his situation with a commodity and check the correctness of the generated sell transaction.
+It also generate lots reports so the user can understand his situation with a commodity and check the correctness of the generated sell transaction, including market performance from *prices directives*, which can be automatically downloaded from [Yahoo Finance](https://finance.yahoo.com/).
 
 To verify your transaction, this package can also check if your past sale has the correct cost.
 
@@ -53,7 +53,7 @@ To get information about the commodities, there is more 2 commands:
 
 
 
-If you add *price directives* for the commodity in a date after the last purchase, additional indicators will be shown related to the performance of the investment. See [indicators](#indicators) help for more detail.
+If you add *price directives* for the commodity in a date after the last purchase, additional indicators will be shown related to the performance of the investment. See [indicators](#indicators) help for more detail and [market prices](market_prices) to download the prices from [Yahoo Finance](https://finance.yahoo.com/).
 
 ## Indicators
   
