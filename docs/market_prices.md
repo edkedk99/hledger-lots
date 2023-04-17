@@ -1,6 +1,6 @@
 # Automatic Market Prices Download
 
-*Hledger-lots* can add download daily market prices from [Yahoo Finance](https://finance.yahoo.com/) and append [market price directive](https://hledger.org/1.29/hledger.html#p-directive) to the journal, so you get updated *xirr* calculation and run regular hledger reports using market prices.
+*Hledger-lots* can download daily market prices from [Yahoo Finance](https://finance.yahoo.com/) and append [market price directive](https://hledger.org/1.29/hledger.html#p-directive) to the journal, so you get updated *xirr* calculation and run regular hledger reports using market prices.
 
 ## Setup
 

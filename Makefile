@@ -53,6 +53,6 @@ gh-deploy:
 .PHONY: publish
 publish:
 	source venv/bin/activate && \
-	rm dist/*
+	rm dist/* && \
 	make build && \
 	python3 -m twine upload dist/*
