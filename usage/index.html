@@ -59,11 +59,15 @@
                 </li>
               </ul>
               <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../market_prices/">Download Market Prices</a>
+                </li>
+              </ul>
+              <ul>
                 <li class="toctree-l1"><a class="reference internal" href="../output/">Output examples</a>
                 </li>
               </ul>
               <ul>
-                <li class="toctree-l1"><a class="" href="/hledger_lots/test_coverage/">Test Coverage</a>
+                <li class="toctree-l1"><a class="" href="/hledger-lots/test_coverage">Test Coverage</a>
                 </li>
               </ul>
               <ul>
@@ -96,7 +100,7 @@
               
                 <h1 id="hledger-lots">hledger-lots<a class="headerlink" href="#hledger-lots" title="Permanent link">#</a></h1>
 <p>Commands to apply FIFO(first-in-first-out) or AVERAGE COST accounting principles without manual management of lots. Useful for transactions involving buying and selling foreign currencies or stocks.</p>
-<p>To find out more, visit <a href="https://github.com/edkedk99/hledger-fifo">https://github.com/edkedk99/hledger-fifo</a></p>
+<p>To find out more, visit <a href="https://github.com/edkedk99/hledger-lots">https://github.com/edkedk99/hledger-lots</a></p>
 <p><strong>Usage:</strong></p>
 <pre><code>hledger-lots [OPTIONS] COMMAND [ARGS]...
 </code></pre>
@@ -183,6 +187,12 @@
 <td>boolean</td>
 <td>Enable/Disable check on the commodities previous transactions to ensure it is following the choosen method. Can be set with env HLEDGER_LOTS_CHECK=tru</td>
 <td>false. Default to false. Inthe future it will default to true</td>
+</tr>
+<tr>
+<td><code>-p</code>, <code>--append-prices-to</code></td>
+<td>path</td>
+<td>Download market price and append to this option file value. Check the doc for info on how to set it up. Can be set with env HLEDGER_LOTS_APPEND_PRICES_TO</td>
+<td><code>&lt;function &lt;lambda&gt; at 0x7f29967fab60&gt;</code></td>
 </tr>
 <tr>
 <td><code>--help</code></td>
@@ -342,8 +352,14 @@
 <tr>
 <td><code>--check</code> / <code>--no-check</code></td>
 <td>boolean</td>
-<td>Enable/Disable check on the commodities previous transactions to ensure it is following the choosen method. Can be set with env HLEDGER_LOTS_CHECK=tru</td>
+<td>Enable/Disable check on the commodities previous transactions to ensure it is following the choosen method. Can be set with env HLEDGER_LOTS_CHECK=true</td>
 <td>false. Default to false. Inthe future it will default to true</td>
+</tr>
+<tr>
+<td><code>-p</code>, <code>--append-prices-to</code></td>
+<td>path</td>
+<td>Download market price and append to this option file value. Check the doc for info on how to set it up. Can be set with env HLEDGER_APPEND_PRICES_TO</td>
+<td><code>&lt;function &lt;lambda&gt; at 0x7f29967fa8e0&gt;</code></td>
 </tr>
 <tr>
 <td><code>--help</code></td>
@@ -390,7 +406,7 @@
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
         <a href=".." class="btn btn-neutral float-left" title="Home"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../output/" class="btn btn-neutral float-right" title="Output examples">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../market_prices/" class="btn btn-neutral float-right" title="Download Market Prices">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -420,7 +436,7 @@
       <span><a href=".." style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../output/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../market_prices/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

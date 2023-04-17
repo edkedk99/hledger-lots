@@ -75,11 +75,15 @@
                 </li>
               </ul>
               <ul>
+                <li class="toctree-l1"><a class="reference internal" href="market_prices/">Download Market Prices</a>
+                </li>
+              </ul>
+              <ul>
                 <li class="toctree-l1"><a class="reference internal" href="output/">Output examples</a>
                 </li>
               </ul>
               <ul>
-                <li class="toctree-l1"><a class="" href="/hledger_lots/test_coverage/">Test Coverage</a>
+                <li class="toctree-l1"><a class="" href="/hledger-lots/test_coverage">Test Coverage</a>
                 </li>
               </ul>
               <ul>
@@ -121,7 +125,7 @@
 </ul>
 <p>This package create a sale transaction according to information provided by the user and traverse the journal file to determine what quantity and lot prices should be used and generate a valid hledger transaction to be appended to the journal with additional helpful calculations as comment tags.</p>
 <p>When using this package, you don't need to create lots as subaccounts or tag, just add a purchase transaction as usual and when there is a sale, <em>hledger-lots</em> will generate the correct postings adding the cost for you, so you don't need to bother looking for this information.</p>
-<p>It also generate lots reports so the user can understand his situation with a commodity and check the correctness of the generated sell transaction.</p>
+<p>It also generate lots reports so the user can understand his situation with a commodity and check the correctness of the generated sell transaction, including market performance from <em>prices directives</em>, which can be automatically downloaded from <a href="https://finance.yahoo.com/">Yahoo Finance</a>.</p>
 <p>To verify your transaction, this package can also check if your past sale has the correct cost.</p>
 <h2 id="documentation">Documentation<a class="headerlink" href="#documentation" title="Permanent link">#</a></h2>
 <p>Documentation with usage information can be found <a href="https://edkedk99.github.io/hledger-lots/">here</a></p>
@@ -136,7 +140,7 @@
 <h2 id="workflow">Workflow<a class="headerlink" href="#workflow" title="Permanent link">#</a></h2>
 <ol>
 <li>Add purchase transaction as normal. <strong>Don't bother creating subaccounts or tags with unique lot name</strong>. See the some examples <a href="examples/test2022.journal">here</a></li>
-<li>When you sell, use the command <a href="usage/#sell">sell</a> instead of adding the transactions manually. Hledger-fifo will generate the correct transaction and print to stdout so you can add to the journal if everything is correct. <em>See transaction tags with interesting indicators about the current trade</em></li>
+<li>When you sell, use the command <a href="usage/#sell">sell</a> instead of adding the transactions manually. Hledger-lots will generate the correct transaction and print to stdout so you can add to the journal if everything is correct. <em>See transaction tags with interesting indicators about the current trade</em></li>
 </ol>
 <blockquote>
 <p>By default the sale is created using <em>FIFO</em> method. Use the option flag "--avg-cost" to change it to <em>Average Cost</em></p>
@@ -161,7 +165,7 @@
 </tr>
 </tbody>
 </table>
-<p>If you add <em>price directives</em> for the commodity in a date after the last purchase, additional indicators will be shown related to the performance of the investment. See <a href="#indicators">indicators</a> help for more detail.</p>
+<p>If you add <em>price directives</em> for the commodity in a date after the last purchase, additional indicators will be shown related to the performance of the investment. See <a href="#indicators">indicators</a> help for more detail and <a href="market_prices">market prices</a> to download the prices from <a href="https://finance.yahoo.com/">Yahoo Finance</a>.</p>
 <h2 id="indicators">Indicators<a class="headerlink" href="#indicators" title="Permanent link">#</a></h2>
 <h3 id="basic-indicators">Basic Indicators<a class="headerlink" href="#basic-indicators" title="Permanent link">#</a></h3>
 <ul>
@@ -241,5 +245,5 @@
 
 <!--
 MkDocs version : 1.4.2
-Build Date UTC : 2023-04-06 19:32:24.549864+00:00
+Build Date UTC : 2023-04-17 20:48:07.142594+00:00
 -->

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://edkedk99.github.io/hledger-lots/market_prices/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Download Market Prices - hledger-lots</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Download Market Prices";
+        var mkdocs_page_input_path = "market_prices.md";
+        var mkdocs_page_url = "/hledger-lots/market_prices/";
+      </script>
+    
+    <script src="../js/jquery-3.6.0.min.js" defer></script>
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+      <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> hledger-lots
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../usage/">Usage</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="./">Download Market Prices</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#setup">Setup</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#downloading">Downloading</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../output/">Output examples</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="" href="/hledger-lots/test_coverage">Test Coverage</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="" href="/hledger-lots/unit_tests">Unit tests</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">hledger-lots</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" alt="Docs"></a> &raquo;</li>
+      <li>Download Market Prices</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/edkedk99/hledger-lots/edit/master/docs/market_prices.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="automatic-market-prices-download">Automatic Market Prices Download<a class="headerlink" href="#automatic-market-prices-download" title="Permanent link">#</a></h1>
+<p><em>Hledger-lots</em> can add download daily market prices from <a href="https://finance.yahoo.com/">Yahoo Finance</a> and append <a href="https://hledger.org/1.29/hledger.html#p-directive">market price directive</a> to the journal, so you get updated <em>xirr</em> calculation and run regular hledger reports using market prices.</p>
+<h2 id="setup">Setup<a class="headerlink" href="#setup" title="Permanent link">#</a></h2>
+<p>Rename those commodities you want <em>hledger-lots</em> to download market according to the rule: <strong>"y.[yahoo ticker name]"</strong>. </p>
+<blockquote>
+<p><strong>IMPORTANT:</strong> You need to add double quotes between the commodity name because hledger accepts only word characters without it</p>
+</blockquote>
+<p>Examples:</p>
+<table>
+<thead>
+<tr>
+<th>Company</th>
+<th>Commodity name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Microsoft</td>
+<td>"y.MSFT"</td>
+</tr>
+<tr>
+<td>Apple</td>
+<td>"y.AAPL"</td>
+</tr>
+<tr>
+<td>EUR/USD</td>
+<td>"y.EURUSD=X"</td>
+</tr>
+<tr>
+<td>Bitcoin</td>
+<td>"y.BTC-USD"</td>
+</tr>
+</tbody>
+</table>
+<h2 id="downloading">Downloading<a class="headerlink" href="#downloading" title="Permanent link">#</a></h2>
+<p>Run <code>hledger-lots list</code> or <code>hledger-lots-view</code> with the option flag <code>--append-prices-to [journal path]</code> or with environment variable <strong>HLEDGER_APPEND_PRICES_TO</strong>. The <em>journal path</em> can be either the journal file you are reading or another one you prefer to have your prices directives.</p>
+<p>With the option above, <em>hledger-lots</em> will download the daily market prices for all the commodities that follows the commodity name rule. The time range follows the rule:</p>
+<ul>
+<li>If there is no market price for a commodity, it will download daily prices from the date of the first purchase until yesterday.</li>
+<li>If there is a market price for a commodity, it will download daily prices from the date following the last price directive to yesterday</li>
+</ul>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../usage/" class="btn btn-neutral float-left" title="Usage"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../output/" class="btn btn-neutral float-right" title="Output examples">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/edkedk99/hledger-lots" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../usage/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../output/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>
