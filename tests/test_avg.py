@@ -135,13 +135,11 @@ class TestAvgSell:
             comm_account="Acct1",
             value=1000,
             check=False,
-            sell_cmd=""
         )
 
         expected = """2022-02-01 Sold AAPL  ; cost_method:avg_cost
     ; commodity:AAPL, qtty:50.00, price:20.00
     ; xirr:3.56% annual percent rate 30/360US
-    ; command:
     Asset:Bank                                    1000.00 USD
     Acct1                   -50 AAPL @ 17.848837209302324 USD
     Revenue:Capital Gain               -107.5581395348838 USD

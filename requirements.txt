@@ -5,3 +5,4 @@ pyxirr
 yfinance
 requests
 requests-cache
+questionary

@@ -3,15 +3,8 @@
 
 Besides the transaction, constructed according to *FIFO* or *AVERAGE COST* without any manual intervention, you have as tags the quantity and price sold, the average cost using *FIFO* and the *xirr* of the transaction, as explained [here](README.md#xirr) 
 
-```txt
-2023-04-01 Sold AAPL
-    ; commodity:AAPL, qtty:6.00, price:6.50
-    ; avg_fifo_cost:5.1167, xirr:1.62% annual percent rate 30/360US
-    Asset:Bank                        39.00 USD
-    Asset:Stocks            -5.0 AAPL @ 5.1 USD  ; buy_date:2023-01-01
-    Asset:Stocks            -1.0 AAPL @ 5.2 USD  ; buy_date:2023-01-05
-    Revenue:Capital Gain              -8.30 USD
-```
+<script async id="asciicast-gLrvr6EazYAs1raGn4ADiBTqe" src="https://asciinema.org/a/gLrvr6EazYAs1raGn4ADiBTqe.js"></script>
+
 
 ## view
 

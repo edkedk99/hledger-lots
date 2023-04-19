@@ -1,19 +1,19 @@
-import functools
 import os
 from pathlib import Path
 from typing import Literal, Tuple
 
 import rich_click as click
 
-from .avg import avg_sell, get_avg_cost
+from .avg import get_avg_cost
 from .avg_info import AllAvgInfo, AvgInfo
-from .fifo import get_lots, get_sell_lots, txn2hl
+from .fifo import get_lots
 from .fifo_info import AllFifoInfo, FifoInfo
 from .files import get_default_file, get_file_path
 from .hl import hledger2txn
-from .info import AllInfo, get_commodities
-from .lib import default_fn_bool, dt_list2table, get_sell_comm
+from .info import AllInfo
+from .lib import default_fn_bool, dt_list2table
 from .prices_yahoo import get_hledger_prices
+from .prompt import PromptSell, get_append_file
 
 CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 
@@ -89,7 +89,6 @@ def cli(file: str):  # pyright:ignore
     default=default_fn_bool("HLEDGER_LOTS_CHECK", False),
     help="Enable/Disable check on the commodities previous transactions to ensure it is following the choosen method. Can be set with env HLEDGER_LOTS_CHECK=true|false. Default to false. Inthe future it will default to true",
 )
-# TODO: fill help
 @click.option(
     "-p",
     "--append-prices-to",
@@ -113,14 +112,13 @@ def view(
     Show a report with lots for a commodity considering eventual past sale using FIFO or AVERAGE COST accounting principles.
 
     Also show some indicators about the lots and performance if there is prices in the journal after the last purchase. See the docs for details
-
-    All flags, except '--file' will be interactively prompted if absent, much like 'hledger-add'.
     """
 
     journals = file or get_default_file()
     adj_txn = hledger2txn(journals, commodity, no_desc)
 
     if append_prices_to:
+        breakpoint()
         get_hledger_prices(file, append_prices_to)
 
     if avg_cost:
@@ -156,18 +154,10 @@ def view(
     help='Change cost method to "average cost"". Can be set with env HLEDGER_LOTS_IS_AVG_COST=true|false. Default to false',
 )
 @click.option(
-    "-c",
-    "--commodity",
-    type=click.STRING,
-    prompt=True,
-    help="Commodity you are selling",
-)
-@click.option(
     "-n",
     "--no-desc",
     type=click.STRING,
     default=lambda: os.environ.get("HLEDGER_LOTS_NO_DESC", None),
-    prompt=False,
     help="Description to be filtered out from calculation. Needed when closing journal with '--show-costs' option. Works like: not:desc:<value>. Will not be prompted if absent. If closed with default description, the value of this option should be: 'opening|closing balances'. Can be set with env HLEDGER_LOTS_NO_DESC",
 )
 @click.option(
@@ -175,127 +165,40 @@ def view(
     default=default_fn_bool("HLEDGER_LOTS_CHECK", False),
     help="Enable/Disable check on the commodities previous transactions to ensure it is following the choosen method. Can be set with env HLEDGER_LOTS_CHECK=tru|false. Default to false. Inthe future it will default to true",
 )
-@click.option(
-    "-s",
-    "--commodity-account",
-    type=click.STRING,
-    prompt=False,
-    required=False,
-    help="What account holds product of the sale. Only used with --avg-cost",
-)
-@click.option(
-    "-a",
-    "--cash-account",
-    type=click.STRING,
-    prompt=True,
-    help="What account entered the product of the sell",
-)
-@click.option(
-    "-r",
-    "--revenue-account",
-    type=click.STRING,
-    prompt=True,
-    help="Account that represent capital gain/loss",
-)
-@click.option(
-    "-d",
-    "--date",
-    type=click.STRING,
-    prompt=True,
-    help="Date of the transaction (YYYY-mm-dd)",
-)
-@click.option(
-    "-q",
-    "--quantity",
-    help="Quantity being sold",
-    type=click.FLOAT,
-    prompt=True,
-)
-@click.option(
-    "-p",
-    "--price",
-    help="Price being sold",
-    type=click.FLOAT,
-    prompt=True,
-)
 @click.pass_context
 def sell(
     ctx: click.Context,  # pyright:ignore
     file: Tuple[str, ...],
     avg_cost: bool,
-    commodity: str,
     no_desc: str,
-    commodity_account: str,
-    cash_account: str,
-    revenue_account: str,
-    date: str,
-    quantity: float,
-    price: float,
     check: bool,
 ):
     """
-    Create a transaction with automatic FIFO or AVERAGE COST for a commodity.\r
+    Create a transaction with automatic FIFO or AVERAGE COST for a commodity by answering some prompts that tries to avoid errors with validation and using current journal data to filter possible answers give informations that guides the user thru the process.\r
 
-    Generate a transaction that represents a sale of a commodity with the following postings:
+    > This command also add transaction's comment with some indicators. See an example on "Output examples" page of the docs.
+
+    ## Transaction postings
 
     - First posting: Positive amount on the 'base-currency' in the account that receives the product of the sale.
 
-    - Multiple lot postings: Each posting is a different lot you are selling for the cost price on purchasing date, calculated according to FIFO accounting principles.
+    - Multiple lot postings: Each posting represents a lot you are selling for the cost price on purchasing date, according to FIFO accounting principles or one postings in case of AVERAGE COST method.
 
     - Revenue posting: posting that represent Capital Gain or Loss as the difference between the total cost and the amount received on the base-currency.
-
-    This command also add transaction's comment with some indicators. See the docs for more info.
-
-    All flags, except '--file' will be interactively prompted if absent, much like 'hledger-add'.
     """
 
     journals = file or get_default_file()
-    adj_txns = hledger2txn(journals, commodity, no_desc)
-    value = quantity * price
+    prompt_sell = PromptSell(journals, avg_cost, check, no_desc)
 
-    sell_comm_fn = functools.partial(
-        get_sell_comm,
-        commodity,
-        no_desc,
-        commodity_account,
-        cash_account,
-        revenue_account,
-        date,
-        quantity,
-        price,
-    )
+    txn_print = prompt_sell.get_hl_txn()
+    click.echo("\n" + txn_print)
 
-    if avg_cost and not commodity_account:
-        commodity_account = input("Commodity account: ")
-
-    if avg_cost:
-        sell_cmd = sell_comm_fn(True)
-        sell_avg = avg_sell(
-            txns=adj_txns,
-            date=date,
-            qtty=quantity,
-            cur=commodity,
-            cash_account=cash_account,
-            revenue_account=revenue_account,
-            comm_account=commodity_account,
-            value=value,
-            check=check,
-            sell_cmd=sell_cmd,
-        )
-        click.echo(sell_avg)
+    append_file = get_append_file(journals[0])
+    if append_file:
+        with open(append_file, "a") as f:
+            f.write("\n" + txn_print)
     else:
-        sell_fifo = get_sell_lots(adj_txns, date, quantity, check)
-        sell_cmd = sell_comm_fn(False)
-        txn_print = txn2hl(
-            txns=sell_fifo,
-            date=date,
-            cur=commodity,
-            cash_account=cash_account,
-            revenue_account=revenue_account,
-            value=value,
-            sell_cmd=sell_cmd,
-        )
-        click.echo(txn_print)
+        click.echo("\n" + "Transaction not saved.")
 
 
 @click.command(name="list")
@@ -382,5 +285,5 @@ def list_commodities(
 
 
 cli.add_command(view)
-cli.add_command(sell)
 cli.add_command(list_commodities)
+cli.add_command(sell)

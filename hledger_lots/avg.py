@@ -79,7 +79,6 @@ def avg_sell(
     comm_account: str,
     value: float,
     check: bool,
-    sell_cmd: str,
 ):
     adj_comm = adjust_commodity(cur)
     checks.check_short_sell_current(txns, qtty)
@@ -97,7 +96,6 @@ def avg_sell(
     txn_hl = f"""{date} Sold {cur}  ; cost_method:avg_cost
     ; commodity:{cur}, qtty:{qtty:,.2f}, price:{price:,.2f}
     ; xirr:{xirr:.2f}% annual percent rate 30/360US
-    ; command:{sell_cmd}
     {cash_account}    {value:.2f} {base_curr}
     {comm_account}    {qtty * -1} {adj_comm} @ {cost} {base_curr}
     {revenue_account}"""

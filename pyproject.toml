@@ -37,7 +37,8 @@ dependencies = [
 	     "pyxirr",
 	     "yfinance",
 	     "requests",
-	     "requests-cache"
+	     "requests-cache",
+	     "questionary"
 ]
 
 [project.urls]

@@ -71,7 +71,7 @@ def get_commodities(journals: Tuple[str, ...]):
     commodities_proc = subprocess.run(comm, capture_output=True)
     commodities_str = commodities_proc.stdout.decode("utf8")
 
-    commodities_list = [com for com in commodities_str.split("\n")]
+    commodities_list = [com for com in commodities_str.split("\n") if com != ""]
     return commodities_list
 
 
