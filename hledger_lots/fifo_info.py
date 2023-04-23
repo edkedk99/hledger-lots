@@ -5,7 +5,7 @@ from .checks import MultipleBaseCurrencies
 from .fifo import get_lots
 from .hl import hledger2txn
 from .info import AllInfo, Info, LotsInfo
-from .lib import get_avg_fifo
+from .lib import dt_list2table, get_avg_fifo
 
 
 class FifoInfo(Info):
@@ -15,6 +15,9 @@ class FifoInfo(Info):
 
         self.lots = get_lots(self.txns, check)
         self.last_buy_date = self.lots[-1].date if len(self.lots) > 0 else None
+
+        self.buy_lots = get_lots(self.txns, check)
+        self.table = dt_list2table(self.buy_lots)
 
     @property
     def info(self):

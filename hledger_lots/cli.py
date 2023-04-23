@@ -4,14 +4,11 @@ from typing import Literal, Tuple
 
 import rich_click as click
 
-from .avg import get_avg_cost
 from .avg_info import AllAvgInfo, AvgInfo
-from .fifo import get_lots
 from .fifo_info import AllFifoInfo, FifoInfo
 from .files import get_default_file, get_file_path
-from .hl import hledger2txn
 from .info import AllInfo
-from .lib import default_fn_bool, dt_list2table
+from .lib import default_fn_bool
 from .prices_yahoo import get_hledger_prices
 from .prompt import PromptSell, get_append_file
 
@@ -115,23 +112,18 @@ def view(
     """
 
     journals = file or get_default_file()
-    adj_txn = hledger2txn(journals, commodity, no_desc)
 
     if append_prices_to:
         get_hledger_prices(file, append_prices_to)
 
     if avg_cost:
-        buy_lots = get_avg_cost(adj_txn, check)
-        table = dt_list2table(buy_lots)
-        click.echo(table)
         avg_info = AvgInfo(journals, commodity, check)
+        click.echo(avg_info.table)
         click.echo(avg_info.info_txt)
 
     else:
-        buy_lots = get_lots(adj_txn, check)
-        table = dt_list2table(buy_lots)
-        click.echo(table)
         fifo_info = FifoInfo(journals, commodity, check)
+        click.echo(fifo_info.table)
         click.echo(fifo_info.info_txt)
 
 

@@ -3,22 +3,24 @@ from typing import Tuple
 
 from .avg import get_avg_cost
 from .info import AllInfo, Info, LotsInfo
+from .lib import dt_list2table
 
 
 class AvgInfo(Info):
     def __init__(self, journals: Tuple[str, ...], commodity: str, check: bool):
         super().__init__(journals, commodity)
         self.check = check
+        self.avg_lots = get_avg_cost(self.txns, self.check)
+        self.table = dt_list2table(self.avg_lots)
 
     @property
     def info(self):
         commodity = self.commodity
         cur = self.txns[0].base_cur
-        avg_lots = get_avg_cost(self.txns, self.check)
-        qtty = avg_lots[-1].total_qtty
-        amount = avg_lots[-1].total_amount
-        avg_cost = avg_lots[-1].avg_cost
-        last_buy_date = datetime.strptime(avg_lots[-1].date, "%Y-%m-%d").date()
+        qtty = self.avg_lots[-1].total_qtty
+        amount = self.avg_lots[-1].total_amount
+        avg_cost = self.avg_lots[-1].avg_cost
+        last_buy_date = datetime.strptime(self.avg_lots[-1].date, "%Y-%m-%d").date()
         xirr = self.get_lots_xirr(last_buy_date)
 
         if self.market_price and self.market_date and xirr:
