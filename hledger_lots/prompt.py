@@ -6,12 +6,11 @@ from typing import List, Optional, Tuple
 import questionary
 from prompt_toolkit.shortcuts import CompleteStyle
 
+from . import avg, fifo
 from .avg_info import AllAvgInfo
 from .fifo_info import AllFifoInfo
 from .files import get_files_comm
 from .hl import hledger2txn
-from . import avg
-from . import fifo
 
 
 class PromptError(BaseException):

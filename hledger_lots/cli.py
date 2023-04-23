@@ -118,7 +118,6 @@ def view(
     adj_txn = hledger2txn(journals, commodity, no_desc)
 
     if append_prices_to:
-        breakpoint()
         get_hledger_prices(file, append_prices_to)
 
     if avg_cost:

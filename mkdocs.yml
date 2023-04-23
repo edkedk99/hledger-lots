@@ -10,8 +10,7 @@ nav:
     - Usage: usage.md
     - Download Market Prices: market_prices.md
     - Output examples: output.md
-    - Test Coverage: /hledger-lots/test_coverage
-    - Unit tests: /hledger-lots/unit_tests
+    - Unit tests: tests.md
 
 markdown_extensions:
   - attr_list
