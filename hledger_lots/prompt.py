@@ -81,6 +81,9 @@ def val_qtty(answer: str, available: float):
 
 
 def val_price(answer: str):
+    if answer == "":
+        return True
+
     try:
         answer_float = float(answer)
     except ValueError:
@@ -88,6 +91,18 @@ def val_price(answer: str):
 
     if answer_float < 0:
         return "Price should be positive"
+
+    return True
+
+
+def val_total(answer: str):
+    try:
+        answer_float = float(answer)
+    except ValueError:
+        return "Invalid number"
+
+    if answer_float < 0:
+        return "Amount should be positive"
 
     return True
 
@@ -169,9 +184,9 @@ class PromptSell:
         last_purchase = self.get_last_purchase()
 
         answer: str = questionary.text(
-            f"Date - Last Purchase: {last_purchase}",
+            f"Date YYYY-MM-DD",
             validate=val_date,
-            instruction="(YYYY-MM-DD)",
+            instruction=f"(Last Purchase: {last_purchase})",
         ).ask()
         return answer
 
@@ -179,22 +194,33 @@ class PromptSell:
         available = float(self.info["qtty"])
 
         answer_str: str = questionary.text(
-            "Quantity",
+            f"Quantity (available {available})",
             validate=lambda answer: val_qtty(answer, available),
-            instruction=f"(available {available})",
+            instruction="",
         ).ask()
-        return float(answer_str)
+        return answer_str
 
     def ask_price(self):
         cost_str = self.info["avg_cost"].replace(",", ".")
         cost = float(cost_str)
 
         answer_str: str = questionary.text(
-            "Price",
+            f"Price (avg cost: {cost})",
             validate=val_price,
-            instruction=f"(avg cost: {cost})",
+            instruction="Empty to input total amount",
         ).ask()
-        return float(answer_str)
+        return answer_str
+
+    def ask_total(self, qtty: float):
+        available = qtty * float(self.info["avg_cost"])
+        available_str = f"{available:,.2f}"
+
+        answer_str: str = questionary.text(
+            f"Total (available {available_str})",
+            validate=val_total,
+            instruction="Amount received",
+        ).ask()
+        return answer_str
 
     def ask_cash_account(self):
         accts = self.get_accounts_list("accounts")
@@ -237,9 +263,17 @@ Remove description : {no_desc_text}
     def prompt(self):
         commodity = self.info["comm"]
         sell_date = self.ask_date()
-        qtty = self.ask_qtty()
-        price = self.ask_price()
-        value = qtty * price
+        qtty = float(self.ask_qtty())
+        price_str = self.ask_price()
+
+        if price_str == "":
+            value_str = self.ask_total(qtty)
+            value = float(value_str)
+            price = value / qtty
+        else:
+            price = float(price_str)
+            value = qtty * price
+
         cash_acct = self.ask_cash_account()
 
         if self.avg_cost:

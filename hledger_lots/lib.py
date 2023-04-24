@@ -5,10 +5,9 @@ from dataclasses import asdict, dataclass
 from datetime import date
 from typing import List, Optional
 
+import click
 from pyxirr import DayCount, xirr
 from tabulate import tabulate
-
-from .files import get_files_comm
 
 
 @dataclass

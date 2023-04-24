@@ -9,9 +9,9 @@ import yfinance as yf
 from requests.exceptions import HTTPError
 from requests_cache import CachedSession
 
+from .files import get_files_comm
 from .hl import hledger2txn
 from .info import get_commodities, get_last_price
-from .lib import adjust_commodity, get_files_comm
 
 
 @dataclass
@@ -113,7 +113,7 @@ def get_hledger_prices(files: Tuple[str, ...], append_prices_to: Path):
                     f.write(prices_hledger + "\n")
                 except HTTPError:
                     print(f"stderr: {ticker} not found", file=sys.stderr)
-                except Exception as e:
+                except Exception:
                     print(
                         f"stderr: Nothing downloaded for {ticker} between {start_date} and {yesterday_str}",
                         file=sys.stderr,

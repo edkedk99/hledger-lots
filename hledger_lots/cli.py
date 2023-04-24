@@ -6,7 +6,7 @@ import rich_click as click
 
 from .avg_info import AllAvgInfo, AvgInfo
 from .fifo_info import AllFifoInfo, FifoInfo
-from .files import get_default_file, get_file_path
+from .files import get_default_file, get_file_path, get_files_comm
 from .info import AllInfo
 from .lib import default_fn_bool
 from .prices_yahoo import get_hledger_prices
@@ -117,14 +117,12 @@ def view(
         get_hledger_prices(file, append_prices_to)
 
     if avg_cost:
-        avg_info = AvgInfo(journals, commodity, check)
-        click.echo(avg_info.table)
-        click.echo(avg_info.info_txt)
-
+        info = AvgInfo(journals, commodity, check)
     else:
-        fifo_info = FifoInfo(journals, commodity, check)
-        click.echo(fifo_info.table)
-        click.echo(fifo_info.info_txt)
+        info = FifoInfo(journals, commodity, check)
+
+    click.echo(info.table)
+    click.echo(info.info_txt)
 
 
 @click.command()
@@ -154,7 +152,7 @@ def view(
 @click.option(
     "--check/--no-check",
     default=default_fn_bool("HLEDGER_LOTS_CHECK", False),
-    help="Enable/Disable check on the commodities previous transactions to ensure it is following the choosen method. Can be set with env HLEDGER_LOTS_CHECK=tru|false. Default to false. Inthe future it will default to true",
+    help="Enable/Disable check on the commodities previous transactions to ensure it is following the choosen method. Can be set with env HLEDGER_LOTS_CHECK=true|false. Default to false. In the future it will default to true",
 )
 @click.pass_context
 def sell(
@@ -190,6 +188,21 @@ def sell(
             f.write("\n" + txn_print)
     else:
         click.echo("\n" + "Transaction not saved.")
+
+    commodity = prompt_sell.info["comm"]
+    if avg_cost:
+        info = AvgInfo(journals, commodity, check)
+    else:
+        info = FifoInfo(journals, commodity, check)
+
+    click.echo(info.table)
+    click.echo(info.info_txt)
+
+    if commodity.startswith("y."):
+        files_comm_str = " ".join(get_files_comm(journals))
+        click.echo(
+            f"To update prices from Yahoo finance, run:\n\n hledger-lots {files_comm_str} view -c {commodity} -p {journals[0]}"
+        )
 
 
 @click.command(name="list")
