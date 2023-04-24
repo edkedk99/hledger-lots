@@ -51,6 +51,8 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#hledger-lots-sell">sell</a>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#transaction-postings">Transaction postings</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#hledger-lots-view">view</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#environment-variables">Environment Variables</a>
@@ -67,11 +69,7 @@
                 </li>
               </ul>
               <ul>
-                <li class="toctree-l1"><a class="" href="/hledger-lots/test_coverage">Test Coverage</a>
-                </li>
-              </ul>
-              <ul>
-                <li class="toctree-l1"><a class="" href="/hledger-lots/unit_tests">Unit tests</a>
+                <li class="toctree-l1"><a class="reference internal" href="../tests/">Unit tests</a>
                 </li>
               </ul>
       </div>
@@ -192,7 +190,7 @@
 <td><code>-p</code>, <code>--append-prices-to</code></td>
 <td>path</td>
 <td>Download market price and append to this option file value. Check the doc for info on how to set it up. Can be set with env HLEDGER_LOTS_APPEND_PRICES_TO</td>
-<td><code>&lt;function &lt;lambda&gt; at 0x7f267b2bab60&gt;</code></td>
+<td><code>&lt;function &lt;lambda&gt; at 0x7f86d49349a0&gt;</code></td>
 </tr>
 <tr>
 <td><code>--help</code></td>
@@ -203,21 +201,22 @@
 </tbody>
 </table>
 <h2 id="hledger-lots-sell">hledger-lots sell<a class="headerlink" href="#hledger-lots-sell" title="Permanent link">#</a></h2>
-<p>Create a transaction with automatic FIFO or AVERAGE COST for a commodity.</p>
-<p>Generate a transaction that represents a sale of a commodity with the following postings:</p>
+<p>Create a transaction with automatic FIFO or AVERAGE COST for a commodity by answering some prompts that tries to avoid errors with validation and using current journal data to filter possible answers give informations that guides the user thru the process.</p>
+<blockquote>
+<p>This command also add transaction's comment with some indicators. See an example on "Output examples" page of the docs.</p>
+</blockquote>
+<h2 id="transaction-postings">Transaction postings<a class="headerlink" href="#transaction-postings" title="Permanent link">#</a></h2>
 <ul>
 <li>
 <p>First posting: Positive amount on the 'base-currency' in the account that receives the product of the sale.</p>
 </li>
 <li>
-<p>Multiple lot postings: Each posting is a different lot you are selling for the cost price on purchasing date, calculated according to FIFO accounting principles.</p>
+<p>Multiple lot postings: Each posting represents a lot you are selling for the cost price on purchasing date, according to FIFO accounting principles or one postings in case of AVERAGE COST method.</p>
 </li>
 <li>
 <p>Revenue posting: posting that represent Capital Gain or Loss as the difference between the total cost and the amount received on the base-currency.</p>
 </li>
 </ul>
-<p>This command also add transaction's comment with some indicators. See the docs for more info.</p>
-<p>All flags, except '--file' will be interactively prompted if absent, much like 'hledger-add'.</p>
 <p><strong>Usage:</strong></p>
 <pre><code>hledger-lots sell [OPTIONS]
 </code></pre>
@@ -245,12 +244,6 @@
 <td>false. Default to false</td>
 </tr>
 <tr>
-<td><code>-c</code>, <code>--commodity</code></td>
-<td>text</td>
-<td>Commodity you are selling</td>
-<td>None</td>
-</tr>
-<tr>
 <td><code>-n</code>, <code>--no-desc</code></td>
 <td>text</td>
 <td>Description to be filtered out from calculation. Needed when closing journal with '--show-costs' option. Works like: not:desc:<value>. Will not be prompted if absent. If closed with default description, the value of this option should be: 'opening</td>
@@ -259,44 +252,8 @@
 <tr>
 <td><code>--check</code> / <code>--no-check</code></td>
 <td>boolean</td>
-<td>Enable/Disable check on the commodities previous transactions to ensure it is following the choosen method. Can be set with env HLEDGER_LOTS_CHECK=tru</td>
-<td>false. Default to false. Inthe future it will default to true</td>
-</tr>
-<tr>
-<td><code>-s</code>, <code>--commodity-account</code></td>
-<td>text</td>
-<td>What account holds product of the sale. Only used with --avg-cost</td>
-<td>None</td>
-</tr>
-<tr>
-<td><code>-a</code>, <code>--cash-account</code></td>
-<td>text</td>
-<td>What account entered the product of the sell</td>
-<td>None</td>
-</tr>
-<tr>
-<td><code>-r</code>, <code>--revenue-account</code></td>
-<td>text</td>
-<td>Account that represent capital gain/loss</td>
-<td>None</td>
-</tr>
-<tr>
-<td><code>-d</code>, <code>--date</code></td>
-<td>text</td>
-<td>Date of the transaction (YYYY-mm-dd)</td>
-<td>None</td>
-</tr>
-<tr>
-<td><code>-q</code>, <code>--quantity</code></td>
-<td>float</td>
-<td>Quantity being sold</td>
-<td>None</td>
-</tr>
-<tr>
-<td><code>-p</code>, <code>--price</code></td>
-<td>float</td>
-<td>Price being sold</td>
-<td>None</td>
+<td>Enable/Disable check on the commodities previous transactions to ensure it is following the choosen method. Can be set with env HLEDGER_LOTS_CHECK=true</td>
+<td>false. Default to false. In the future it will default to true</td>
 </tr>
 <tr>
 <td><code>--help</code></td>
@@ -310,7 +267,6 @@
 <p>Report lots for a commodity.</p>
 <p>Show a report with lots for a commodity considering eventual past sale using FIFO or AVERAGE COST accounting principles.</p>
 <p>Also show some indicators about the lots and performance if there is prices in the journal after the last purchase. See the docs for details</p>
-<p>All flags, except '--file' will be interactively prompted if absent, much like 'hledger-add'.</p>
 <p><strong>Usage:</strong></p>
 <pre><code>hledger-lots view [OPTIONS]
 </code></pre>
@@ -359,7 +315,7 @@
 <td><code>-p</code>, <code>--append-prices-to</code></td>
 <td>path</td>
 <td>Download market price and append to this option file value. Check the doc for info on how to set it up. Can be set with env HLEDGER_APPEND_PRICES_TO</td>
-<td><code>&lt;function &lt;lambda&gt; at 0x7f267b2ba8e0&gt;</code></td>
+<td><code>&lt;function &lt;lambda&gt; at 0x7f86d49345e0&gt;</code></td>
 </tr>
 <tr>
 <td><code>--help</code></td>

@@ -81,11 +81,7 @@
                 </li>
               </ul>
               <ul>
-                <li class="toctree-l1"><a class="" href="/hledger-lots/test_coverage">Test Coverage</a>
-                </li>
-              </ul>
-              <ul>
-                <li class="toctree-l1"><a class="" href="/hledger-lots/unit_tests">Unit tests</a>
+                <li class="toctree-l1"><a class="reference internal" href="../tests/">Unit tests</a>
                 </li>
               </ul>
       </div>
@@ -115,14 +111,8 @@
                 <h1 id="output-examples">Output examples<a class="headerlink" href="#output-examples" title="Permanent link">#</a></h1>
 <h2 id="sell">sell<a class="headerlink" href="#sell" title="Permanent link">#</a></h2>
 <p>Besides the transaction, constructed according to <em>FIFO</em> or <em>AVERAGE COST</em> without any manual intervention, you have as tags the quantity and price sold, the average cost using <em>FIFO</em> and the <em>xirr</em> of the transaction, as explained <a href="../#xirr">here</a> </p>
-<pre><code class="language-txt">2023-04-01 Sold AAPL
-    ; commodity:AAPL, qtty:6.00, price:6.50
-    ; avg_fifo_cost:5.1167, xirr:1.62% annual percent rate 30/360US
-    Asset:Bank                        39.00 USD
-    Asset:Stocks            -5.0 AAPL @ 5.1 USD  ; buy_date:2023-01-01
-    Asset:Stocks            -1.0 AAPL @ 5.2 USD  ; buy_date:2023-01-05
-    Revenue:Capital Gain              -8.30 USD
-</code></pre>
+<script async id="asciicast-gLrvr6EazYAs1raGn4ADiBTqe" src="https://asciinema.org/a/gLrvr6EazYAs1raGn4ADiBTqe.js"></script>
+
 <h2 id="view">view<a class="headerlink" href="#view" title="Permanent link">#</a></h2>
 <h3 id="fifo-method">FIFO method<a class="headerlink" href="#fifo-method" title="Permanent link">#</a></h3>
 <pre><code class="language-txt">date          price  base_cur      qtty  acct
@@ -211,6 +201,7 @@ GOOG,USD,3,57.00,19.0000,,,,,
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
         <a href="../market_prices/" class="btn btn-neutral float-left" title="Download Market Prices"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../tests/" class="btn btn-neutral float-right" title="Unit tests">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -239,6 +230,8 @@ GOOG,USD,3,57.00,19.0000,,,,,
     
       <span><a href="../market_prices/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
+    
+      <span><a href="../tests/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

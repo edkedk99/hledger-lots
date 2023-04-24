@@ -3,18 +3,18 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://edkedk99.github.io/hledger-lots/market_prices/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://edkedk99.github.io/hledger-lots/tests/" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Download Market Prices - hledger-lots</title>
+    <title>Unit tests - hledger-lots</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Download Market Prices";
-        var mkdocs_page_input_path = "market_prices.md";
-        var mkdocs_page_url = "/hledger-lots/market_prices/";
+        var mkdocs_page_name = "Unit tests";
+        var mkdocs_page_input_path = "tests.md";
+        var mkdocs_page_url = "/hledger-lots/tests/";
       </script>
     
     <script src="../js/jquery-3.6.0.min.js" defer></script>
@@ -48,22 +48,22 @@
                 <li class="toctree-l1"><a class="reference internal" href="../usage/">Usage</a>
                 </li>
               </ul>
-              <ul class="current">
-                <li class="toctree-l1 current"><a class="reference internal current" href="./">Download Market Prices</a>
-    <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#setup">Setup</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#downloading">Downloading</a>
-    </li>
-    </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../market_prices/">Download Market Prices</a>
                 </li>
               </ul>
               <ul>
                 <li class="toctree-l1"><a class="reference internal" href="../output/">Output examples</a>
                 </li>
               </ul>
-              <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../tests/">Unit tests</a>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="./">Unit tests</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#test-coverage">Test Coverage</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#unit-test">Unit Test</a>
+    </li>
+    </ul>
                 </li>
               </ul>
       </div>
@@ -80,9 +80,9 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" alt="Docs"></a> &raquo;</li>
-      <li>Download Market Prices</li>
+      <li>Unit tests</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/edkedk99/hledger-lots/edit/master/docs/market_prices.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/edkedk99/hledger-lots/edit/master/docs/tests.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -90,53 +90,17 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="automatic-market-prices-download">Automatic Market Prices Download<a class="headerlink" href="#automatic-market-prices-download" title="Permanent link">#</a></h1>
-<p><em>Hledger-lots</em> can download daily market prices from <a href="https://finance.yahoo.com/">Yahoo Finance</a> and append <a href="https://hledger.org/1.29/hledger.html#p-directive">market price directive</a> to the journal, so you get updated <em>xirr</em> calculation and run regular hledger reports using market prices.</p>
-<h2 id="setup">Setup<a class="headerlink" href="#setup" title="Permanent link">#</a></h2>
-<p>Rename those commodities you want <em>hledger-lots</em> to download market according to the rule: <strong>"y.[yahoo ticker name]"</strong>. </p>
-<blockquote>
-<p><strong>IMPORTANT:</strong> You need to add double quotes between the commodity name because hledger accepts only word characters without it</p>
-</blockquote>
-<p>Examples:</p>
-<table>
-<thead>
-<tr>
-<th>Company</th>
-<th>Commodity name</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Microsoft</td>
-<td>"y.MSFT"</td>
-</tr>
-<tr>
-<td>Apple</td>
-<td>"y.AAPL"</td>
-</tr>
-<tr>
-<td>EUR/USD</td>
-<td>"y.EURUSD=X"</td>
-</tr>
-<tr>
-<td>Bitcoin</td>
-<td>"y.BTC-USD"</td>
-</tr>
-</tbody>
-</table>
-<h2 id="downloading">Downloading<a class="headerlink" href="#downloading" title="Permanent link">#</a></h2>
-<p>Run <code>hledger-lots list</code> or <code>hledger-lots-view</code> with the option flag <code>--append-prices-to [journal path]</code> or with environment variable <strong>HLEDGER_APPEND_PRICES_TO</strong>. The <em>journal path</em> can be either the journal file you are reading or another one you prefer to have your prices directives.</p>
-<p>With the option above, <em>hledger-lots</em> will download the daily market prices for all the commodities that follows the commodity name rule. The time range follows the rule:</p>
-<ul>
-<li>If there is no market price for a commodity, it will download daily prices from the date of the first purchase until yesterday.</li>
-<li>If there is a market price for a commodity, it will download daily prices from the date following the last price directive to yesterday</li>
-</ul>
+                <h1 id="unit-tests">Unit Tests<a class="headerlink" href="#unit-tests" title="Permanent link">#</a></h1>
+<h2 id="test-coverage">Test Coverage<a class="headerlink" href="#test-coverage" title="Permanent link">#</a></h2>
+<iframe  src="/hledger-lots/test_coverage" allowfullscreen style="width: 100%; height: 500px; border: none;"></iframe>
+
+<h2 id="unit-test">Unit Test<a class="headerlink" href="#unit-test" title="Permanent link">#</a></h2>
+<iframe  src="/hledger-lots/unit_tests" allowfullscreen style="width: 100%; height: 1000px; border: none;"></iframe>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../usage/" class="btn btn-neutral float-left" title="Usage"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../output/" class="btn btn-neutral float-right" title="Output examples">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../output/" class="btn btn-neutral float-left" title="Output examples"><span class="icon icon-circle-arrow-left"></span> Previous</a>
     </div>
 
   <hr/>
@@ -163,10 +127,8 @@
         </span>
     
     
-      <span><a href="../usage/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../output/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
-    
-      <span><a href="../output/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
