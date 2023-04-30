@@ -85,9 +85,7 @@ def buy(
     file: Tuple[str, ...],
 ):
     """
-    Create a transaction with automatic FIFO or AVERAGE COST for a commodity by answering some prompts that tries to avoid errors with validation and using current journal data to filter possible answers and give informations that guides the user thru the process.\r
-
-    > This command also add transaction's comment with some indicators. See an example on "Output examples" page of the docs.
+    Create a purchase transaction for a commodity by answering some prompts that tries to avoid errors with validation and using current journal data to filter possible answers and give informations that guides the user thru the process.\r
 
     ### Transaction postings
 
