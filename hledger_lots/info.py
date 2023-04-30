@@ -51,7 +51,7 @@ def get_last_price(files_comm: List[str], commodity: str):
     prices_list = [row.split(" ", 3) for row in prices_str.split("\n") if row != ""]
 
     date_list = [
-        (row[1], re.sub(r"[a-zA-Z]|\,|\s", "", row[3]))
+        (row[1], re.sub(r"[^0-9.]", "", row[3]))
         for row in prices_list
         if row[2] == adjust_commodity(commodity)
     ]
@@ -85,7 +85,6 @@ class Info:
         self.txns = hledger2txn(journals, commodity, no_desc)
 
         self.has_txn = len(self.txns) > 0
-
         self.last_price = get_last_price(self.files_comm, commodity)
 
         self.market_date, self.market_price = self.last_price

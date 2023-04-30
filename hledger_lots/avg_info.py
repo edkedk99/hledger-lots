@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Tuple
+from typing import Optional, Tuple
 
 from .avg import get_avg_cost
 from .info import AllInfo, Info, LotsInfo
@@ -7,7 +7,13 @@ from .lib import dt_list2table
 
 
 class AvgInfo(Info):
-    def __init__(self, journals: Tuple[str, ...], commodity: str, check: bool):
+    def __init__(
+        self,
+        journals: Tuple[str, ...],
+        commodity: str,
+        check: bool,
+        no_desc: Optional[str] = None,
+    ):
         super().__init__(journals, commodity)
         self.check = check
         self.avg_lots = get_avg_cost(self.txns, self.check)

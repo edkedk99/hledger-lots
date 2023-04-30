@@ -8,30 +8,31 @@ ENV_FILE = "LEDGER_FILE"
 default_path = Path.home() / ".hledger.journal"
 
 
-def get_default_file() -> Tuple[str, ...]:
-    file_env = os.getenv("LEDGER_FILE")
-    if file_env:
-        return (file_env,)
-    elif default_path.exists():
-        return (str(default_path),)
-    else:
-        raise click.BadOptionUsage("file", "File missing")
-
-
-def get_file_path(
-    ctx: click.Context, _param, value: Optional[Tuple[str, ...]]
-) -> Optional[Tuple[str, ...]]:  # type: ignore
-    if value:
-        return value
-
-    if not ctx.parent:
+def get_parent_file(ctx: click.Context):
+    parent = ctx.parent
+    if not parent:
         return None
 
-    filenames: Optional[Tuple] = ctx.parent.params.get("file")
-    if not filenames:
-        raise click.BadOptionUsage("file", "File missing")
+    file_parent = parent.params.get("file")
+    if not file_parent:
+        return None
+    file: Optional[Tuple[str, ...]] = file_parent
+    return file
 
-    return filenames
+
+def get_file(ctx: click.Context, file: Tuple[str, ...]):
+    if len(file) > 0:
+        return file
+
+    parent_file = get_parent_file(ctx)
+    if parent_file:
+        return parent_file
+
+    env_file = os.getenv("LEDGER_FILE")
+    if env_file:
+        return (env_file,)
+
+    raise click.BadOptionUsage("file", "File missing")
 
 
 def get_files_comm(file_path: Tuple[str, ...]) -> List[str]:

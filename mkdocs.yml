@@ -4,7 +4,16 @@ repo_url: https://github.com/edkedk99/hledger-lots
 strict: true
 remote_name: github
 
-theme: readthedocs
+theme:
+  name: material
+  palette:
+    primary: teal
+  features:
+    - navigation.tracking
+    - navigation.sections
+    - navigation.path
+    - navigation.top
+
 nav:
     - Home: README.md
     - Usage: usage.md

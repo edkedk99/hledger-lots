@@ -6,11 +6,10 @@ from typing import List, Optional, Tuple
 import questionary
 from prompt_toolkit.shortcuts import CompleteStyle
 
-from . import avg, fifo
 from .avg_info import AllAvgInfo
 from .fifo_info import AllFifoInfo
 from .files import get_files_comm
-from .hl import hledger2txn
+from .info import LotsInfo
 
 
 class PromptError(BaseException):
@@ -20,15 +19,26 @@ class PromptError(BaseException):
 
 
 @dataclass
-class SellInfo:
+class Tradeinfo:
     date: str
     quantity: float
     commodity: str
     cash_account: str
-    revenue_account: str
     commodity_account: str
     price: float
     value: float
+
+
+def custom_autocomplete(name: str, choices: List[str]):
+    question = questionary.autocomplete(
+        f"{name} (TAB to autocomplete)",
+        choices=choices,
+        ignore_case=True,
+        match_middle=True,
+        style=questionary.Style([("answer", "fg:#f71b07")]),
+        complete_style=CompleteStyle.MULTI_COLUMN,
+    )
+    return question
 
 
 def get_append_file(default_file: str):
@@ -45,16 +55,18 @@ def get_append_file(default_file: str):
         return file_append
 
 
-def custom_autocomplete(name: str, choices: List[str]):
-    question = questionary.autocomplete(
-        f"{name} (TAB to autocomplete)",
-        choices=choices,
-        ignore_case=True,
-        match_middle=True,
-        style=questionary.Style([("answer", "fg:#f71b07")]),
-        complete_style=CompleteStyle.MULTI_COLUMN,
-    )
-    return question
+def select_commodities_text(commodities: List[str]):
+    answer = questionary.select(
+        "Commodity",
+        choices=commodities,
+        use_shortcuts=True,
+    ).ask()
+    return answer
+
+
+def ask_commodities_text(commodities: List[str]):
+    answer: str = custom_autocomplete("Commodity", commodities).ask()
+    return answer
 
 
 def val_date(date: str):
@@ -65,13 +77,13 @@ def val_date(date: str):
         return "Invalid date format"
 
 
-def val_qtty(answer: str, available: float):
+def val_sell_qtty(answer: str, available: float):
     try:
         answer_float = float(answer)
     except ValueError:
         return "Invalid number"
 
-    if answer_float < 0:
+    if answer_float <= 0:
         return "Quantity should be positive"
 
     if answer_float > available:
@@ -107,7 +119,7 @@ def val_total(answer: str):
     return True
 
 
-class PromptSell:
+class Prompt:
     def __init__(
         self,
         file: Tuple[str, ...],
@@ -116,54 +128,49 @@ class PromptSell:
         no_desc: Optional[str] = None,
     ) -> None:
         self.file = file
-        self.avg_cost = avg_cost
         self.check = check
         self.no_desc = no_desc
+        self.avg_cost = avg_cost
 
         self.files_comm = get_files_comm(file)
+        self.infos = self.get_infos()
+        self.commodities = [info["comm"] for info in self.get_infos()]
 
-        print(self.initial_info)
-        self.info = self.get_info()
+    def run_hledger(self, *comm: str):
+        command = ["hledger", *self.files_comm, *comm, f"not:desc:{self.no_desc}"]
+        proc = subprocess.run(command, capture_output=True)
+        if proc.returncode != 0:
+            raise subprocess.SubprocessError(proc.stderr.decode("utf8"))
 
-    def get_commodities_text(self, commodities: List[str]):
-        answer = questionary.select(
-            "Commodity",
-            choices=commodities,
-            use_shortcuts=True,
-        ).ask()
-        return answer
+        result = proc.stdout.decode("utf8")
+        return result
 
-    def get_info(self):
+    def run_hledger_no_query_desc(self, *comm: str):
+        command = ["hledger", *self.files_comm, *comm]
+        proc = subprocess.run(command, capture_output=True)
+        if proc.returncode != 0:
+            raise subprocess.SubprocessError(proc.stderr.decode("utf8"))
+
+        result = proc.stdout.decode("utf8")
+        return result
+
+    def get_infos(self):
         if self.avg_cost:
             infos = AllAvgInfo(self.file, self.no_desc or "", self.check)
         else:
             infos = AllFifoInfo(self.file, self.no_desc or "", self.check)
 
-        commodities = [info["comm"] for info in infos.infos if float(info["qtty"]) > 0]
-        commodity_text = self.get_commodities_text(commodities)
-        info = next(item for item in infos.infos if item["comm"] == commodity_text)
-        return info
+        valid_infos = [info for info in infos.infos if float(info["qtty"]) > 0]
+        return valid_infos
 
-    def get_last_purchase(self):
-        commodity = self.info["comm"]
+    def get_last_purchase(self, info: LotsInfo):
+        commodity = info["comm"]
+        reg = self.run_hledger("reg", f"cur:{commodity}", "amt:>0")
+        rows_list = [row for row in reg.split("\n") if row != ""]
 
-        comm = ["hledger", *self.files_comm, "reg", f"cur:{commodity}", "amt:>0"]
-        reg_proc = subprocess.run(comm, capture_output=True)
-        reg_txt = reg_proc.stdout.decode("utf8")
-        rows_list = [row for row in reg_txt.split("\n") if row != ""]
-        last_date = rows_list[-1][0:10]
-        return last_date
-
-    def get_accounts_list(self, *query: str):
-        command = ["hledger", *self.files_comm, *query]
-        proc = subprocess.run(command, capture_output=True)
-        if proc.returncode != 0:
-            stderr = proc.stderr.decode("utf8")
-            raise PromptError(stderr)
-
-        proc_list = proc.stdout.decode("utf8").split("\n")
-        proc_list = [row for row in proc_list if row != ""]
-        return proc_list
+        if len(rows_list) > 0:
+            last_date = rows_list[-1][0:10]
+            return last_date
 
     def get_append_file(self):
         default_file = self.file[0]
@@ -180,8 +187,8 @@ class PromptSell:
             subprocess.run(comm, check=True)
             return file_append
 
-    def ask_date(self):
-        last_purchase = self.get_last_purchase()
+    def ask_date(self, last_purchase: Optional[str]):
+        last_purchase = last_purchase
 
         answer: str = questionary.text(
             f"Date YYYY-MM-DD",
@@ -190,18 +197,18 @@ class PromptSell:
         ).ask()
         return answer
 
-    def ask_qtty(self):
-        available = float(self.info["qtty"])
+    def ask_sell_qtty(self, info: LotsInfo):
+        available = float(info["qtty"])
 
         answer_str: str = questionary.text(
             f"Quantity (available {available})",
-            validate=lambda answer: val_qtty(answer, available),
+            validate=lambda answer: val_sell_qtty(answer, available),
             instruction="",
         ).ask()
         return answer_str
 
-    def ask_price(self):
-        cost_str = self.info["avg_cost"].replace(",", ".")
+    def ask_price(self, info: LotsInfo):
+        cost_str = info["avg_cost"].replace(",", ".")
         cost = float(cost_str)
 
         answer_str: str = questionary.text(
@@ -211,8 +218,8 @@ class PromptSell:
         ).ask()
         return answer_str
 
-    def ask_total(self, qtty: float):
-        available = qtty * float(self.info["avg_cost"])
+    def ask_total(self, qtty: float, info: LotsInfo):
+        available = qtty * float(info["avg_cost"])
         available_str = f"{available:,.2f}"
 
         answer_str: str = questionary.text(
@@ -223,24 +230,14 @@ class PromptSell:
         return answer_str
 
     def ask_cash_account(self):
-        accts = self.get_accounts_list("accounts")
-
+        accts_txt = self.run_hledger("accounts")
+        accts = [acct for acct in accts_txt.split("\n") if acct != ""]
         answer: str = custom_autocomplete("Cash Account", accts).ask()
         return answer
 
-    def ask_commodity_account(self):
-        commodity = self.info["comm"]
-        accts = self.get_accounts_list("accounts", "note:Buy", f"cur:{commodity}")
-
-        answer: str = questionary.select(
-            "Commodity Account",
-            choices=accts,
-            use_shortcuts=True,
-        ).ask()
-        return answer
-
     def ask_revenue_account(self):
-        accts = self.get_accounts_list("accounts")
+        accts_txt = self.run_hledger("accounts")
+        accts = [acct for acct in accts_txt.split("\n") if acct != ""]
         answer: str = custom_autocomplete("Revenue Account", accts).ask()
         return answer
 
@@ -259,74 +256,3 @@ Cost Method        : {cost_method_text} - {check_text}
 Remove description : {no_desc_text}
 """
         return result
-
-    def prompt(self):
-        commodity = self.info["comm"]
-        sell_date = self.ask_date()
-        qtty = float(self.ask_qtty())
-        price_str = self.ask_price()
-
-        if price_str == "":
-            value_str = self.ask_total(qtty)
-            value = float(value_str)
-            price = value / qtty
-        else:
-            price = float(price_str)
-            value = qtty * price
-
-        cash_acct = self.ask_cash_account()
-
-        if self.avg_cost:
-            commodity_acct = self.ask_commodity_account()
-        else:
-            commodity_acct = ""
-
-        revenue_acct = self.ask_revenue_account()
-
-        result = SellInfo(
-            date=sell_date,
-            quantity=qtty,
-            commodity=commodity,
-            cash_account=cash_acct,
-            revenue_account=revenue_acct,
-            commodity_account=commodity_acct,
-            price=price,
-            value=value,
-        )
-
-        return result
-
-    def get_hl_txn(self):
-        sell = self.prompt()
-        commodity = sell.commodity
-        adj_txns = hledger2txn(self.file, commodity, self.no_desc)
-
-        if self.avg_cost:
-            txn_print = avg.avg_sell(
-                txns=adj_txns,
-                date=sell.date,
-                qtty=sell.quantity,
-                cur=sell.commodity,
-                cash_account=sell.cash_account,
-                revenue_account=sell.revenue_account,
-                comm_account=sell.commodity_account,
-                value=sell.value,
-                check=self.check,
-            )
-        else:
-            sell_fifo = fifo.get_sell_lots(
-                lots=adj_txns,
-                sell_date=sell.date,
-                sell_qtty=sell.quantity,
-                check=self.check,
-            )
-            txn_print = fifo.txn2hl(
-                txns=sell_fifo,
-                date=sell.date,
-                cur=sell.commodity,
-                cash_account=sell.cash_account,
-                revenue_account=sell.revenue_account,
-                value=sell.value,
-            )
-
-        return txn_print

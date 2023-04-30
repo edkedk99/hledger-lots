@@ -3,108 +3,72 @@
 
 Besides the transaction, constructed according to *FIFO* or *AVERAGE COST* without any manual intervention, you have as tags the quantity and price sold, the average cost using *FIFO* and the *xirr* of the transaction, as explained [here](README.md#xirr) 
 
-<script async id="asciicast-gLrvr6EazYAs1raGn4ADiBTqe" src="https://asciinema.org/a/gLrvr6EazYAs1raGn4ADiBTqe.js"></script>
-
+[![asciicast](https://asciinema.org/a/zzEMCtDAlqAlza1hMlxynKMWy.svg)](https://asciinema.org/a/zzEMCtDAlqAlza1hMlxynKMWy)
 
 ## view
 
-### FIFO method
-```txt
+```bash
+$ python -m hledger_lots -f docs/examples/data.journal  view -c y.AAPL
 date          price  base_cur      qtty  acct
 ----------  -------  ----------  ------  ------------
-2022-01-05   4.0000  USD              0  Asset:Stocks
-2022-01-10   5.0000  USD              0  Asset:Stocks
-2022-01-20   5.8000  USD              0  Asset:Stocks
-2022-02-15   5.1000  USD              0  Asset:Stocks
-2023-01-01   5.1000  USD              5  Asset:Stocks
-2023-01-05   5.2000  USD              3  Asset:Stocks
+2022-01-05      160  USD              0  Asset:Stocks
+2022-01-10      145  USD              4  Asset:Stocks
+2022-01-20      168  USD             15  Asset:Stocks
 
 Info
 ----
-Commodity:      AAPL
-Quantity:       8
-Amount:         41.10
-Average Cost:   5.1375
+Commodity:      y.AAPL
+Quantity:       19
+Amount:         3,100.00
+Average Cost:   163.1579
 
-Market Price:  6.2000
-Market Amount: 49.60
-Market Profit: 8.50
-Market Date:   2023-07-01
-Xirr:          46.1056% (APR 30/360US)
+Market Price:  163.7700
+Market Amount: 3,111.63
+Market Profit: 11.63
+Market Date:   2023-04-25
+Xirr:          0.0029% (APR 30/360US)
+
 ```
 
-### AVERAGE COST METHOD
-
-```txt
-date          total_qtty    total_amount    avg_cost
-----------  ------------  --------------  ----------
-2022-01-05             5         20.0000      4.0000
-2022-01-10            15         70.0000      4.6667
-2022-01-15            12         56.0000      4.6667
-2022-01-20            27        143.0000      5.2963
-2022-01-25            25        132.4074      5.2963
-2022-01-25            19        100.6296      5.2963
-2022-02-10            15         79.4444      5.2963
-2022-02-10             0          0.0000      0.0000
-2022-02-15             5         25.5000      5.1000
-2022-12-31             0          0.0000      0.0000
-2023-01-01             5         25.5000      5.1000
-2023-01-05             8         41.1000      5.1375
-
-Info
-----
-Commodity:      AAPL
-Quantity:       8
-Amount:         41.10
-Average Cost:   5.1375
-
-Market Price:  6.2000
-Market Amount: 49.60
-Market Profit: 8.50
-Market Date:   2023-07-01
-Xirr:          0.1595% (APR 30/360US)
-```
-
-## Info
+## list
 
 ### plain
 
-```txt
-comm    cur      qtty    amount    avg_cost  mkt_price    mkt_amount    mkt_profit    mkt_date    xirr
-AAPL    USD         8   41.1000      5.1375  6.2000       49.60         8.50          2023-07-01  46.1056%
-BRL     USD        55   10.0000      0.1818
-GOOG    USD         3   57.0000     19.0000
+```bash
+$ python -m hledger_lots -f docs/examples/data.journal list
+comm    cur      qtty  amount      avg_cost    mkt_price  mkt_amount      mkt_profit  mkt_date    xirr
+y.GOOG  USD         3  306.00      102.0000     104.6100  313.83              7.8300  2023-04-25  0.0200%
+y.AAPL  USD        19  3,100.00    163.1579     163.7700  3,111.63           11.6300  2023-04-25  0.0029%
 ```
 
 ### pretty
 
-```txt
-┍━━━━━━━━┯━━━━━━━┯━━━━━━━━┯━━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━━━━━━┯━━━━━━━━━━━━━━┯━━━━━━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━━━┑
-│ comm   │ cur   │   qtty │   amount │   avg_cost │ mkt_price   │ mkt_amount   │ mkt_profit   │ mkt_date   │ xirr     │
-┝━━━━━━━━┿━━━━━━━┿━━━━━━━━┿━━━━━━━━━━┿━━━━━━━━━━━━┿━━━━━━━━━━━━━┿━━━━━━━━━━━━━━┿━━━━━━━━━━━━━━┿━━━━━━━━━━━━┿━━━━━━━━━━┥
-│ AAPL   │ USD   │      8 │  41.1000 │     5.1375 │ 6.2000      │ 49.60        │ 8.50         │ 2023-07-01 │ 46.1056% │
-├────────┼───────┼────────┼──────────┼────────────┼─────────────┼──────────────┼──────────────┼────────────┼──────────┤
-│ BRL    │ USD   │     55 │  10.0000 │     0.1818 │             │              │              │            │          │
-├────────┼───────┼────────┼──────────┼────────────┼─────────────┼──────────────┼──────────────┼────────────┼──────────┤
-│ GOOG   │ USD   │      3 │  57.0000 │    19.0000 │             │              │              │            │          │
-┕━━━━━━━━┷━━━━━━━┷━━━━━━━━┷━━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━━━┷━━━━━━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━━━┙
+```bash
+$ python -m hledger_lots -f docs/examples/data.journal list --output-format pretty
+┍━━━━━━━━┯━━━━━━━┯━━━━━━━━┯━━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━━━━━━┯━━━━━━━━━━━━━━┯━━━━━━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━━┑
+│ comm   │ cur   │   qtty │ amount   │   avg_cost │   mkt_price │ mkt_amount   │   mkt_profit │ mkt_date   │ xirr    │
+┝━━━━━━━━┿━━━━━━━┿━━━━━━━━┿━━━━━━━━━━┿━━━━━━━━━━━━┿━━━━━━━━━━━━━┿━━━━━━━━━━━━━━┿━━━━━━━━━━━━━━┿━━━━━━━━━━━━┿━━━━━━━━━┥
+│ y.GOOG │ USD   │      3 │ 306.00   │   102.0000 │    104.6100 │ 313.83       │       7.8300 │ 2023-04-25 │ 0.0200% │
+├────────┼───────┼────────┼──────────┼────────────┼─────────────┼──────────────┼──────────────┼────────────┼─────────┤
+│ y.AAPL │ USD   │     19 │ 3,100.00 │   163.1579 │    163.7700 │ 3,111.63     │      11.6300 │ 2023-04-25 │ 0.0029% │
+┕━━━━━━━━┷━━━━━━━┷━━━━━━━━┷━━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━━━┷━━━━━━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━━┙
 ```
 
 ### csv
 
-```txt
+```bash
+$ python -m hledger_lots -f docs/examples/data.journal list --output-format csv
 comm,cur,qtty,amount,avg_cost,mkt_price,mkt_amount,mkt_profit,mkt_date,xirr
-AAPL,USD,8,41.10,5.1375,6.2000,49.60,8.50,2023-07-01,46.1056%
-BRL,USD,55,10.00,0.1818,,,,,
-GOOG,USD,3,57.00,19.0000,,,,,
+y.GOOG,USD,3,306.00,102.0000,104.6100,313.83,7.83,2023-04-25,0.0200%
+y.AAPL,USD,19,"3,100.00",163.1579,163.7700,"3,111.63",11.63,2023-04-25,0.0029%
 ```
 
 ## --check/no-check
 
 The error below was raised for a sale transaction generated using *AVERAGE COST* after trying to use the *view* command not setting "--avg-cost", so *FIFO* was used. This command raised a *CostMethodError* because the cost was not the one expected:
 
+```bash
+$ hledger_lots -f test.journal view -c AAPL --check
 
-> hledger_lots -f test.journal view -c AAPL --check
-
->*hledger_lots.lib.CostMethodError: Error in sale AdjustedTxn(date='2023-03-10', price=1.3066666667, base_cur='BRL', qtty=-15, acct='Ativo:Acoes:AAPL'). Correct price should be 1.2 in currency BRL*
-
+hledger_lots.lib.CostMethodError: Error in sale AdjustedTxn(date='2023-03-10', price=1.3066666667, base_cur='BRL', qtty=-15, acct='Ativo:Acoes:AAPL'). Correct price should be 1.2 in currency BRL*
+```

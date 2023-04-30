@@ -1,34 +1,59 @@
-# Introduction
+# Hledger-lots
 
 ![automatic lots](img/meme.jpg)
 
-This script aims to help hledger's users to add transactions involving buying and selling commodities, which can be FOREX or investments assets, for example
+This package helps [hledger](https://hledger.org/) users to add and manage transactions involving buying and selling commodities like stock, currency, etc.
 
-When you sell a commodity, you should use the cost and quantity from the purchase date, which is buried deep down in your journal file so you have hledger accounting the correct _Capital Gain_.
+## Features
+
+### Add transaction
+
+Instead of editing the journal file directly to add a commodity purchase or sale, answer some interactive prompts with the following benefits:
+
+- Validation of allowed values for each field
+- Fuzzy search completion using previous transaction data in the journal
+- Select the answer between possible values or autocomplete when only one answer is allowed.
+
+### Automatic Lots
+
+The most convoluted aspect of using hledger for investment is to [manage lots](https://hledger.org/track-investments.html) because when selling a commodity, you need to use its cost, which is buried deep down in your journal, instead of the sale price, which is more easily available to add the correct profit/loss of the trade.
+
+To calculate the cost, there are some methods you can apply and hledger doesn't provide tools to do it, so you are on your own. Hledger-lots calculate the cost without the need to alocate each purchase to a specific subaccount or tag. When you use `hledger-lots sell`, it traverse the journal and arrive to the correct cost without additional information.
 
 You can choose between two diferrent methods to calculate the cost of selling lots:
 
 - **FIFO**: First In First Out
 - **AVERAGE COST**: Average Cost of all previous purchase. It is as if selling a proportional part of each previous sale.
 
-This package create a sale transaction according to information provided by the user and traverse the journal file to determine what quantity and lot prices should be used and generate a valid hledger transaction to be appended to the journal with additional helpful calculations as comment tags.
 
-When using this package, you don't need to create lots as subaccounts or tag, just add a purchase transaction as usual and when there is a sale, *hledger-lots* will generate the correct postings adding the cost for you, so you don't need to bother looking for this information.
+### Update Price
 
-It also generate lots reports so the user can understand his situation with a commodity and check the correctness of the generated sell transaction, including market performance from *prices directives*, which can be automatically downloaded from [Yahoo Finance](https://finance.yahoo.com/).
+After having the correct cost and result for selling a commodity, we want to follow the investment performance using market data. This package can download market price history from [Yahoo Finance](https://finance.yahoo.com/) and append [price directive](https://hledger.org/1.29/hledger.html#p-directive) to the journal just by following the required format when naming the commodity. More information [here](market_prices/)
 
-To verify your transaction, this package can also check if your past sale has the correct cost.
+### Reports
+
+To get information about the commodities, there is more 2 commands:
+
+| command                          | description                                          |
+|----------------------------------|------------------------------------------------------|
+| [view](usage/#hledger-lots-view) | Get the lots and indicators for a specific commodity |
+| [list](usage/#hledger-lots-list) | Get the indicators for all commodities as a table    |
+
+The indicators provided by these command are explained [here](#indicators).
 
 ## Documentation
 
 Documentation with usage information can be found [here](https://edkedk99.github.io/hledger-lots/)
 
-## Requirements
-
-- python
-- hledger
 
 ## Installation
+
+### Requirements
+
+- [python](https://www.python.org/)
+- [hledger](https://hledger.org/1.29/hledger.html#p-directive)
+
+### Command
 
 ```python
 pip install --upgrade hledger-lots
@@ -36,24 +61,12 @@ pip install --upgrade hledger-lots
 
 ## Workflow
 
-1. Add purchase transaction as normal. **Don't bother creating subaccounts or tags with unique lot name**. See the some examples [here](examples/test2022.journal)
-2. When you sell, use the command [sell](usage/#sell) instead of adding the transactions manually. Hledger-lots will generate the correct transaction and print to stdout so you can add to the journal if everything is correct. *See transaction tags with interesting indicators about the current trade*
+1. Add purchase using the command [buy](usage/#buy) or edit the journal as usual using "@" notation. **Don't bother creating subaccounts or tags with unique lot name**. See the some examples [here](examples/data.journal)
+2. When you sell, use the command [sell](usage/#sell) instead of adding the transactions manually. Hledger-lots will generate the correct transaction and append to the selected journal if you confirm the transaction is correct. *See transaction tags with interesting indicators about the current trade*
+3. View financial indicators for a specific commodity using [view](usage/#view) or a summary of all commodities using [list](usage/$list). Optionally update market prices from [Yahoo Finance](https://finance.yahoo.com/) using the flag *--apend-prices-to [file path]*
 
 > By default the sale is created using *FIFO* method. Use the option flag "--avg-cost" to change it to *Average Cost*
-   
 
-## Reports
-
-To get information about the commodities, there is more 2 commands:
-
-| command | description                                          |
-|---------|------------------------------------------------------|
-| view    | Get the lots and indicators for a specific commodity |
-| list   | Get the indicators for all commodities as a table    |
-
-
-
-If you add *price directives* for the commodity in a date after the last purchase, additional indicators will be shown related to the performance of the investment. See [indicators](#indicators) help for more detail and [market prices](market_prices) to download the prices from [Yahoo Finance](https://finance.yahoo.com/).
 
 ## Indicators
   
@@ -78,13 +91,13 @@ For commodities with price directives on a date after the last purchase, you wil
 
 The sale transaction gives you the calculated **xirr** as tag, which is the internal rate of return of an investment based on a specified series of irregularly spaced cash flows. This value is annual percentage rate following the 30/360US day count convention. It is a good metric to compare the investment return with a benchmark like the S&P or the T-Bill, for example.
 
-Note the benchmark can use another day count convention, so this comparison may not be 100% precise. This app may in the future offer others day count convention for **xirr** calculation.
+> Note the benchmark can use another day count convention, so this comparison may not be 100% precise. This app may in the future offer others day count convention for **xirr** calculation.
 
 ## Checks
 
 It is recommended to use the option *--check* to ensure you past selling transaction has the correct cost according to the choosen cost method. It can be enabled by setting the environment variable **HLEDGER_LOTS_CHECK** to "true". It can be disabled with the option *--no-check* or setting the environment variable **HLEDGER_LOTS_CHECK** to "false".
 
-At the moment the dafault is set to "false", but expect it to be turned to "true" in future releases.
+> At the moment the default is set to "false", but expect it to be turned to "true" in future releases.
 
 ## Limitations
 

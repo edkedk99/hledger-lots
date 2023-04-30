@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Tuple
+from typing import Optional, Tuple
 
 from .checks import MultipleBaseCurrencies
 from .fifo import get_lots
@@ -9,7 +9,13 @@ from .lib import dt_list2table, get_avg_fifo
 
 
 class FifoInfo(Info):
-    def __init__(self, journals: Tuple[str, ...], commodity: str, check: bool):
+    def __init__(
+        self,
+        journals: Tuple[str, ...],
+        commodity: str,
+        check: bool,
+        no_desc: Optional[str] = None,
+    ):
         super().__init__(journals, commodity)
         self.check = check
 

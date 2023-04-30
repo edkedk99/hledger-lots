@@ -2,7 +2,7 @@ from hledger_lots.lib import AdjustedTxn
 import pytest
 from hledger_lots import checks
 
-# TODO: Test --check-no-check option
+
 class TestCheckShortSellPast:
     previous_buys = [
         AdjustedTxn(
