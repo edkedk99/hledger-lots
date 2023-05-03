@@ -8,7 +8,7 @@ class CommodityTag(TypedDict):
 
 
 def get_commodity_name(commodity_directive: str):
-    commodity = re.sub(r"(\d[,\d.]*\d)|( )", "", commodity_directive)
+    commodity = re.sub(r"(\d[,\d.]*\d)|( )|\'|\"", "", commodity_directive)
     return commodity
 
 

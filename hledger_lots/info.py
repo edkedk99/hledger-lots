@@ -51,9 +51,7 @@ def get_last_price(files_comm: List[str], commodity: str):
     prices_list = [row.split(" ", 3) for row in prices_str.split("\n") if row != ""]
 
     date_list = [
-        (row[1], re.sub(r"[^0-9.]", "", row[3]))
-        for row in prices_list
-        if row[2] == adjust_commodity(commodity)
+        (row[1], re.sub(r"[^0-9.]", "", row[3])) for row in prices_list if len(row) > 0
     ]
 
     if len(date_list) == 0:

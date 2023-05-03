@@ -26,9 +26,9 @@ You can choose between two diferrent methods to calculate the cost of selling lo
 - **AVERAGE COST**: Average Cost of all previous purchase. It is as if selling a proportional part of each previous sale.
 
 
-### Update Price
+### Automatic Price Download
 
-After having the correct cost and result for selling a commodity, we want to follow the investment performance using market data. This package can download market price history from [Yahoo Finance](https://finance.yahoo.com/) and append [price directive](https://hledger.org/1.29/hledger.html#p-directive) to the journal just by following the required format when naming the commodity. More information [here](market_prices/)
+One simple command to automatically download market price from [Yahoo Finance](https://finance.yahoo.com/) for choosen commodities as explained [here](market_prices/). 
 
 ### Reports
 
@@ -61,9 +61,10 @@ pip install --upgrade hledger-lots
 
 ## Workflow
 
-1. Add purchase using the command [buy](usage/#buy) or edit the journal as usual using "@" notation. **Don't bother creating subaccounts or tags with unique lot name**. See the some examples [here](examples/data.journal)
-2. When you sell, use the command [sell](usage/#sell) instead of adding the transactions manually. Hledger-lots will generate the correct transaction and append to the selected journal if you confirm the transaction is correct. *See transaction tags with interesting indicators about the current trade*
-3. View financial indicators for a specific commodity using [view](usage/#view) or a summary of all commodities using [list](usage/$list). Optionally update market prices from [Yahoo Finance](https://finance.yahoo.com/) using the flag *--apend-prices-to [file path]*
+1. Add purchase using the command [buy](usage/#hledger-lots-buy) or edit the journal as usual using "@" notation. **Don't bother creating subaccounts or tags with unique lot name**. See the some examples [here](examples/data.journal)
+2. Download market price history as [price directive](https://hledger.org/1.29/hledger.html#p-directive) using the command [prices](usage/#hledger-lots-prices)
+3. View financial indicators for a specific commodity using [view](usage/#hledger-lots-view) or a summary of all commodities using [list](usage/$list). Optionally update market prices from [Yahoo Finance](https://finance.yahoo.com/) using the flag *--apend-prices-to [file path]*
+4. When you sell, use the command [sell](usage/#hledger-lots-sell) instead of adding the transactions manually. Hledger-lots will generate the correct transaction and append to the selected journal if you confirm the transaction is correct. *See transaction tags with interesting indicators about the current trade*
 
 > By default the sale is created using *FIFO* method. Use the option flag "--avg-cost" to change it to *Average Cost*
 

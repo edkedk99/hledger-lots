@@ -17,6 +17,9 @@ commodity BTC        ; yahoo_ticker:BTC-USD
 commodity EURUSD     ; yahoo_ticker:EURUSD=X
 ```
 
+For output example, see [here](/hledger-lots/output/#prices)
+
+
 ## Downloading
 
 Run `hledger-lots prices -f [journal file]`. For those commodities that have a *yahoo_ticker* tag according to the example above, *hledger-lots* will download daily historical prices in a date range according to the rule below, so the user doesn't need to care about start and end dates.

@@ -2,7 +2,7 @@ import sys
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta
 from pathlib import Path
-from typing import List, Tuple
+from typing import Dict, List, Tuple
 
 import yfinance as yf
 from requests.exceptions import HTTPError
@@ -20,42 +20,6 @@ class Price:
     date: date
     price: float
     cur: str
-
-
-def prices2hledger(prices: List[Price]):
-    prices_list = [
-        f"P {price.date.strftime('%Y-%m-%d')} \"{price.name}\" {price.price} {price.cur}"
-        for price in prices
-        if price
-    ]
-    prices_str = "\n".join(prices_list)
-    return prices_str
-
-
-def get_yahoo_prices(
-    commodity: CommodityTag,
-    start_date: str,
-    end_date: str,
-    session: CachedSession,
-):
-    ticker = yf.Ticker(commodity["value"], session=session)
-    info = ticker.info
-
-    if start_date:
-        df = ticker.history(start=start_date, end=end_date, raise_errors=True)
-    else:
-        df = ticker.history(period="1d", raise_errors=True)
-
-    prices = [
-        Price(
-            commodity["commodity"],
-            row[0].to_pydatetime().date(),  # type:ignore
-            row[1]["Close"],  # type: ignore
-            info["currency"],
-        )
-        for row in df.iterrows()
-    ]
-    return prices
 
 
 class YahooPrices:
@@ -94,7 +58,45 @@ class YahooPrices:
 
         return start_date
 
-    def print_commodity_prices(self, commodity: CommodityTag):
+    def prices2hledger(self, prices: List[Price]):
+        prices_list = [
+            f"P {price.date.strftime('%Y-%m-%d')} \"{price.name}\" {price.price} {price.cur}"
+            for price in prices
+            if price
+        ]
+        prices_str = "\n".join(prices_list)
+        return prices_str
+
+    def get_prices(
+        self,
+        commodity: CommodityTag,
+        start_date: str,
+    ) -> List[Price]:
+        ticker = yf.Ticker(commodity["value"], session=self.session)
+
+        try:
+            info: Dict[str, str] = ticker.info
+        except HTTPError:
+            print(f"; stderr: Can't download commodity {commodity}", file=sys.stderr)
+            return []
+
+        if not start_date:
+            return []
+
+        df = ticker.history(start=start_date, end=self.yesterday_str, raise_errors=True)
+
+        prices = [
+            Price(
+                commodity["commodity"],
+                row[0].to_pydatetime().date(),  # type:ignore
+                row[1]["Close"],  # type: ignore
+                info["currency"],
+            )
+            for row in df.iterrows()
+        ]
+        return prices
+
+    def get_commodity_prices(self, commodity: CommodityTag):
         start_date = self.get_start_date(commodity)
         if not start_date:
             print(f"; stderr: No new data for {commodity}", file=sys.stderr)
@@ -102,16 +104,15 @@ class YahooPrices:
 
         start_date_str = start_date.strftime("%Y-%m-%d")
         try:
-            prices = get_yahoo_prices(
-                commodity, start_date_str, self.yesterday_str, self.session
-            )
-            prices_hledger = prices2hledger(prices)
-            print(prices_hledger + "\n")
+            prices = [
+                price for price in self.get_prices(commodity, start_date_str) if price
+            ]
+            return prices
         except HTTPError:
-            print(f"stderr: {commodity['value']} not found", file=sys.stderr)
+            print(f"; stderr: {commodity['value']} not found", file=sys.stderr)
         except Exception:
             print(
-                f"stderr: Nothing downloaded for {commodity['value']} between {start_date} and {self.yesterday_str}",
+                f"; stderr: Nothing downloaded for {commodity['value']} between {start_date} and {self.yesterday_str}",
                 file=sys.stderr,
             )
 
@@ -123,9 +124,9 @@ class YahooPrices:
             )
             return
 
-        today_str = date.today().strftime("%Y-%m-%d")
-        print(f"\n\n; hledger_lots prices downloads for {self.TAG} on {today_str}")
-
         for commodity in self.commodities:
-            self.print_commodity_prices(commodity)
-            print("\n")
+            prices = self.get_commodity_prices(commodity)
+            if prices:
+                print("\n")
+                hledger_prices = self.prices2hledger(prices)
+                print(hledger_prices)
