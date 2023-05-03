@@ -284,6 +284,19 @@
     Setup
   </a>
   
+    <nav class="md-nav" aria-label="Setup">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    Examples:
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -362,6 +375,19 @@
     Setup
   </a>
   
+    <nav class="md-nav" aria-label="Setup">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    Examples:
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -390,46 +416,47 @@
 
 
 <h1 id="automatic-market-prices-download">Automatic Market Prices Download<a class="headerlink" href="#automatic-market-prices-download" title="Permanent link">#</a></h1>
-<p><em>Hledger-lots</em> can download daily market prices from <a href="https://finance.yahoo.com/">Yahoo Finance</a> and append <a href="https://hledger.org/1.29/hledger.html#p-directive">market price directive</a> to the journal, so you get updated <em>xirr</em> calculation and run regular hledger reports using market prices.</p>
+<p><em>Hledger-lots</em> can download daily market prices from <a href="https://finance.yahoo.com/">Yahoo Finance</a> and output as <a href="https://hledger.org/1.29/hledger.html#p-directive">market price directive</a>, so you get updated <em>xirr</em> calculation and run regular hledger reports using market prices.</p>
 <h2 id="setup">Setup<a class="headerlink" href="#setup" title="Permanent link">#</a></h2>
-<p>Rename those commodities you want <em>hledger-lots</em> to download market according to the rule: <strong>"y.[yahoo ticker name]"</strong>. </p>
+<p>Add a <strong>yahoo_ticker</strong> <a href="https://hledger.org/1.29/hledger.html#tags">tag</a> to the comment of a <a href="https://hledger.org/1.29/hledger.html#commodity-directive">commodity directive</a> with the value of the ticker in <a href="https://finance.yahoo.com/">Yahoo Finance</a>.</p>
 <blockquote>
-<p><strong>IMPORTANT:</strong> You need to add double quotes between the commodity name because hledger accepts only word characters without it</p>
+<p><strong>IMPORTANT:</strong> You may need to add double quotes between the commodity name because hledger accepts only word characters without it</p>
 </blockquote>
-<p>Examples:</p>
+<h3 id="examples">Examples:<a class="headerlink" href="#examples" title="Permanent link">#</a></h3>
+<pre><code class="language-text">commodity AAPL       ; yahoo_ticker:AAPL                                      
+commodity &quot;PETR4&quot;    ; yahoo_ticker:PETR4.SA                                  
+commodity BTC        ; yahoo_ticker:BTC-USD 
+commodity EURUSD     ; yahoo_ticker:EURUSD=X
+</code></pre>
+<p>For output example, see <a href="/hledger-lots/output/#prices">here</a></p>
+<h2 id="downloading">Downloading<a class="headerlink" href="#downloading" title="Permanent link">#</a></h2>
+<p>Run <code>hledger-lots prices -f [journal file]</code>. For those commodities that have a <em>yahoo_ticker</em> tag according to the example above, <em>hledger-lots</em> will download daily historical prices in a date range according to the rule below, so the user doesn't need to care about start and end dates.</p>
 <table>
 <thead>
 <tr>
-<th>Company</th>
-<th>Commodity name</th>
+<th>Condition</th>
+<th>Start Date</th>
+<th>End Date</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Microsoft</td>
-<td>"y.MSFT"</td>
+<td>no market price</td>
+<td>First Purchase</td>
+<td>Yesterday</td>
 </tr>
 <tr>
-<td>Apple</td>
-<td>"y.AAPL"</td>
+<td>have market price</td>
+<td>Next day of the last price</td>
+<td>Yesterday</td>
 </tr>
 <tr>
-<td>EUR/USD</td>
-<td>"y.EURUSD=X"</td>
-</tr>
-<tr>
-<td>Bitcoin</td>
-<td>"y.BTC-USD"</td>
+<td>market price later or equal yesterday</td>
+<td>No download</td>
+<td>No download</td>
 </tr>
 </tbody>
 </table>
-<h2 id="downloading">Downloading<a class="headerlink" href="#downloading" title="Permanent link">#</a></h2>
-<p>Run <code>hledger-lots list</code> or <code>hledger-lots-view</code> with the option flag <code>--append-prices-to [journal path]</code> or with environment variable <strong>HLEDGER_APPEND_PRICES_TO</strong>. The <em>journal path</em> can be either the journal file you are reading or another one you prefer to have your prices directives.</p>
-<p>With the option above, <em>hledger-lots</em> will download the daily market prices for all the commodities that follows the commodity name rule. The time range follows the rule:</p>
-<ul>
-<li>If there is no market price for a commodity, it will download daily prices from the date of the first purchase until yesterday.</li>
-<li>If there is a market price for a commodity, it will download daily prices from the date following the last price directive to yesterday</li>
-</ul>
 
 
 

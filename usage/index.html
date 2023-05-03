@@ -292,6 +292,33 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#hledger-lots-prices" class="md-nav__link">
+    prices
+  </a>
+  
+    <nav class="md-nav" aria-label="prices">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#setup" class="md-nav__link">
+    Setup
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example" class="md-nav__link">
+    Example
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#hledger-lots-sell" class="md-nav__link">
     sell
   </a>
@@ -432,6 +459,33 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#hledger-lots-prices" class="md-nav__link">
+    prices
+  </a>
+  
+    <nav class="md-nav" aria-label="prices">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#setup" class="md-nav__link">
+    Setup
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example" class="md-nav__link">
+    Example
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#hledger-lots-sell" class="md-nav__link">
     sell
   </a>
@@ -524,6 +578,7 @@
 <ul>
 <li><em><a href="#hledger-lots-buy">buy</a></em>: </li>
 <li><em><a href="#hledger-lots-list">list</a></em>: </li>
+<li><em><a href="#hledger-lots-prices">prices</a></em>: </li>
 <li><em><a href="#hledger-lots-sell">sell</a></em>: </li>
 <li><em><a href="#hledger-lots-view">view</a></em>: </li>
 </ul>
@@ -632,10 +687,41 @@
 <td>false. Default to false. Inthe future it will default to true</td>
 </tr>
 <tr>
-<td><code>-p</code>, <code>--append-prices-to</code></td>
-<td>path</td>
-<td>Download market price and append to this option file value. Check the doc for info on how to set it up. Can be set with env HLEDGER_LOTS_APPEND_PRICES_TO</td>
-<td><code>&lt;function &lt;lambda&gt; at 0x7f901ce26840&gt;</code></td>
+<td><code>--help</code></td>
+<td>boolean</td>
+<td>Show this message and exit.</td>
+<td><code>False</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="hledger-lots-prices">hledger-lots prices<a class="headerlink" href="#hledger-lots-prices" title="Permanent link">#</a></h2>
+<p>Download market prices from Yahoo Finance and print as <strong>price directives</strong>. Use <em>BASH</em> redirection to append to the journal or copy/paste the data.</p>
+<h3 id="setup">Setup<a class="headerlink" href="#setup" title="Permanent link">#</a></h3>
+<p>Add a "yahoo_ticker" tag to the <em>commodity directive</em> with the value of the ticker in Yahoo Finance to download prices</p>
+<h3 id="example">Example<a class="headerlink" href="#example" title="Permanent link">#</a></h3>
+<pre><code class="language-text">commodity AAPL       ; yahoo_ticker:AAPL
+commodity &quot;PETR4&quot;    ; yahoo_ticker:PETR4.SA
+commodity BTC        ; yahoo_ticker:BTC-USD
+</code></pre>
+<p><strong>Usage:</strong></p>
+<pre><code>hledger-lots prices [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-f</code>, <code>--file</code></td>
+<td>text</td>
+<td>Inform the journal file path. If "-", read from stdin. Without this flag read from $LEDGER_FILE or ~/.hledger.journal in this order  or '-f-'.</td>
+<td>None</td>
 </tr>
 <tr>
 <td><code>--help</code></td>
@@ -755,12 +841,6 @@
 <td>boolean</td>
 <td>Enable/Disable check on the commodities previous transactions to ensure it is following the choosen method. Can be set with env HLEDGER_LOTS_CHECK=true</td>
 <td>false. Default to false. Inthe future it will default to true</td>
-</tr>
-<tr>
-<td><code>-p</code>, <code>--append-prices-to</code></td>
-<td>path</td>
-<td>Download market price and append to this option file value. Check the doc for info on how to set it up. Can be set with env HLEDGER_APPEND_PRICES_TO</td>
-<td><code>&lt;function &lt;lambda&gt; at 0x7f901ce265c0&gt;</code></td>
 </tr>
 <tr>
 <td><code>--help</code></td>

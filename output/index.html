@@ -302,6 +302,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#prices" class="md-nav__link">
+    prices
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#view" class="md-nav__link">
     view
   </a>
@@ -406,6 +413,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#prices" class="md-nav__link">
+    prices
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#view" class="md-nav__link">
     view
   </a>
@@ -475,8 +489,25 @@
 <h2 id="sell">sell<a class="headerlink" href="#sell" title="Permanent link">#</a></h2>
 <p>Besides the transaction, constructed according to <em>FIFO</em> or <em>AVERAGE COST</em> without any manual intervention, you have as tags the quantity and price sold, the average cost using <em>FIFO</em> and the <em>xirr</em> of the transaction, as explained <a href="../#xirr">here</a> </p>
 <p><a href="https://asciinema.org/a/zzEMCtDAlqAlza1hMlxynKMWy"><img alt="asciicast" src="https://asciinema.org/a/zzEMCtDAlqAlza1hMlxynKMWy.svg" /></a></p>
+<h2 id="prices">prices<a class="headerlink" href="#prices" title="Permanent link">#</a></h2>
+<p>Prices directives are printed to stdout, while error logs are printed to stderr so you can append stdout to a file without the error logs</p>
+<pre><code class="language-text">
+
+P 2023-04-17 &quot;AAPL&quot; 165.22999572753906 USD
+P 2023-04-18 &quot;AAPL&quot; 166.47000122070312 USD
+P 2023-04-19 &quot;AAPL&quot; 167.6300048828125 USD
+P 2023-04-20 &quot;AAPL&quot; 166.64999389648438 USD
+P 2023-04-21 &quot;AAPL&quot; 165.02000427246094 USD
+P 2023-04-24 &quot;AAPL&quot; 165.3300018310547 USD
+P 2023-04-25 &quot;AAPL&quot; 163.77000427246094 USD
+P 2023-04-26 &quot;AAPL&quot; 163.75999450683594 USD
+P 2023-04-27 &quot;AAPL&quot; 168.41000366210938 USD
+P 2023-04-28 &quot;AAPL&quot; 169.67999267578125 USD
+P 2023-05-01 &quot;AAPL&quot; 169.58999633789062 USD
+; stderr: Nothing downloaded for PETR4.SA between 2023-04-29 and 2023-05-02
+</code></pre>
 <h2 id="view">view<a class="headerlink" href="#view" title="Permanent link">#</a></h2>
-<pre><code class="language-bash">$ python -m hledger_lots -f docs/examples/data.journal  view -c y.AAPL
+<pre><code class="language-bash">$ python -m hledger_lots -f docs/examples/data.journal  view -c AAPL
 date          price  base_cur      qtty  acct
 ----------  -------  ----------  ------  ------------
 2022-01-05      160  USD              0  Asset:Stocks
@@ -485,7 +516,7 @@ date          price  base_cur      qtty  acct
 
 Info
 ----
-Commodity:      y.AAPL
+Commodity:      AAPL
 Quantity:       19
 Amount:         3,100.00
 Average Cost:   163.1579
@@ -501,24 +532,24 @@ Xirr:          0.0029% (APR 30/360US)
 <h3 id="plain">plain<a class="headerlink" href="#plain" title="Permanent link">#</a></h3>
 <pre><code class="language-bash">$ python -m hledger_lots -f docs/examples/data.journal list
 comm    cur      qtty  amount      avg_cost    mkt_price  mkt_amount      mkt_profit  mkt_date    xirr
-y.GOOG  USD         3  306.00      102.0000     104.6100  313.83              7.8300  2023-04-25  0.0200%
-y.AAPL  USD        19  3,100.00    163.1579     163.7700  3,111.63           11.6300  2023-04-25  0.0029%
+GOOG  USD         3  306.00      102.0000     104.6100  313.83              7.8300  2023-04-25  0.0200%
+AAPL  USD        19  3,100.00    163.1579     163.7700  3,111.63           11.6300  2023-04-25  0.0029%
 </code></pre>
 <h3 id="pretty">pretty<a class="headerlink" href="#pretty" title="Permanent link">#</a></h3>
 <pre><code class="language-bash">$ python -m hledger_lots -f docs/examples/data.journal list --output-format pretty
 ┍━━━━━━━━┯━━━━━━━┯━━━━━━━━┯━━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━━━━━━┯━━━━━━━━━━━━━━┯━━━━━━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━━┑
 │ comm   │ cur   │   qtty │ amount   │   avg_cost │   mkt_price │ mkt_amount   │   mkt_profit │ mkt_date   │ xirr    │
 ┝━━━━━━━━┿━━━━━━━┿━━━━━━━━┿━━━━━━━━━━┿━━━━━━━━━━━━┿━━━━━━━━━━━━━┿━━━━━━━━━━━━━━┿━━━━━━━━━━━━━━┿━━━━━━━━━━━━┿━━━━━━━━━┥
-│ y.GOOG │ USD   │      3 │ 306.00   │   102.0000 │    104.6100 │ 313.83       │       7.8300 │ 2023-04-25 │ 0.0200% │
+│ GOOG   │ USD   │      3 │ 306.00   │   102.0000 │    104.6100 │ 313.83       │       7.8300 │ 2023-04-25 │ 0.0200% │
 ├────────┼───────┼────────┼──────────┼────────────┼─────────────┼──────────────┼──────────────┼────────────┼─────────┤
-│ y.AAPL │ USD   │     19 │ 3,100.00 │   163.1579 │    163.7700 │ 3,111.63     │      11.6300 │ 2023-04-25 │ 0.0029% │
+│ AAPL   │ USD   │     19 │ 3,100.00 │   163.1579 │    163.7700 │ 3,111.63     │      11.6300 │ 2023-04-25 │ 0.0029% │
 ┕━━━━━━━━┷━━━━━━━┷━━━━━━━━┷━━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━━━┷━━━━━━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━━┙
 </code></pre>
 <h3 id="csv">csv<a class="headerlink" href="#csv" title="Permanent link">#</a></h3>
 <pre><code class="language-bash">$ python -m hledger_lots -f docs/examples/data.journal list --output-format csv
 comm,cur,qtty,amount,avg_cost,mkt_price,mkt_amount,mkt_profit,mkt_date,xirr
-y.GOOG,USD,3,306.00,102.0000,104.6100,313.83,7.83,2023-04-25,0.0200%
-y.AAPL,USD,19,&quot;3,100.00&quot;,163.1579,163.7700,&quot;3,111.63&quot;,11.63,2023-04-25,0.0029%
+GOOG,USD,3,306.00,102.0000,104.6100,313.83,7.83,2023-04-25,0.0200%
+AAPL,USD,19,&quot;3,100.00&quot;,163.1579,163.7700,&quot;3,111.63&quot;,11.63,2023-04-25,0.0029%
 </code></pre>
 <h2 id="-checkno-check">--check/no-check<a class="headerlink" href="#-checkno-check" title="Permanent link">#</a></h2>
 <p>The error below was raised for a sale transaction generated using <em>AVERAGE COST</em> after trying to use the <em>view</em> command not setting "--avg-cost", so <em>FIFO</em> was used. This command raised a <em>CostMethodError</em> because the cost was not the one expected:</p>

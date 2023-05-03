@@ -270,8 +270,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#update-price" class="md-nav__link">
-    Update Price
+  <a href="#automatic-price-download" class="md-nav__link">
+    Automatic Price Download
   </a>
   
 </li>
@@ -494,8 +494,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#update-price" class="md-nav__link">
-    Update Price
+  <a href="#automatic-price-download" class="md-nav__link">
+    Automatic Price Download
   </a>
   
 </li>
@@ -638,8 +638,8 @@
 <li><strong>FIFO</strong>: First In First Out</li>
 <li><strong>AVERAGE COST</strong>: Average Cost of all previous purchase. It is as if selling a proportional part of each previous sale.</li>
 </ul>
-<h3 id="update-price">Update Price<a class="headerlink" href="#update-price" title="Permanent link">#</a></h3>
-<p>After having the correct cost and result for selling a commodity, we want to follow the investment performance using market data. This package can download market price history from <a href="https://finance.yahoo.com/">Yahoo Finance</a> and append <a href="https://hledger.org/1.29/hledger.html#p-directive">price directive</a> to the journal just by following the required format when naming the commodity. More information <a href="market_prices/">here</a></p>
+<h3 id="automatic-price-download">Automatic Price Download<a class="headerlink" href="#automatic-price-download" title="Permanent link">#</a></h3>
+<p>One simple command to automatically download market price from <a href="https://finance.yahoo.com/">Yahoo Finance</a> for choosen commodities as explained <a href="market_prices/">here</a>. </p>
 <h3 id="reports">Reports<a class="headerlink" href="#reports" title="Permanent link">#</a></h3>
 <p>To get information about the commodities, there is more 2 commands:</p>
 <table>
@@ -674,9 +674,10 @@
 </code></pre>
 <h2 id="workflow">Workflow<a class="headerlink" href="#workflow" title="Permanent link">#</a></h2>
 <ol>
-<li>Add purchase using the command <a href="usage/#buy">buy</a> or edit the journal as usual using "@" notation. <strong>Don't bother creating subaccounts or tags with unique lot name</strong>. See the some examples <a href="examples/data.journal">here</a></li>
-<li>When you sell, use the command <a href="usage/#sell">sell</a> instead of adding the transactions manually. Hledger-lots will generate the correct transaction and append to the selected journal if you confirm the transaction is correct. <em>See transaction tags with interesting indicators about the current trade</em></li>
-<li>View financial indicators for a specific commodity using <a href="usage/#view">view</a> or a summary of all commodities using <a href="usage/$list">list</a>. Optionally update market prices from <a href="https://finance.yahoo.com/">Yahoo Finance</a> using the flag <em>--apend-prices-to [file path]</em></li>
+<li>Add purchase using the command <a href="usage/#hledger-lots-buy">buy</a> or edit the journal as usual using "@" notation. <strong>Don't bother creating subaccounts or tags with unique lot name</strong>. See the some examples <a href="examples/data.journal">here</a></li>
+<li>Download market price history as <a href="https://hledger.org/1.29/hledger.html#p-directive">price directive</a> using the command <a href="usage/#hledger-lots-prices">prices</a></li>
+<li>View financial indicators for a specific commodity using <a href="usage/#hledger-lots-view">view</a> or a summary of all commodities using <a href="usage/$list">list</a>. Optionally update market prices from <a href="https://finance.yahoo.com/">Yahoo Finance</a> using the flag <em>--apend-prices-to [file path]</em></li>
+<li>When you sell, use the command <a href="usage/#hledger-lots-sell">sell</a> instead of adding the transactions manually. Hledger-lots will generate the correct transaction and append to the selected journal if you confirm the transaction is correct. <em>See transaction tags with interesting indicators about the current trade</em></li>
 </ol>
 <blockquote>
 <p>By default the sale is created using <em>FIFO</em> method. Use the option flag "--avg-cost" to change it to <em>Average Cost</em></p>
