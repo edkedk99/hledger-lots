@@ -1,5 +1,4 @@
 import os
-from pathlib import Path
 from typing import Literal, Optional, Tuple
 
 import rich_click as click
@@ -9,7 +8,7 @@ from .fifo_info import AllFifoInfo, FifoInfo
 from .files import get_file, get_files_comm
 from .info import AllInfo
 from .lib import default_fn_bool
-from .prices_yahoo import get_hledger_prices
+from .prices_yahoo import YahooPrices
 from .prompt import get_append_file
 from .prompt_buy import PromptBuy
 from .prompt_sell import PromptSell
@@ -235,15 +234,6 @@ def sell(
     default=default_fn_bool("HLEDGER_LOTS_CHECK", False),
     help="Enable/Disable check on the commodities previous transactions to ensure it is following the choosen method. Can be set with env HLEDGER_LOTS_CHECK=true|false. Default to false. Inthe future it will default to true",
 )
-@click.option(
-    "-p",
-    "--append-prices-to",
-    type=click.Path(),
-    default=lambda: os.environ.get("HLEDGER_APPEND_PRICES_TO", None),
-    prompt=False,
-    required=False,
-    help="Download market price and append to this option file value. Check the doc for info on how to set it up. Can be set with env HLEDGER_APPEND_PRICES_TO",
-)
 @click.pass_context
 def view(
     ctx: click.Context,
@@ -251,7 +241,6 @@ def view(
     commodity: str,
     no_desc: str,
     check: bool,
-    append_prices_to: Path,
     file: Tuple[str, ...],
 ):
     """
@@ -262,9 +251,6 @@ def view(
     Also show some indicators about the lots and performance if there is prices in the journal after the last purchase. See the docs for details
     """
     journals = get_file(ctx, file)
-
-    if append_prices_to:
-        get_hledger_prices(journals, append_prices_to)
 
     if avg_cost:
         info = AvgInfo(journals, commodity, check, no_desc)
@@ -310,15 +296,6 @@ def view(
     default=default_fn_bool("HLEDGER_LOTS_CHECK", False),
     help="Enable/Disable check on the commodities previous transactions to ensure it is following the choosen method. Can be set with env HLEDGER_LOTS_CHECK=tru|false. Default to false. Inthe future it will default to true",
 )
-@click.option(
-    "-p",
-    "--append-prices-to",
-    type=click.Path(),
-    default=lambda: os.environ.get("HLEDGER_APPEND_PRICES_TO", None),
-    prompt=False,
-    required=False,
-    help="Download market price and append to this option file value. Check the doc for info on how to set it up. Can be set with env HLEDGER_LOTS_APPEND_PRICES_TO",
-)
 @click.pass_context
 def list_commodities(
     ctx: click.Context,
@@ -326,7 +303,6 @@ def list_commodities(
     output_format: str,
     no_desc: Literal["plain", "pretty", "csv"],
     check: bool,
-    append_prices_to: Path,
     file: Tuple[str, ...],
 ):
     """
@@ -337,9 +313,6 @@ def list_commodities(
 
     journals = get_file(ctx, file)
     lots_info = AllInfo(journals, no_desc)
-
-    if append_prices_to:
-        get_hledger_prices(journals, append_prices_to)
 
     lots_info = (
         AllAvgInfo(journals, no_desc, check)
@@ -358,7 +331,41 @@ def list_commodities(
     click.echo(table)
 
 
+@click.command()
+@click.option(
+    "-f",
+    "--file",
+    required=False,
+    multiple=True,
+    help="Inform the journal file path. If \"-\", read from stdin. Without this flag read from $LEDGER_FILE or ~/.hledger.journal in this order  or '-f-'.",
+)
+@click.pass_context
+def prices(
+    ctx: click.Context,  # pyright:ignore
+    file: Tuple[str, ...],
+):
+    """
+    Download market prices from Yahoo Finance and print as **price directives**. Use *BASH* redirection to append to the journal or copy/paste the data.
+
+    ### Setup
+    Add a \"yahoo_ticker\" tag to the *commodity directive* with the value of the ticker in Yahoo Finance to download prices
+
+    ### Example
+
+    ```text
+    commodity AAPL       ; yahoo_ticker:AAPL
+    commodity \"PETR4\"    ; yahoo_ticker:PETR4.SA
+    commodity BTC        ; yahoo_ticker:BTC-USD
+    ```
+
+
+    """
+    yahoo_prices = YahooPrices(file)
+    yahoo_prices.print_prices()
+
+
 cli.add_command(buy)
 cli.add_command(sell)
 cli.add_command(view)
 cli.add_command(list_commodities)
+cli.add_command(prices)

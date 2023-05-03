@@ -1,17 +1,17 @@
-import re
 import sys
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta
 from pathlib import Path
-from typing import List, Optional, Tuple
+from typing import List, Tuple
 
 import yfinance as yf
 from requests.exceptions import HTTPError
 from requests_cache import CachedSession
 
+from .commodity_tag import CommodityDirective, CommodityTag
 from .files import get_files_comm
 from .hl import hledger2txn
-from .info import get_commodities, get_last_price
+from .info import get_last_price
 
 
 @dataclass
@@ -22,29 +22,9 @@ class Price:
     cur: str
 
 
-def get_start_date(txn_first_date: date, last_market_date: Optional[date]):
-    if not last_market_date:
-        last_date = txn_first_date
-    elif last_market_date < txn_first_date:
-        last_date = txn_first_date
-    else:
-        last_date = last_market_date
-
-    start_date = last_date + timedelta(days=1)
-    start_date_str = start_date.strftime("%Y-%m-%d")
-    return start_date_str
-
-
-def filter_yahoo(com: List[str]):
-    y_match = (re.search(r"^(y\.)(.*)", item) for item in com)
-    y_match = (item for item in y_match if item)
-    y_match = [match.groups()[1] for match in y_match]
-    return y_match
-
-
 def prices2hledger(prices: List[Price]):
     prices_list = [
-        f"P {price.date.strftime('%Y-%m-%d')} \"y.{price.name}\" {price.price} {price.cur}"
+        f"P {price.date.strftime('%Y-%m-%d')} \"{price.name}\" {price.price} {price.cur}"
         for price in prices
         if price
     ]
@@ -53,12 +33,12 @@ def prices2hledger(prices: List[Price]):
 
 
 def get_yahoo_prices(
-    ticker_name: str,
+    commodity: CommodityTag,
     start_date: str,
     end_date: str,
     session: CachedSession,
 ):
-    ticker = yf.Ticker(ticker_name, session=session)
+    ticker = yf.Ticker(commodity["value"], session=session)
     info = ticker.info
 
     if start_date:
@@ -68,7 +48,7 @@ def get_yahoo_prices(
 
     prices = [
         Price(
-            ticker_name,
+            commodity["commodity"],
             row[0].to_pydatetime().date(),  # type:ignore
             row[1]["Close"],  # type: ignore
             info["currency"],
@@ -78,45 +58,74 @@ def get_yahoo_prices(
     return prices
 
 
-def get_hledger_prices(files: Tuple[str, ...], append_prices_to: Path):
-    files_comm = get_files_comm(files)
-    commodities = get_commodities(files)
-    tickers = filter_yahoo(commodities)
-    tickers_str = " ".join(tickers)
-    print(
-        f"stderr: Downloading price history for tickers: {tickers_str}", file=sys.stderr
-    )
+class YahooPrices:
+    TAG = "yahoo_ticker"
 
-    session_path = Path.home() / "yfinance.cache"
-    session = CachedSession(str(session_path))
-    today = datetime.today()
-    yesterday = today - timedelta(days=1)
-    yesterday_str = yesterday.strftime("%Y-%m-%d")
-    with open(append_prices_to, "a") as f:
-        f.write("\n")
-        for ticker in tickers:
-            commodity = f"y.{ticker}"
-            txns = hledger2txn(files, commodity)
-            txn_first_date_str = txns[0].date
-            txn_first_date = datetime.strptime(txn_first_date_str, "%Y-%m-%d").date()
+    def __init__(self, files: Tuple[str, ...]) -> None:
+        self.files = files
+        self.files_comm = get_files_comm(files)
 
-            last_market_date = get_last_price(files_comm, commodity)[0]
-            start_date = get_start_date(txn_first_date, last_market_date)
-            days_past = today.date() - datetime.strptime(start_date, "%Y-%m-%d").date()
+        self.session_path = Path.home() / "yfinance.cache"
+        self.session = CachedSession(str(self.session_path))
+        self.today = datetime.today()
+        yesterday = self.today - timedelta(days=1)
+        self.yesterday_str = yesterday.strftime("%Y-%m-%d")
 
-            if days_past.days > 0:
-                try:
-                    prices = get_yahoo_prices(
-                        ticker, start_date, yesterday_str, session
-                    )
-                    prices_hledger = prices2hledger(prices)
-                    f.write(prices_hledger + "\n")
-                except HTTPError:
-                    print(f"stderr: {ticker} not found", file=sys.stderr)
-                except Exception:
-                    print(
-                        f"stderr: Nothing downloaded for {ticker} between {start_date} and {yesterday_str}",
-                        file=sys.stderr,
-                    )
+        commodity_directive = CommodityDirective(self.files)
+        self.commodities = commodity_directive.get_commodity_tag(self.TAG)
 
-        f.write("\n")
+    def get_start_date(self, commodity: CommodityTag):
+        txns = hledger2txn(self.files, commodity["commodity"])
+        first_date_str = txns[0].date
+        first_date = datetime.strptime(first_date_str, "%Y-%m-%d").date()
+        last_market_date = get_last_price(self.files_comm, commodity["commodity"])[0]
+
+        if not last_market_date:
+            last_date = first_date
+        elif last_market_date < first_date:
+            last_date = first_date
+        else:
+            last_date = last_market_date
+
+        start_date = last_date + timedelta(days=1)
+        past = date.today() - start_date
+        if past.days < 1:
+            return
+
+        return start_date
+
+    def print_commodity_prices(self, commodity: CommodityTag):
+        start_date = self.get_start_date(commodity)
+        if not start_date:
+            print(f"; stderr: No new data for {commodity}", file=sys.stderr)
+            return
+
+        start_date_str = start_date.strftime("%Y-%m-%d")
+        try:
+            prices = get_yahoo_prices(
+                commodity, start_date_str, self.yesterday_str, self.session
+            )
+            prices_hledger = prices2hledger(prices)
+            print(prices_hledger + "\n")
+        except HTTPError:
+            print(f"stderr: {commodity['value']} not found", file=sys.stderr)
+        except Exception:
+            print(
+                f"stderr: Nothing downloaded for {commodity['value']} between {start_date} and {self.yesterday_str}",
+                file=sys.stderr,
+            )
+
+    def print_prices(self):
+        if len(self.commodities) == 0:
+            print(
+                f"\n\n; stderr: No commodities directives with tag {self.TAG}",
+                file=sys.stderr,
+            )
+            return
+
+        today_str = date.today().strftime("%Y-%m-%d")
+        print(f"\n\n; hledger_lots prices downloads for {self.TAG} on {today_str}")
+
+        for commodity in self.commodities:
+            self.print_commodity_prices(commodity)
+            print("\n")
