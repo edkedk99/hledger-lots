@@ -246,6 +246,21 @@
   
   
     <li class="md-nav__item">
+      <a href="../config/" class="md-nav__link">
+        Config
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../market_prices/" class="md-nav__link">
         Download Market Prices
       </a>
@@ -352,6 +367,13 @@
         <li class="md-nav__item">
   <a href="#-checkno-check" class="md-nav__link">
     --check/no-check
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#missing-configuration" class="md-nav__link">
+    Missing configuration
   </a>
   
 </li>
@@ -467,6 +489,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#missing-configuration" class="md-nav__link">
+    Missing configuration
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -556,6 +585,18 @@ AAPL,USD,19,&quot;3,100.00&quot;,163.1579,163.7700,&quot;3,111.63&quot;,11.63,20
 <pre><code class="language-bash">$ hledger_lots -f test.journal view -c AAPL --check
 
 hledger_lots.lib.CostMethodError: Error in sale AdjustedTxn(date='2023-03-10', price=1.3066666667, base_cur='BRL', qtty=-15, acct='Ativo:Acoes:AAPL'). Correct price should be 1.2 in currency BRL*
+</code></pre>
+<h2 id="missing-configuration">Missing configuration<a class="headerlink" href="#missing-configuration" title="Permanent link">#</a></h2>
+<p>When a configuration is missing, detailed instructions are given on how to add it to the journal</p>
+<pre><code class="language-text">hledger_lots.options.OptionError: 
+
+Missing keys {'check', 'no_desc', 'avg_cost'}
+
+Copy/Paste the text below to the journal, changing values according to the need
+
+#+hledger-lots avg_cost:false, check:true
+#+hledger-lots no_desc:
+
 </code></pre>
 
 

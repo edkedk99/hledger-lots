@@ -8,20 +8,20 @@
       
       
       
-        <link rel="canonical" href="https://edkedk99.github.io/hledger-lots/market_prices/">
+        <link rel="canonical" href="https://edkedk99.github.io/hledger-lots/config/">
       
       
-        <link rel="prev" href="../config/">
+        <link rel="prev" href="../usage/">
       
       
-        <link rel="next" href="../output/">
+        <link rel="next" href="../market_prices/">
       
       <link rel="icon" href="../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.1.8">
     
     
       
-        <title>Download Market Prices - hledger-lots</title>
+        <title>Config - hledger-lots</title>
       
     
     
@@ -69,7 +69,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#automatic-market-prices-download" class="md-skip">
+        <a href="#configure-hledger-lots" class="md-skip">
           Skip to content
         </a>
       
@@ -104,7 +104,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Download Market Prices
+              Config
             
           </span>
         </div>
@@ -244,21 +244,6 @@
 
   
   
-  
-    <li class="md-nav__item">
-      <a href="../config/" class="md-nav__link">
-        Config
-      </a>
-    </li>
-  
-
-    
-      
-      
-      
-
-  
-  
     
   
   
@@ -271,12 +256,12 @@
       
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
-          Download Market Prices
+          Config
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <a href="./" class="md-nav__link md-nav__link--active">
-        Download Market Prices
+        Config
       </a>
       
         
@@ -295,28 +280,22 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#setup" class="md-nav__link">
-    Setup
+  <a href="#configuration-format" class="md-nav__link">
+    Configuration Format
   </a>
-  
-    <nav class="md-nav" aria-label="Setup">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#examples" class="md-nav__link">
-    Examples:
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#downloading" class="md-nav__link">
-    Downloading
+  <a href="#example" class="md-nav__link">
+    Example
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hledger-lots-properties" class="md-nav__link">
+    hledger-lots properties
   </a>
   
 </li>
@@ -325,6 +304,21 @@
   
 </nav>
       
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../market_prices/" class="md-nav__link">
+        Download Market Prices
+      </a>
     </li>
   
 
@@ -386,28 +380,22 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#setup" class="md-nav__link">
-    Setup
+  <a href="#configuration-format" class="md-nav__link">
+    Configuration Format
   </a>
-  
-    <nav class="md-nav" aria-label="Setup">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#examples" class="md-nav__link">
-    Examples:
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#downloading" class="md-nav__link">
-    Downloading
+  <a href="#example" class="md-nav__link">
+    Example
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hledger-lots-properties" class="md-nav__link">
+    hledger-lots properties
   </a>
   
 </li>
@@ -430,50 +418,41 @@
   
 
 
-<h1 id="automatic-market-prices-download">Automatic Market Prices Download<a class="headerlink" href="#automatic-market-prices-download" title="Permanent link">#</a></h1>
-<p><em>Hledger-lots</em> can download daily market prices from <a href="https://finance.yahoo.com/">Yahoo Finance</a> and output as <a href="https://hledger.org/1.29/hledger.html#p-directive">market price directive</a>, so you get updated <em>xirr</em> calculation and run regular hledger reports using market prices.</p>
-<h2 id="setup">Setup<a class="headerlink" href="#setup" title="Permanent link">#</a></h2>
-<p>Add a <strong>yahoo_ticker</strong> <a href="https://hledger.org/1.29/hledger.html#tags">tag</a> to the comment of a <a href="https://hledger.org/1.29/hledger.html#commodity-directive">commodity directive</a> with the value of the ticker in <a href="https://finance.yahoo.com/">Yahoo Finance</a>.</p>
-<blockquote>
-<p><strong>IMPORTANT:</strong> You may need to add double quotes between the commodity name because hledger accepts only word characters without it</p>
-</blockquote>
-<h3 id="examples">Examples:<a class="headerlink" href="#examples" title="Permanent link">#</a></h3>
-<pre><code class="language-text">commodity AAPL       ; yahoo_ticker:AAPL                                      
-commodity &quot;PETR4&quot;    ; yahoo_ticker:PETR4.SA                                  
-commodity BTC        ; yahoo_ticker:BTC-USD 
-commodity EURUSD     ; yahoo_ticker:EURUSD=X
+<h1 id="configure-hledger-lots">Configure hledger-lots<a class="headerlink" href="#configure-hledger-lots" title="Permanent link">#</a></h1>
+<p>Hledger configuration is inserted directly into the journal using a custom format composed by key/value pairs that belongs to a namespace. This packages uses properties on <strong>hledger-lots</strong> namespace. </p>
+<h2 id="configuration-format">Configuration Format<a class="headerlink" href="#configuration-format" title="Permanent link">#</a></h2>
+<p>Configuration is added on a row in the journal starting with '#+[namespace]' and multiple key value/pairs separated by commas. Properties can be spread into different rows with the same namespace</p>
+<pre><code class="language-text">#+namespace key1:value1, key:value2
+#+namespace key3:value3
 </code></pre>
-<p>For output example, see <a href="/hledger-lots/output/#prices">here</a></p>
-<h2 id="downloading">Downloading<a class="headerlink" href="#downloading" title="Permanent link">#</a></h2>
-<p>Run <code>hledger-lots -f [journal file] prices</code>. For those commodities that have a <em>yahoo_ticker</em> tag according to the example above, <em>hledger-lots</em> will download daily historical prices in a date range according to the rule below, so the user doesn't need to care about start and end dates.</p>
+<h2 id="example">Example<a class="headerlink" href="#example" title="Permanent link">#</a></h2>
+<pre><code class="language-text">#+hledger-lots avg_cost:true, check:true
+#+hledger-lots no_desc:opening|closing
+</code></pre>
+<h2 id="hledger-lots-properties">hledger-lots properties<a class="headerlink" href="#hledger-lots-properties" title="Permanent link">#</a></h2>
 <table>
 <thead>
 <tr>
-<th>Condition</th>
-<th>Start Date</th>
-<th>End Date</th>
+<th>Property</th>
+<th>Allowed values</th>
+<th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>no market price</td>
-<td>First Purchase</td>
-<td>Yesterday</td>
+<td>avg_cost</td>
+<td>true or false</td>
+<td>true: uses average cost <br/>false: uses FIFO method</td>
 </tr>
 <tr>
-<td>have market price</td>
-<td>Next day of the last price</td>
-<td>Yesterday</td>
+<td>check</td>
+<td>true or false</td>
+<td>true: check if sale transaction uses the correct cost methods <br/>false: doesn't do cost method checks</td>
 </tr>
 <tr>
-<td>market price later or equal yesterday</td>
-<td>No download</td>
-<td>No download</td>
-</tr>
-<tr>
-<td>no transactions</td>
-<td>No download</td>
-<td>No download</td>
+<td>no_desc</td>
+<td>[regex]</td>
+<td>Description to be filtered out from calculation. Needed when closing journal with '--show-costs' option. Works like: 'not:desc:<value>'. If closed with default description, the value of this option should be: 'opening|closing balances'</td>
 </tr>
 </tbody>
 </table>

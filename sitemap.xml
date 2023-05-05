@@ -2,27 +2,32 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://edkedk99.github.io/hledger-lots/</loc>
-         <lastmod>2023-05-03</lastmod>
+         <lastmod>2023-05-05</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://edkedk99.github.io/hledger-lots/config/</loc>
+         <lastmod>2023-05-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://edkedk99.github.io/hledger-lots/market_prices/</loc>
-         <lastmod>2023-05-03</lastmod>
+         <lastmod>2023-05-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://edkedk99.github.io/hledger-lots/output/</loc>
-         <lastmod>2023-05-03</lastmod>
+         <lastmod>2023-05-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://edkedk99.github.io/hledger-lots/tests/</loc>
-         <lastmod>2023-05-03</lastmod>
+         <lastmod>2023-05-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://edkedk99.github.io/hledger-lots/usage/</loc>
-         <lastmod>2023-05-03</lastmod>
+         <lastmod>2023-05-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>

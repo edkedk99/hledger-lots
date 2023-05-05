@@ -296,11 +296,11 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#installation" class="md-nav__link">
-    Installation
+  <a href="#setup" class="md-nav__link">
+    Setup
   </a>
   
-    <nav class="md-nav" aria-label="Installation">
+    <nav class="md-nav" aria-label="Setup">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -311,8 +311,15 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#command" class="md-nav__link">
-    Command
+  <a href="#install" class="md-nav__link">
+    Install
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#config" class="md-nav__link">
+    Config
   </a>
   
 </li>
@@ -395,6 +402,21 @@
     <li class="md-nav__item">
       <a href="usage/" class="md-nav__link">
         Usage
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="config/" class="md-nav__link">
+        Config
       </a>
     </li>
   
@@ -520,11 +542,11 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#installation" class="md-nav__link">
-    Installation
+  <a href="#setup" class="md-nav__link">
+    Setup
   </a>
   
-    <nav class="md-nav" aria-label="Installation">
+    <nav class="md-nav" aria-label="Setup">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -535,8 +557,15 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#command" class="md-nav__link">
-    Command
+  <a href="#install" class="md-nav__link">
+    Install
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#config" class="md-nav__link">
+    Config
   </a>
   
 </li>
@@ -663,25 +692,27 @@
 <p>The indicators provided by these command are explained <a href="#indicators">here</a>.</p>
 <h2 id="documentation">Documentation<a class="headerlink" href="#documentation" title="Permanent link">#</a></h2>
 <p>Documentation with usage information can be found <a href="https://edkedk99.github.io/hledger-lots/">here</a></p>
-<h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">#</a></h2>
+<h2 id="setup">Setup<a class="headerlink" href="#setup" title="Permanent link">#</a></h2>
 <h3 id="requirements">Requirements<a class="headerlink" href="#requirements" title="Permanent link">#</a></h3>
 <ul>
 <li><a href="https://www.python.org/">python</a></li>
 <li><a href="https://hledger.org/1.29/hledger.html#p-directive">hledger</a></li>
 </ul>
-<h3 id="command">Command<a class="headerlink" href="#command" title="Permanent link">#</a></h3>
+<h3 id="install">Install<a class="headerlink" href="#install" title="Permanent link">#</a></h3>
 <pre><code class="language-python">pip install --upgrade hledger-lots
 </code></pre>
+<h3 id="config">Config<a class="headerlink" href="#config" title="Permanent link">#</a></h3>
+<p>Instead of using command options, which is hard to remember and makes the command long, environment variables, which demands tweaking the .bashrc file or a configuration file, this app add configuration options directly in the journal using a custom directives specification explained <a href="config">here</a></p>
+<blockquote>
+<p>You can still use <strong>LEDGER_FILE</strong> environment variable by adding <code>export LEDGER_FILE=your_data.journal</code> or prepend to the command: <code>LEDGER_FILE=your_data.journal hledger-lots ...</code></p>
+</blockquote>
 <h2 id="workflow">Workflow<a class="headerlink" href="#workflow" title="Permanent link">#</a></h2>
 <ol>
-<li>Add purchase using the command <a href="usage/#hledger-lots-buy">buy</a> or edit the journal as usual using "@" notation. <strong>Don't bother creating subaccounts or tags with unique lot name</strong>. See the some examples <a href="examples/data.journal">here</a></li>
-<li>Download market price history as <a href="https://hledger.org/1.29/hledger.html#p-directive">price directive</a> using the command <a href="usage/#hledger-lots-prices">prices</a></li>
-<li>View financial indicators for a specific commodity using <a href="usage/#hledger-lots-view">view</a> or a summary of all commodities using <a href="usage/$list">list</a>. Optionally update market prices from <a href="https://finance.yahoo.com/">Yahoo Finance</a> using the flag <em>--apend-prices-to [file path]</em></li>
+<li>Add a commodity purchase using the command <a href="usage/#hledger-lots-buy">buy</a> or edit the journal as usual using "@" notation. <strong>Don't bother creating subaccounts or tags with unique lot name</strong>. See some examples <a href="examples/data.journal">here</a></li>
+<li>Download market price history from <a href="https://finance.yahoo.com/">Yahoo Finance</a> as <a href="https://hledger.org/1.29/hledger.html#p-directive">price directive</a> using the command <a href="usage/#hledger-lots-prices">prices</a></li>
+<li>View financial indicators for a specific commodity using <a href="usage/#hledger-lots-view">view</a> or a summary of all commodities using <a href="usage/$list">list</a>.</li>
 <li>When you sell, use the command <a href="usage/#hledger-lots-sell">sell</a> instead of adding the transactions manually. Hledger-lots will generate the correct transaction and append to the selected journal if you confirm the transaction is correct. <em>See transaction tags with interesting indicators about the current trade</em></li>
 </ol>
-<blockquote>
-<p>By default the sale is created using <em>FIFO</em> method. Use the option flag "--avg-cost" to change it to <em>Average Cost</em></p>
-</blockquote>
 <h2 id="indicators">Indicators<a class="headerlink" href="#indicators" title="Permanent link">#</a></h2>
 <h3 id="basic-indicators">Basic Indicators<a class="headerlink" href="#basic-indicators" title="Permanent link">#</a></h3>
 <ul>
@@ -705,10 +736,7 @@
 <p>Note the benchmark can use another day count convention, so this comparison may not be 100% precise. This app may in the future offer others day count convention for <strong>xirr</strong> calculation.</p>
 </blockquote>
 <h2 id="checks">Checks<a class="headerlink" href="#checks" title="Permanent link">#</a></h2>
-<p>It is recommended to use the option <em>--check</em> to ensure you past selling transaction has the correct cost according to the choosen cost method. It can be enabled by setting the environment variable <strong>HLEDGER_LOTS_CHECK</strong> to "true". It can be disabled with the option <em>--no-check</em> or setting the environment variable <strong>HLEDGER_LOTS_CHECK</strong> to "false".</p>
-<blockquote>
-<p>At the moment the default is set to "false", but expect it to be turned to "true" in future releases.</p>
-</blockquote>
+<p>It is recommended to set the option <em>check</em> to true to ensure you past selling transaction has the correct cost according to the choosen cost method. See how to set it up <a href="config">here</a></p>
 <h2 id="limitations">Limitations<a class="headerlink" href="#limitations" title="Permanent link">#</a></h2>
 <ul>
 <li>No <em>short-selling</em></li>
