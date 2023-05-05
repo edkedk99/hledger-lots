@@ -16,7 +16,7 @@ class FifoInfo(Info):
         check: bool,
         no_desc: Optional[str] = None,
     ):
-        super().__init__(journals, commodity,no_desc)
+        super().__init__(journals, commodity, no_desc)
         self.check = check
 
         self.lots = get_lots(self.txns, check)
@@ -28,7 +28,7 @@ class FifoInfo(Info):
     def get_info(self):
         if len(self.txns) == 0:
             return None
-        
+
         commodity = self.commodity
 
         cur = self.lots[0].base_cur

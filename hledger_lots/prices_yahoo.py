@@ -13,6 +13,7 @@ from .hl import hledger2txn
 from .info import get_last_price
 from .lib import get_files_comm
 
+
 @dataclass
 class Price:
     name: str

@@ -1,14 +1,15 @@
+import os
 import re
 import shlex
+import sys
+import tempfile
 from dataclasses import asdict, dataclass
 from datetime import date
+from pathlib import Path
 from typing import List, Optional, Tuple
-import os
+
 from pyxirr import DayCount, xirr
 from tabulate import tabulate
-from pathlib import Path
-import tempfile
-import sys
 
 
 @dataclass
@@ -32,7 +33,7 @@ class CostMethodError(Exception):
 
 
 def get_file_from_stdin():
-    tmp_file = tempfile.NamedTemporaryFile(suffix=".journal",delete=False)
+    tmp_file = tempfile.NamedTemporaryFile(suffix=".journal", delete=False)
     name = tmp_file.name
 
     with open(tmp_file.name, "w") as f:
@@ -40,8 +41,7 @@ def get_file_from_stdin():
             f.write(line)
 
     return name
-    
-    
+
 
 def get_default_file():
     ledger_file = os.getenv("LEDGER_FILE")
@@ -52,9 +52,7 @@ def get_default_file():
     if default_path.exists():
         return (str(default_path),)
 
-    
 
-        
 def get_files_comm(file_path: Tuple[str, ...]) -> List[str]:
     files = []
     for file in file_path:

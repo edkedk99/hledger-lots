@@ -139,7 +139,7 @@ class Prompt:
     def run_hledger(self, *comm: str):
         command = ["hledger", *self.files_comm, *comm]
 
-        if self.no_desc and self.no_desc!= "":
+        if self.no_desc and self.no_desc != "":
             command = [*command, f"not:desc:{self.no_desc}"]
 
         proc = subprocess.run(command, capture_output=True)

@@ -1,11 +1,11 @@
 from typing import Tuple, TypedDict
-import os
+
 import rich_click as click
 
 from .avg_info import AllAvgInfo, AvgInfo
 from .fifo_info import AllFifoInfo, FifoInfo
 from .info import AllInfo
-from .lib import get_files_comm, get_default_file, get_file_from_stdin
+from .lib import get_default_file, get_file_from_stdin, get_files_comm
 from .options import Options, get_options
 from .prices_yahoo import YahooPrices
 from .prompt import get_append_file
@@ -54,8 +54,6 @@ def cli(obj, file: Tuple[str, ...]):
     To find out more, visit [https://github.com/edkedk99/hledger-lots](https://github.com/edkedk99/hledger-lots)
     """
 
-    
-    
     if file[0] == "-":
         stdin_file = (get_file_from_stdin(),)
         opt = get_options(stdin_file)

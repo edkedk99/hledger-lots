@@ -22,7 +22,7 @@ class AvgInfo(Info):
     def get_info(self):
         if len(self.txns) == 0:
             return
-        
+
         commodity = self.commodity
         cur = self.txns[0].base_cur
         qtty = self.avg_lots[-1].total_qtty
@@ -64,7 +64,7 @@ class AvgInfo(Info):
         info = self.get_info()
         if not info:
             return f"No transaction for {self.commodity}"
-        
+
         return self.get_info_txt(info)
 
 
