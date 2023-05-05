@@ -3,8 +3,7 @@ import subprocess
 import sys
 from typing import List, Optional, Tuple
 
-from .files import get_files_comm
-from .lib import AdjustedTxn, Txn, get_avg_fifo, get_xirr
+from .lib import AdjustedTxn, Txn, get_avg_fifo, get_files_comm, get_xirr
 
 
 def adjust_txn(txn: Txn) -> AdjustedTxn:

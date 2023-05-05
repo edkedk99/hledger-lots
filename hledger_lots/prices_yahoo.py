@@ -9,9 +9,9 @@ from requests.exceptions import HTTPError
 from requests_cache import CachedSession
 
 from .commodity_tag import CommodityDirective, CommodityTag
-from .files import get_files_comm
 from .hl import hledger2txn
 from .info import get_last_price
+from .lib import get_files_comm
 
 
 @dataclass

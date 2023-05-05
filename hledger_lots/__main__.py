@@ -2,7 +2,7 @@ from .cli import cli
 
 
 def main():
-    cli()
+    cli(obj=dict())
 
 
 if __name__ == "__main__":

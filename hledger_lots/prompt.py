@@ -8,8 +8,8 @@ from prompt_toolkit.shortcuts import CompleteStyle
 
 from .avg_info import AllAvgInfo
 from .fifo_info import AllFifoInfo
-from .files import get_files_comm
 from .info import LotsInfo
+from .lib import get_files_comm
 
 
 class PromptError(BaseException):
@@ -137,7 +137,11 @@ class Prompt:
         self.commodities = [info["comm"] for info in self.get_infos()]
 
     def run_hledger(self, *comm: str):
-        command = ["hledger", *self.files_comm, *comm, f"not:desc:{self.no_desc}"]
+        command = ["hledger", *self.files_comm, *comm]
+
+        if self.no_desc and self.no_desc!= "":
+            command = [*command, f"not:desc:{self.no_desc}"]
+
         proc = subprocess.run(command, capture_output=True)
         if proc.returncode != 0:
             raise subprocess.SubprocessError(proc.stderr.decode("utf8"))

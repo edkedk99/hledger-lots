@@ -17,6 +17,7 @@ theme:
 nav:
     - Home: README.md
     - Usage: usage.md
+    - Config: config.md
     - Download Market Prices: market_prices.md
     - Output examples: output.md
     - Unit tests: tests.md
