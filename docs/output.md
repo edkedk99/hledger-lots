@@ -93,3 +93,19 @@ $ hledger_lots -f test.journal view -c AAPL --check
 
 hledger_lots.lib.CostMethodError: Error in sale AdjustedTxn(date='2023-03-10', price=1.3066666667, base_cur='BRL', qtty=-15, acct='Ativo:Acoes:AAPL'). Correct price should be 1.2 in currency BRL*
 ```
+
+## Missing configuration
+
+When a configuration is missing, detailed instructions are given on how to add it to the journal
+
+```text
+hledger_lots.options.OptionError: 
+
+Missing keys {'check', 'no_desc', 'avg_cost'}
+
+Copy/Paste the text below to the journal, changing values according to the need
+
+#+hledger-lots avg_cost:false, check:true
+#+hledger-lots no_desc:
+    
+```

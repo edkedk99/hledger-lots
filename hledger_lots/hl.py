@@ -43,7 +43,7 @@ def hledger2txn(
         for txn in txns_list
         for posting_items in txn["tpostings"]
         for prices_items in posting_items["pamount"]
-        if prices_items["acommodity"] == cur and prices_items["aprice"]
+        if prices_items["acommodity"].upper() == cur.upper() and prices_items["aprice"]
     ]
 
     adjusted_txns = [adjust_txn(txn) for txn in txns]

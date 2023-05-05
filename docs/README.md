@@ -46,28 +46,31 @@ The indicators provided by these command are explained [here](#indicators).
 Documentation with usage information can be found [here](https://edkedk99.github.io/hledger-lots/)
 
 
-## Installation
+## Setup
 
 ### Requirements
 
 - [python](https://www.python.org/)
 - [hledger](https://hledger.org/1.29/hledger.html#p-directive)
 
-### Command
+### Install
 
 ```python
 pip install --upgrade hledger-lots
 ```
 
+### Config
+
+Instead of using command options, which is hard to remember and makes the command long, environment variables, which demands tweaking the .bashrc file or a configuration file, this app add configuration options directly in the journal using a custom directives specification explained [here](config)
+
+> You can still use **LEDGER_FILE** environment variable by adding `export LEDGER_FILE=your_data.journal` or prepend to the command: `LEDGER_FILE=your_data.journal hledger-lots ...`
+
 ## Workflow
 
-1. Add purchase using the command [buy](usage/#hledger-lots-buy) or edit the journal as usual using "@" notation. **Don't bother creating subaccounts or tags with unique lot name**. See the some examples [here](examples/data.journal)
-2. Download market price history as [price directive](https://hledger.org/1.29/hledger.html#p-directive) using the command [prices](usage/#hledger-lots-prices)
-3. View financial indicators for a specific commodity using [view](usage/#hledger-lots-view) or a summary of all commodities using [list](usage/$list). Optionally update market prices from [Yahoo Finance](https://finance.yahoo.com/) using the flag *--apend-prices-to [file path]*
+1. Add a commodity purchase using the command [buy](usage/#hledger-lots-buy) or edit the journal as usual using "@" notation. **Don't bother creating subaccounts or tags with unique lot name**. See some examples [here](examples/data.journal)
+2. Download market price history from [Yahoo Finance](https://finance.yahoo.com/) as [price directive](https://hledger.org/1.29/hledger.html#p-directive) using the command [prices](usage/#hledger-lots-prices)
+3. View financial indicators for a specific commodity using [view](usage/#hledger-lots-view) or a summary of all commodities using [list](usage/$list).
 4. When you sell, use the command [sell](usage/#hledger-lots-sell) instead of adding the transactions manually. Hledger-lots will generate the correct transaction and append to the selected journal if you confirm the transaction is correct. *See transaction tags with interesting indicators about the current trade*
-
-> By default the sale is created using *FIFO* method. Use the option flag "--avg-cost" to change it to *Average Cost*
-
 
 ## Indicators
   
@@ -96,9 +99,7 @@ The sale transaction gives you the calculated **xirr** as tag, which is the inte
 
 ## Checks
 
-It is recommended to use the option *--check* to ensure you past selling transaction has the correct cost according to the choosen cost method. It can be enabled by setting the environment variable **HLEDGER_LOTS_CHECK** to "true". It can be disabled with the option *--no-check* or setting the environment variable **HLEDGER_LOTS_CHECK** to "false".
-
-> At the moment the default is set to "false", but expect it to be turned to "true" in future releases.
+It is recommended to set the option *check* to true to ensure you past selling transaction has the correct cost according to the choosen cost method. See how to set it up [here](config)
 
 ## Limitations
 

@@ -4,7 +4,7 @@ Hledger configuration is inserted directly into the journal using a custom forma
 
 ## Configuration Format
 
-Configuration is added a a row in the journal starting with '#+[namespace]' and multiple key value/pairs separated by commas. Properties can be spread indo multiple rows with the same namespace
+Configuration is added on a row in the journal starting with '#+[namespace]' and multiple key value/pairs separated by commas. Properties can be spread into different rows with the same namespace
 
 ```text
 #+namespace key1:value1, key:value2

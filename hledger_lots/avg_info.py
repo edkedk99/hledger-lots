@@ -14,13 +14,15 @@ class AvgInfo(Info):
         check: bool,
         no_desc: Optional[str] = None,
     ):
-        super().__init__(journals, commodity)
+        super().__init__(journals, commodity, no_desc)
         self.check = check
         self.avg_lots = get_avg_cost(self.txns, self.check)
         self.table = dt_list2table(self.avg_lots)
 
-    @property
-    def info(self):
+    def get_info(self):
+        if len(self.txns) == 0:
+            return
+        
         commodity = self.commodity
         cur = self.txns[0].base_cur
         qtty = self.avg_lots[-1].total_qtty
@@ -59,7 +61,11 @@ class AvgInfo(Info):
 
     @property
     def info_txt(self):
-        return self.get_info_txt(self.info)
+        info = self.get_info()
+        if not info:
+            return f"No transaction for {self.commodity}"
+        
+        return self.get_info_txt(info)
 
 
 class AllAvgInfo(AllInfo):
@@ -72,7 +78,7 @@ class AllAvgInfo(AllInfo):
         if len(avg_obj.txns) == 0:
             return
         else:
-            return avg_obj.info
+            return avg_obj.get_info()
 
     @property
     def infos(self):

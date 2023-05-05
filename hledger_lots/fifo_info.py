@@ -16,7 +16,7 @@ class FifoInfo(Info):
         check: bool,
         no_desc: Optional[str] = None,
     ):
-        super().__init__(journals, commodity)
+        super().__init__(journals, commodity,no_desc)
         self.check = check
 
         self.lots = get_lots(self.txns, check)
@@ -25,8 +25,10 @@ class FifoInfo(Info):
         self.buy_lots = get_lots(self.txns, check)
         self.table = dt_list2table(self.buy_lots)
 
-    @property
-    def info(self):
+    def get_info(self):
+        if len(self.txns) == 0:
+            return None
+        
         commodity = self.commodity
 
         cur = self.lots[0].base_cur
@@ -72,7 +74,10 @@ class FifoInfo(Info):
 
     @property
     def info_txt(self):
-        return self.get_info_txt(self.info)
+        info = self.get_info()
+        if not info:
+            return f"No transactions available for {self.commodity}"
+        return self.get_info_txt(info)
 
 
 class AllFifoInfo(AllInfo):
@@ -88,7 +93,7 @@ class AllFifoInfo(AllInfo):
             return None
 
         if len(lots) > 0:
-            lot_info = FifoInfo(self.journals, commodity, self.check).info
+            lot_info = FifoInfo(self.journals, commodity, self.check).get_info()
             return lot_info
 
     @property

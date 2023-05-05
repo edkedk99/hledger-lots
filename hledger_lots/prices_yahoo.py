@@ -13,7 +13,6 @@ from .hl import hledger2txn
 from .info import get_last_price
 from .lib import get_files_comm
 
-
 @dataclass
 class Price:
     name: str
@@ -40,6 +39,14 @@ class YahooPrices:
 
     def get_start_date(self, commodity: CommodityTag):
         txns = hledger2txn(self.files, commodity["commodity"])
+        qtty = sum(txn.qtty for txn in txns)
+        if qtty == 0:
+            print(
+                f"; stderr: No transaction for {commodity['commodity']}. Not downloading ",
+                file=sys.stderr,
+            )
+            return
+
         first_date_str = txns[0].date
         first_date = datetime.strptime(first_date_str, "%Y-%m-%d").date()
         last_market_date = get_last_price(self.files_comm, commodity["commodity"])[0]
@@ -54,6 +61,7 @@ class YahooPrices:
         start_date = last_date + timedelta(days=1)
         past = date.today() - start_date
         if past.days < 1:
+            print(f"; stderr: No new data for {commodity}", file=sys.stderr)
             return
 
         return start_date
@@ -99,7 +107,6 @@ class YahooPrices:
     def get_commodity_prices(self, commodity: CommodityTag):
         start_date = self.get_start_date(commodity)
         if not start_date:
-            print(f"; stderr: No new data for {commodity}", file=sys.stderr)
             return
 
         start_date_str = start_date.strftime("%Y-%m-%d")

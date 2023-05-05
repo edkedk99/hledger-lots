@@ -78,7 +78,7 @@ class Info:
     ) -> None:
         self.journals = journals
         self.files_comm = get_files_comm(journals)
-        self.commodity = commodity
+        self.commodity = commodity.upper()
         self.txns = hledger2txn(journals, commodity, no_desc)
 
         self.has_txn = len(self.txns) > 0

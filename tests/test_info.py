@@ -109,9 +109,9 @@ class TestLotInfo:
             "xirr": "6.2529%",
         }
     def test_fifo_info(self, fifo_info: FifoInfo):
-        assert fifo_info.info == self.expected
+        assert fifo_info.get_info() == self.expected
 
     def test_avg_info(self, avg_info: AvgInfo):
-        assert avg_info.info == self.expected
+        assert avg_info.get_info() == self.expected
 
     

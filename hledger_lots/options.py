@@ -15,12 +15,12 @@ class Options:
 class OptionError(BaseException):
     TEMPLATE = """Copy/Paste the text below to the journal, changing values according to the need
 
-    #+hledger-lots avg_cost:false, check:true
-    #+hledger-lots no_desc:
+#+hledger-lots avg_cost:false, check:true
+#+hledger-lots no_desc:
     """
 
     def __init__(self, message: str) -> None:
-        self.message = f"{message}\n\n{self.TEMPLATE}"
+        self.message = f"\n\n{message}\n\n{self.TEMPLATE}"
         super().__init__(self.message)
 
 

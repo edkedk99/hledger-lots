@@ -1,11 +1,11 @@
 from typing import Tuple, TypedDict
-
+import os
 import rich_click as click
 
 from .avg_info import AllAvgInfo, AvgInfo
 from .fifo_info import AllFifoInfo, FifoInfo
 from .info import AllInfo
-from .lib import get_files_comm
+from .lib import get_files_comm, get_default_file, get_file_from_stdin
 from .options import Options, get_options
 from .prices_yahoo import YahooPrices
 from .prompt import get_append_file
@@ -41,20 +41,29 @@ click.rich_click.STYLE_OPTIONS_PANEL_BORDER = "dim"  # Possibly conceal
     "-f",
     "--file",
     required=True,
-    envvar="LEDGER_FILE",
+    default=lambda: get_default_file(),
     multiple=True,
     help="Inform the journal file path. If \"-\", read from stdin. Without this flag read from $LEDGER_FILE or ~/.hledger.journal in this order  or '-f-'.",
 )
 @click.pass_obj
 @click.version_option()
-def cli(obj, file: Tuple[str, ...]):  # TODO: stdin
+def cli(obj, file: Tuple[str, ...]):
     """
     Commands to apply FIFO(first-in-first-out) or AVERAGE COST accounting principles without manual management of lots. Useful for transactions involving buying and selling foreign currencies or stocks.
 
     To find out more, visit [https://github.com/edkedk99/hledger-lots](https://github.com/edkedk99/hledger-lots)
     """
-    opt = get_options(file)
-    obj["file"] = file
+
+    
+    
+    if file[0] == "-":
+        stdin_file = (get_file_from_stdin(),)
+        opt = get_options(stdin_file)
+        obj["file"] = stdin_file
+    else:
+        opt = get_options(file)
+        obj["file"] = file
+
     obj["opt"] = opt
 
 
@@ -154,7 +163,6 @@ def view(obj: Obj, commodity: str):
     file = obj["file"]
     opt = obj["opt"]
 
-    # TODO: Fix IndexError and insensitive case
     if opt.avg_cost:
         info = AvgInfo(file, commodity, opt.check, opt.no_desc)
     else:

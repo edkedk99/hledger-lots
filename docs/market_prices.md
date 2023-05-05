@@ -22,10 +22,12 @@ For output example, see [here](/hledger-lots/output/#prices)
 
 ## Downloading
 
-Run `hledger-lots prices -f [journal file]`. For those commodities that have a *yahoo_ticker* tag according to the example above, *hledger-lots* will download daily historical prices in a date range according to the rule below, so the user doesn't need to care about start and end dates.
+Run `hledger-lots -f [journal file] prices`. For those commodities that have a *yahoo_ticker* tag according to the example above, *hledger-lots* will download daily historical prices in a date range according to the rule below, so the user doesn't need to care about start and end dates.
 
 | Condition                             | Start Date                 | End Date    |
 |---------------------------------------|----------------------------|-------------|
 | no market price                       | First Purchase             | Yesterday   |
 | have market price                     | Next day of the last price | Yesterday   |
 | market price later or equal yesterday | No download                | No download |
+| no transactions                       | No download                | No download |
+
