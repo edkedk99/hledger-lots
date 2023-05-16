@@ -39,12 +39,6 @@ class PromptBuy(prompt.Prompt):
             com for com in all_commodities_txt.split("\n") if com != ""
         ]
 
-        print(
-            """
-            Append a new purchase of a commodity.
-            Use format format "y.ticker" to automatically download prices.
-            Search on yahoo finance website the ticker for the commodity.\n"""
-        )
         print(self.initial_info)
         self.info = self.get_info()
         self.last_purchase = self.get_last_purchase(self.info)

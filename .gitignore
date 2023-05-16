@@ -147,3 +147,4 @@ cython_debug/
 /hlpj/test.py
 /.pdbrc
 docs/unit_tests/*
+/docs/.markdown-preview.html

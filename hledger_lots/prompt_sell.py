@@ -34,7 +34,7 @@ class PromptSell(prompt.Prompt):
 
     def ask_commodity_account(self, info: LotsInfo):
         commodity = info["comm"]
-        accts_txt = self.run_hledger("accounts", "note:Buy", f"cur:{commodity}")
+        accts_txt = self.run_hledger("accounts", f"cur:{commodity}")
         accts = [acct for acct in accts_txt.split("\n") if acct != ""]
 
         answer: str = questionary.select(

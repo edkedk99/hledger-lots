@@ -1,6 +1,11 @@
 #+hledger-lots avg_cost:false, check:true
 #+hledger-lots no_desc:
 
+#+args buy_aapl:bal desc:"Buy AAPL"
+#+args aapl_cur:bal desc:"Buy AAPL" cur:{commodity}
+#+args sell_aapl: bal desc:"Sold" {tag_price}
+
+commodity 1,000.00   USD
 commodity 1,000.0000 AAPL        ; yahoo_ticker:AAPL
 commodity 1,000.0000 GOOG        ; yahoo_ticker:GOOG
 commodity 1,000.0000 "PETR4.SA"  ; yahoo_ticker:PETR4.SA
@@ -9,7 +14,7 @@ commodity 1,000.0000 "PETR4.SA"  ; yahoo_ticker:PETR4.SA
     Asset:Bank                             100000.00 USD
     Equity:Initial
 
-2023-01-05 Buy y.AAPL
+2023-01-05 Buy AAPL
     Asset:Stocks                                  5 AAPL @ 160 USD
     Asset:Bank
 
