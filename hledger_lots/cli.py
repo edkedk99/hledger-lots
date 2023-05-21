@@ -45,14 +45,15 @@ click.rich_click.STYLE_OPTIONS_PANEL_BORDER = "dim"  # Possibly conceal
     multiple=True,
     help="Inform the journal file path. If \"-\", read from stdin. Without this flag read from $LEDGER_FILE or ~/.hledger.journal in this order  or '-f-'.",
 )
-@click.pass_obj
+@click.pass_context
 @click.version_option()
-def cli(obj, file: Tuple[str, ...]):
+def cli(ctx: click.Context, file: Tuple[str, ...]):
     """
     Commands to apply FIFO(first-in-first-out) or AVERAGE COST accounting principles without manual management of lots. Useful for transactions involving buying and selling foreign currencies or stocks.
 
     To find out more, visit [https://github.com/edkedk99/hledger-lots](https://github.com/edkedk99/hledger-lots)
     """
+    obj = ctx.obj
 
     if file[0] == "-":
         stdin_file = (get_file_from_stdin(),)
