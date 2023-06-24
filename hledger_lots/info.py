@@ -41,8 +41,8 @@ def get_last_price(files_comm: List[str], commodity: str):
         f"cur:{commodity}",
         "--infer-reverse-prices",
     ]
-    prices_proc = subprocess.run(prices_comm, capture_output=True)
-    prices_str = prices_proc.stdout.decode("utf8")
+    prices_proc = subprocess.run(prices_comm, capture_output=True, encoding="utf8")
+    prices_str = prices_proc.stdout
 
     if prices_str == "":
         return (None, None)
@@ -65,8 +65,8 @@ def get_last_price(files_comm: List[str], commodity: str):
 def get_commodities(journals: Tuple[str, ...]):
     files_comm = get_files_comm(journals)
     comm = ["hledger", *files_comm, "commodities"]
-    commodities_proc = subprocess.run(comm, capture_output=True)
-    commodities_str = commodities_proc.stdout.decode("utf8")
+    commodities_proc = subprocess.run(comm, capture_output=True, encoding="utf8")
+    commodities_str = commodities_proc.stdout
 
     commodities_list = [com for com in commodities_str.split("\n") if com != ""]
     return commodities_list

@@ -142,20 +142,20 @@ class Prompt:
         if self.no_desc and self.no_desc != "":
             command = [*command, f"not:desc:{self.no_desc}"]
 
-        proc = subprocess.run(command, capture_output=True)
+        proc = subprocess.run(command, capture_output=True, encoding="utf8")
         if proc.returncode != 0:
-            raise subprocess.SubprocessError(proc.stderr.decode("utf8"))
+            raise subprocess.SubprocessError(proc.stderr)
 
-        result = proc.stdout.decode("utf8")
+        result = proc.stdout
         return result
 
     def run_hledger_no_query_desc(self, *comm: str):
         command = ["hledger", *self.files_comm, *comm]
-        proc = subprocess.run(command, capture_output=True)
+        proc = subprocess.run(command, capture_output=True, encoding="utf8")
         if proc.returncode != 0:
-            raise subprocess.SubprocessError(proc.stderr.decode("utf8"))
+            raise subprocess.SubprocessError(proc.stderr)
 
-        result = proc.stdout.decode("utf8")
+        result = proc.stdout
         return result
 
     def get_infos(self):

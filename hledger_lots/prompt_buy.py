@@ -129,13 +129,11 @@ class PromptBuy(prompt.Prompt):
 
         comm = ["hledger", "-f-", "print", "--explicit"]
         txn_proc = subprocess.run(
-            comm,
-            input=txn_raw.encode(),
-            capture_output=True,
+            comm, input=txn_raw, capture_output=True, encoding="utf8"
         )
         if txn_proc.returncode != 0:
-            err = txn_proc.stderr.decode("utf8")
+            err = txn_proc.stderr
             raise prompt.PromptError(err)
 
-        txn_print: str = txn_proc.stdout.decode("utf8")
+        txn_print: str = txn_proc.stdout
         return txn_print
