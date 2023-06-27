@@ -101,7 +101,7 @@ def avg_sell(
     {revenue_account}"""
 
     comm = ["hledger", "-f-", "print", "--explicit"]
-    txn_proc = subprocess.run(comm, input=txn_hl.encode(), capture_output=True)
+    txn_proc = subprocess.run(comm, input=txn_hl, capture_output=True, encoding="utf8")
 
-    txn_print: str = txn_proc.stdout.decode("utf8")
+    txn_print: str = txn_proc.stdout
     return txn_print

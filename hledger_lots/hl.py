@@ -31,11 +31,13 @@ def hledger2txn(
     if no_desc:
         comm.append(f"not:desc:{no_desc}")
 
-    hl_proc = subprocess.run(comm, stdin=sys.stdin, capture_output=True)
+    hl_proc = subprocess.run(
+        comm, stdin=sys.stdin, capture_output=True, encoding="utf8"
+    )
     if hl_proc.returncode != 0:
-        raise ValueError(hl_proc.stderr.decode("utf8"))
+        raise ValueError(hl_proc.stderr)
 
-    hl_data = hl_proc.stdout.decode("utf8")
+    hl_data = hl_proc.stdout
     txns_list = json.loads(hl_data)
 
     txns = [

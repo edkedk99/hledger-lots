@@ -1,4 +1,4 @@
-from typing import Tuple, TypedDict
+from typing import Tuple, TypedDict, Optional
 
 import rich_click as click
 
@@ -16,6 +16,7 @@ from .prompt_sell import PromptSell
 class Obj(TypedDict):
     file: Tuple[str, ...]
     opt: Options
+    newlines: Optional[str]
 
 
 CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
@@ -45,9 +46,16 @@ click.rich_click.STYLE_OPTIONS_PANEL_BORDER = "dim"  # Possibly conceal
     multiple=True,
     help="Inform the journal file path. If \"-\", read from stdin. Without this flag read from $LEDGER_FILE or ~/.hledger.journal in this order  or '-f-'.",
 )
+@click.option(
+    "-l",
+    "--newlines",
+    required=False,
+    type=click.Choice(["Auto", "Linux", "Windows"], case_sensitive=False),
+    help="Whether to use the default line endings or specific line endings when writing to files.",
+)
 @click.pass_context
 @click.version_option()
-def cli(ctx: click.Context, file: Tuple[str, ...]):
+def cli(ctx: click.Context, file: Tuple[str, ...], newlines: Optional[str]):
     """
     Commands to apply FIFO(first-in-first-out) or AVERAGE COST accounting principles without manual management of lots. Useful for transactions involving buying and selling foreign currencies or stocks.
 
@@ -56,7 +64,7 @@ def cli(ctx: click.Context, file: Tuple[str, ...]):
     obj = ctx.obj
 
     if file[0] == "-":
-        stdin_file = (get_file_from_stdin(),)
+        stdin_file = (get_file_from_stdin(), opt["newlines"])
         opt = get_options(stdin_file)
         obj["file"] = stdin_file
     else:
@@ -64,6 +72,13 @@ def cli(ctx: click.Context, file: Tuple[str, ...]):
         obj["file"] = file
 
     obj["opt"] = opt
+
+    if newlines == "Windows":
+        obj["newlines"] = "\r\n"
+    elif newlines == "Linux":
+        obj["newlines"] = "\n"
+    else:
+        obj["newlines"] = None
 
 
 @click.command()
@@ -87,7 +102,7 @@ def buy(obj: Obj):
 
     append_file = get_append_file(file[0])
     if append_file:
-        with open(append_file, "a") as f:
+        with open(append_file, "a", newline=obj["newlines"]) as f:
             f.write("\n" + txn_print)
     else:
         click.echo("\n" + "Transaction not saved.")
@@ -127,7 +142,7 @@ def sell(obj: Obj):
 
     append_file = get_append_file(file[0])
     if append_file:
-        with open(append_file, "a") as f:
+        with open(append_file, "a", newline=obj["newlines"]) as f:
             f.write("\n" + txn_print)
     else:
         click.echo("\n" + "Transaction not saved.")

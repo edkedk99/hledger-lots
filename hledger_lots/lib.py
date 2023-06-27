@@ -32,11 +32,11 @@ class CostMethodError(Exception):
         super().__init__(self.message)
 
 
-def get_file_from_stdin():
+def get_file_from_stdin(newlines: Optional[str]):
     tmp_file = tempfile.NamedTemporaryFile(suffix=".journal", delete=False)
     name = tmp_file.name
 
-    with open(tmp_file.name, "w") as f:
+    with open(tmp_file.name, "w", newline=newlines) as f:
         for line in sys.stdin:
             f.write(line)
 
